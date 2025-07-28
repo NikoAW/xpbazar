@@ -1,1 +1,144 @@
-<!DOCTYPE html><html lang="tr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>KOF</title><style>:root{--neon-blue:#00f7ff;--neon-pink:#ff00ea;--neon-green:#39ff14;--dark-bg:#0a0a0a}*{box-sizing:border-box;font-family:'Segoe UI',sans-serif}body{margin:0;background:var(--dark-bg);color:white;overflow-x:hidden}.neon-text{text-shadow:0 0 5px var(--neon-blue),0 0 10px var(--neon-pink)}.form-container{max-width:400px;margin:5rem auto;padding:2rem;border:2px solid var(--neon-blue);border-radius:12px;box-shadow:0 0 20px var(--neon-green);background-color:rgba(0,0,0,0.6)}input,textarea,button{width:100%;padding:12px;margin-top:10px;background:transparent;color:white;border:2px solid var(--neon-pink);border-radius:8px;transition:.3s}input:focus,textarea:focus{outline:none;box-shadow:0 0 10px var(--neon-blue)}button:hover{background-color:var(--neon-blue);color:black}.error-box{position:fixed;top:-100px;left:50%;transform:translateX(-50%);background-color:red;padding:1rem;border-radius:6px;color:white;font-weight:bold;animation:slideDown 2s ease forwards}@keyframes slideDown{0%{top:-100px}10%{top:20px}90%{top:20px}100%{top:-100px}}.post-container{max-width:600px;margin:2rem auto;padding:1.5rem;border:2px solid var(--neon-green);background-color:rgba(0,0,0,0.5);border-radius:12px;box-shadow:0 0 15px var(--neon-blue)}.post-title{font-size:1.2rem;font-weight:bold;color:var(--neon-blue)}.post-code{white-space:pre-wrap;background:#111;padding:1rem;margin-top:1rem;border-radius:8px;border:1px solid var(--neon-pink)}</style></head><body><div id=\"app\"><div id=\"loginSection\" class=\"form-container\"><h2 class=\"neon-text\">Kayıt Ol</h2><input id=\"username\" type=\"text\" placeholder=\"Hesap İsmi\" minlength=\"8\" maxlength=\"16\" required><input id=\"password\" type=\"password\" placeholder=\"Şifre\" minlength=\"6\" maxlength=\"18\" required><button onclick=\"registerUser()\">Kayıt Ol</button></div></div><div id=\"errorBox\" class=\"error-box\" style=\"display:none;\">Hata!</div><script>let users=JSON.parse(localStorage.getItem(\"users\")||'{}');let currentUser=localStorage.getItem(\"currentUser\");function showError(msg){const e=document.getElementById(\"errorBox\");e.innerText=msg;e.style.display='block';e.classList.add(\"error-box\");setTimeout(()=>e.style.display='none',2e3)}function registerUser(){const u=document.getElementById(\"username\").value.trim(),p=document.getElementById(\"password\").value.trim();if(u.length<8||u.length>16)return showError(\"Hesap ismi 8-16 karakter olmalı\");if(p.length<6||p.length>18)return showError(\"Şifre 6-18 karakter olmalı\");if(users[u])return showError(\"Bu kullanıcı zaten var\");users[u]={password:p,posts:[],followers:[],following:[],about:'',image:'',date:Date.now()};localStorage.setItem(\"users\",JSON.stringify(users));localStorage.setItem(\"currentUser\",u);alert(\"Kayıt başarılı! Giriş yapılıyor...\");location.reload()}function logout(){localStorage.removeItem(\"currentUser\");location.reload()}if(currentUser&&users[currentUser]){document.getElementById(\"app\").innerHTML=`<div style=\"padding:2rem;\"><h2 class=\"neon-text\">Hoş geldin, ${currentUser}</h2><button onclick=\"logout()\">Çıkış Yap</button><div class=\"form-container\" style=\"margin-top:2rem;\"><h3 class=\"neon-text\">Kod Paylaş</h3><input id=\"postTitle\" type=\"text\" placeholder=\"Kod Açıklaması (10-100 karakter)\" maxlength=\"100\"><textarea id=\"postCode\" placeholder=\"Kodun Kendisi (10-1000 karakter)\" rows=\"6\" maxlength=\"1000\"></textarea><button onclick=\"sharePost()\">Paylaş</button></div><div id=\"posts\"></div></div>`;renderPosts()}function sharePost(){const t=document.getElementById(\"postTitle\").value.trim(),c=document.getElementById(\"postCode\").value.trim();if(t.length<10||c.length<10)return showError(\"Açıklama ve kod en az 10 karakter olmalı\");users[currentUser].posts.push({title:t,code:c,date:new Date().toISOString()});localStorage.setItem(\"users\",JSON.stringify(users));renderPosts();document.getElementById(\"postTitle\").value=\"\";document.getElementById(\"postCode\").value=\"\"}function renderPosts(){const b=document.getElementById(\"posts\");b.innerHTML=\"<h3 class='neon-text'>Paylaşılan Kodlar</h3>\";users[currentUser].posts.slice().reverse().forEach(p=>{b.innerHTML+=`<div class=\"post-container\"><div class=\"post-title\">${p.title}</div><div class=\"post-code\">${p.code}</div><small><i>${new Date(p.date).toLocaleString('tr-TR')}</i></small></div>`})}</script></body></html>
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Neon Wheel Spin</title>
+  <style>
+    body {
+      margin: 0;
+      background: black;
+      font-family: 'Arial', sans-serif;
+      color: #0ff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }h1 {
+  font-size: 36px;
+  color: #0ff;
+  text-shadow: 0 0 10px #0ff;
+}
+
+.wheel {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  border: 10px solid #0ff;
+  border-radius: 50%;
+  margin-bottom: 20px;
+  box-shadow: 0 0 30px #0ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 18px;
+}
+
+.segment {
+  position: absolute;
+  width: 50%;
+  height: 50%;
+  background: #0ff;
+  clip-path: polygon(100% 50%, 0% 0%, 0% 100%);
+  transform-origin: 100% 50%;
+  color: black;
+  font-weight: bold;
+}
+
+.panel {
+  text-align: center;
+}
+
+input {
+  padding: 10px;
+  border: 2px solid #0ff;
+  background: black;
+  color: #0ff;
+  font-size: 16px;
+  text-align: center;
+  margin-bottom: 10px;
+  outline: none;
+}
+
+button {
+  padding: 10px 20px;
+  background: black;
+  border: 2px solid #0ff;
+  color: #0ff;
+  font-size: 16px;
+  cursor: pointer;
+  text-shadow: 0 0 5px #0ff;
+}
+
+.odds {
+  margin-top: 20px;
+  color: #f0f;
+  font-size: 14px;
+}
+
+  </style>
+</head>
+<body>
+  <div class="wheel" id="wheel">
+    <!-- Segments will be added by JS -->
+  </div>  <div class="panel">
+    <input type="text" id="keyInput" placeholder="KEY">
+    <br>
+    <button id="spinBtn" disabled>DÖNDÜR</button>
+    <p id="result"></p>
+  </div>  <div class="odds" id="odds">
+    <strong>ORANLAR:</strong><br>
+    120k hesap - %85<br>
+    60k hesap - %80<br>
+    40k hesap - %50<br>
+    20k hesap - %20<br>
+    80k hesap - %90<br>
+    HIÇBIRŞEY - %2
+  </div>  <script>
+    const segments = ["120k", "60k", "80k", "40k", "20k", "50k", "HIÇBIRŞEY"];
+    const wheel = document.getElementById("wheel");
+    const spinBtn = document.getElementById("spinBtn");
+    const result = document.getElementById("result");
+    const keyInput = document.getElementById("keyInput");
+    const oddsDiv = document.getElementById("odds");
+
+    let keyUsed = false;
+
+    function drawSegments() {
+      const step = 360 / segments.length;
+      segments.forEach((seg, i) => {
+        const div = document.createElement("div");
+        div.className = "segment";
+        div.style.transform = `rotate(${i * step}deg)`;
+        div.textContent = seg;
+        wheel.appendChild(div);
+      });
+    }
+
+    keyInput.addEventListener("input", () => {
+      if (keyInput.value === "AWWHEALTH" && !keyUsed) {
+        spinBtn.disabled = false;
+      } else {
+        spinBtn.disabled = true;
+      }
+    });
+
+    spinBtn.addEventListener("click", () => {
+      if (keyUsed) return;
+      keyUsed = true;
+      keyInput.disabled = true;
+      spinBtn.disabled = true;
+      oddsDiv.style.display = "none";
+
+      const rotation = 3600 + Math.floor(Math.random() * 360);
+      wheel.style.transition = "transform 6s ease-out";
+      wheel.style.transform = `rotate(${rotation}deg)`;
+
+      setTimeout(() => {
+        result.textContent = "KAZANDIĞINIZ: HIÇBIR ŞEY";
+      }, 6000);
+    });
+
+    drawSegments();
+  </script></body>
+</html>
