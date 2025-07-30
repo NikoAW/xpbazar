@@ -1,144 +1,117 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html><html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <title>Neon Wheel Spin</title>
+  <title>Neon Tek Komut Sistem</title>
   <style>
     body {
-      margin: 0;
-      background: black;
-      font-family: 'Arial', sans-serif;
-      color: #0ff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-    }h1 {
-  font-size: 36px;
-  color: #0ff;
-  text-shadow: 0 0 10px #0ff;
-}
-
-.wheel {
-  position: relative;
-  width: 300px;
-  height: 300px;
-  border: 10px solid #0ff;
-  border-radius: 50%;
-  margin-bottom: 20px;
-  box-shadow: 0 0 30px #0ff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  font-size: 18px;
-}
-
-.segment {
-  position: absolute;
-  width: 50%;
-  height: 50%;
-  background: #0ff;
-  clip-path: polygon(100% 50%, 0% 0%, 0% 100%);
-  transform-origin: 100% 50%;
-  color: black;
-  font-weight: bold;
-}
-
-.panel {
-  text-align: center;
-}
-
-input {
-  padding: 10px;
-  border: 2px solid #0ff;
-  background: black;
-  color: #0ff;
-  font-size: 16px;
-  text-align: center;
-  margin-bottom: 10px;
-  outline: none;
-}
-
-button {
-  padding: 10px 20px;
-  background: black;
-  border: 2px solid #0ff;
-  color: #0ff;
-  font-size: 16px;
-  cursor: pointer;
-  text-shadow: 0 0 5px #0ff;
-}
-
-.odds {
-  margin-top: 20px;
-  color: #f0f;
-  font-size: 14px;
-}
-
+      font-family: 'Courier New', monospace;
+      background-color: #0d0d0d;
+      color: #39ff14;
+      text-align: center;
+      padding: 20px;
+    }
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+      border: none;
+      margin-top: 10px;
+      background: #0d0d0d;
+      color: #39ff14;
+      border: 2px solid #39ff14;
+      box-shadow: 0 0 10px #39ff14, 0 0 20px #39ff14;
+      outline: none;
+    }
+    #verifyBtn, #paper, #downloadBtn {
+      display: none;
+      margin-top: 15px;
+    }
+    #loading {
+      display: none;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    #paper {
+      border: 2px solid #39ff14;
+      width: 300px;
+      margin: 20px auto;
+      padding: 10px;
+      background-color: #1a1a1a;
+      color: #39ff14;
+      box-shadow: 0 0 15px #39ff14;
+      text-align: left;
+    }
   </style>
 </head>
-<body>
-  <div class="wheel" id="wheel">
-    <!-- Segments will be added by JS -->
-  </div>  <div class="panel">
-    <input type="text" id="keyInput" placeholder="KEY">
-    <br>
-    <button id="spinBtn" disabled>DÖNDÜR</button>
-    <p id="result"></p>
-  </div>  <div class="odds" id="odds">
-    <strong>ORANLAR:</strong><br>
-    120k hesap - %85<br>
-    60k hesap - %80<br>
-    40k hesap - %50<br>
-    20k hesap - %20<br>
-    80k hesap - %90<br>
-    HIÇBIRŞEY - %2
-  </div>  <script>
-    const segments = ["120k", "60k", "80k", "40k", "20k", "50k", "HIÇBIRŞEY"];
-    const wheel = document.getElementById("wheel");
-    const spinBtn = document.getElementById("spinBtn");
-    const result = document.getElementById("result");
-    const keyInput = document.getElementById("keyInput");
-    const oddsDiv = document.getElementById("odds");
+<body>  <h1>ANA MENÜ</h1>  <input type="number" id="userIdInput" placeholder="User ID" oninput="checkInputLength()">
+  <br>
+  <button id="verifyBtn" onclick="verifyId()">DOĞRULA</button>
+  <div id="loading">İşleniyor...</div>  <div id="paper">
+    <p><strong>Oyuncu Id:</strong> <span id="playerId"></span></p>
+    <p><strong>Tarih:</strong> <span id="date"></span></p>
+    <p><strong>Konum:</strong> <span id="location"></span></p>
+  </div><button id="downloadBtn" onclick="downloadImage()">ÇEKİ YÜKLE</button>
 
-    let keyUsed = false;
+  <script>
+    let originalId = '';
+    let hasVerified = localStorage.getItem('hasVerified') === 'true';
 
-    function drawSegments() {
-      const step = 360 / segments.length;
-      segments.forEach((seg, i) => {
-        const div = document.createElement("div");
-        div.className = "segment";
-        div.style.transform = `rotate(${i * step}deg)`;
-        div.textContent = seg;
-        wheel.appendChild(div);
-      });
+    window.onload = () => {
+      if (hasVerified) {
+        document.getElementById('userIdInput').disabled = true;
+        document.getElementById('userIdInput').placeholder = 'Tekrar doğrulama yapılmaz';
+      }
     }
 
-    keyInput.addEventListener("input", () => {
-      if (keyInput.value === "AWWHEALTH" && !keyUsed) {
-        spinBtn.disabled = false;
+    function checkInputLength() {
+      const input = document.getElementById('userIdInput').value;
+      if (!hasVerified && input.length >= 6 && input.length <= 12) {
+        document.getElementById('verifyBtn').style.display = 'inline-block';
       } else {
-        spinBtn.disabled = true;
+        document.getElementById('verifyBtn').style.display = 'none';
       }
-    });
+    }
 
-    spinBtn.addEventListener("click", () => {
-      if (keyUsed) return;
-      keyUsed = true;
-      keyInput.disabled = true;
-      spinBtn.disabled = true;
-      oddsDiv.style.display = "none";
+    function verifyId() {
+      if (hasVerified) return;
+      const input = document.getElementById('userIdInput').value;
+      originalId = input;
+      document.getElementById('verifyBtn').style.display = 'none';
+      document.getElementById('loading').style.display = 'block';
+      setTimeout(showPaper, 3000);
+      localStorage.setItem('hasVerified', 'true');
+    }
 
-      const rotation = 3600 + Math.floor(Math.random() * 360);
-      wheel.style.transition = "transform 6s ease-out";
-      wheel.style.transform = `rotate(${rotation}deg)`;
+    function showPaper() {
+      const location = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const fakeId = randomizeId(originalId);
+      document.getElementById('playerId').textContent = fakeId;
+      document.getElementById('date').textContent = new Date().toLocaleDateString();
+      document.getElementById('location').textContent = location;
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('paper').style.display = 'block';
+      document.getElementById('downloadBtn').style.display = 'inline-block';
+    }
 
-      setTimeout(() => {
-        result.textContent = "KAZANDIĞINIZ: HIÇBIR ŞEY";
-      }, 6000);
-    });
+    function randomizeId(id) {
+      let arr = id.split('');
+      const idx1 = Math.floor(Math.random() * arr.length);
+      let idx2;
+      do {
+        idx2 = Math.floor(Math.random() * arr.length);
+      } while (idx2 === idx1);
+      arr[idx1] = Math.floor(Math.random() * 10).toString();
+      arr[idx2] = Math.floor(Math.random() * 10).toString();
+      return arr.join('');
+    }
 
-    drawSegments();
-  </script></body>
+    function downloadImage() {
+      const paper = document.getElementById('paper');
+      html2canvas(paper).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'cek.png';
+        link.href = canvas.toDataURL();
+        link.click();
+      });
+    }
+  </script>  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script></body>
 </html>
