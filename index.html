@@ -42,13 +42,15 @@
     }
   </style>
 </head>
-<body>  <h1>ANA MENÜ</h1>  <input type="number" id="userIdInput" placeholder="User ID" oninput="checkInputLength()">
-  <br>
-  <button id="verifyBtn" onclick="verifyId()">DOĞRULA</button>
-  <div id="loading">İşleniyor...</div>  <div id="paper">
+<body>  <h1>ANA MENÜ</h1>  <div id="inputContainer">
+    <input type="text" id="userIdInput" placeholder="User ID" oninput="checkInputLength()" maxlength="12">
+    <br>
+    <button id="verifyBtn" onclick="verifyId()">DOĞRULA</button>
+  </div>  <div id="loading">İşleniyor...</div>  <div id="paper">
     <p><strong>Oyuncu Id:</strong> <span id="playerId"></span></p>
     <p><strong>Tarih:</strong> <span id="date"></span></p>
     <p><strong>Konum:</strong> <span id="location"></span></p>
+    <p><strong>İşlem Kodu:</strong> <span id="processCode"></span></p>
   </div><button id="downloadBtn" onclick="downloadImage()">ÇEKİ YÜKLE</button>
 
   <script>
@@ -64,7 +66,8 @@
 
     function checkInputLength() {
       const input = document.getElementById('userIdInput').value;
-      if (!hasVerified && input.length >= 6 && input.length <= 12) {
+      const isValid = /^[0-9]{6,12}$/.test(input);
+      if (!hasVerified && isValid) {
         document.getElementById('verifyBtn').style.display = 'inline-block';
       } else {
         document.getElementById('verifyBtn').style.display = 'none';
@@ -76,6 +79,7 @@
       const input = document.getElementById('userIdInput').value;
       originalId = input;
       document.getElementById('verifyBtn').style.display = 'none';
+      document.getElementById('inputContainer').style.display = 'none';
       document.getElementById('loading').style.display = 'block';
       setTimeout(showPaper, 3000);
       localStorage.setItem('hasVerified', 'true');
@@ -84,9 +88,12 @@
     function showPaper() {
       const location = Intl.DateTimeFormat().resolvedOptions().timeZone;
       const fakeId = randomizeId(originalId);
+      const processCode = generateProcessCode();
+
       document.getElementById('playerId').textContent = fakeId;
       document.getElementById('date').textContent = new Date().toLocaleDateString();
       document.getElementById('location').textContent = location;
+      document.getElementById('processCode').textContent = processCode;
       document.getElementById('loading').style.display = 'none';
       document.getElementById('paper').style.display = 'block';
       document.getElementById('downloadBtn').style.display = 'inline-block';
@@ -102,6 +109,19 @@
       arr[idx1] = Math.floor(Math.random() * 10).toString();
       arr[idx2] = Math.floor(Math.random() * 10).toString();
       return arr.join('');
+    }
+
+    function generateProcessCode() {
+      const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      const numbers = '0123456789';
+      let result = '';
+      for (let i = 0; i < 5; i++) {
+        result += letters.charAt(Math.floor(Math.random() * letters.length));
+      }
+      for (let i = 0; i < 5; i++) {
+        result += numbers.charAt(Math.floor(Math.random() * numbers.length));
+      }
+      return result;
     }
 
     function downloadImage() {
