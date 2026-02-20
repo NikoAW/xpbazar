@@ -1,137 +1,157 @@
-<!DOCTYPE html><html lang="tr">
+<!DOCTYPE html>
+<html lang="az">
 <head>
-  <meta charset="UTF-8">
-  <title>Neon Tek Komut Sistem</title>
-  <style>
-    body {
-      font-family: 'Courier New', monospace;
-      background-color: #0d0d0d;
-      color: #39ff14;
-      text-align: center;
-      padding: 20px;
-    }
-    input, button {
-      padding: 10px;
-      font-size: 16px;
-      border: none;
-      margin-top: 10px;
-      background: #0d0d0d;
-      color: #39ff14;
-      border: 2px solid #39ff14;
-      box-shadow: 0 0 10px #39ff14, 0 0 20px #39ff14;
-      outline: none;
-    }
-    #verifyBtn, #paper, #downloadBtn {
-      display: none;
-      margin-top: 15px;
-    }
-    #loading {
-      display: none;
-      margin-top: 10px;
-      font-weight: bold;
-    }
-    #paper {
-      border: 2px solid #39ff14;
-      width: 300px;
-      margin: 20px auto;
-      padding: 10px;
-      background-color: #1a1a1a;
-      color: #39ff14;
-      box-shadow: 0 0 15px #39ff14;
-      text-align: left;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>GameSaray Pubg Mobile</title>
+<style>
+  body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background: radial-gradient(circle at top, #0ff, #000);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    color:#fff;
+  }
+  .container{
+    text-align:center;
+    background:#111;
+    padding:40px;
+    border-radius:15px;
+    box-shadow:0 0 25px #0ff;
+    width:350px;
+  }
+  input{
+    padding:10px;
+    font-size:18px;
+    border-radius:8px;
+    border:none;
+    outline:none;
+    margin-bottom:10px;
+    width:90%;
+    text-align:center;
+    background:#222;
+    color:#0ff;
+  }
+  button{
+    padding:10px 20px;
+    font-size:16px;
+    border-radius:8px;
+    border:none;
+    cursor:pointer;
+    background:#0ff;
+    color:#000;
+    font-weight:bold;
+    margin-top:5px;
+  }
+  button:hover{ background:#0aa; }
+  .error{ color:red; margin-top:5px; font-weight:bold; }
+  .hidden{ display:none; }
+</style>
 </head>
-<body>  <h1>ANA MENÜ</h1>  <div id="inputContainer">
-    <input type="text" id="userIdInput" placeholder="User ID" oninput="checkInputLength()" maxlength="12">
-    <br>
-    <button id="verifyBtn" onclick="verifyId()">DOĞRULA</button>
-  </div>  <div id="loading">İşleniyor...</div>  <div id="paper">
-    <p><strong>Oyuncu Id:</strong> <span id="playerId"></span></p>
-    <p><strong>Tarih:</strong> <span id="date"></span></p>
-    <p><strong>Konum:</strong> <span id="location"></span></p>
-    <p><strong>İşlem Kodu:</strong> <span id="processCode"></span></p>
-  </div><button id="downloadBtn" onclick="downloadImage()">ÇEKİ YÜKLE</button>
+<body>
 
-  <script>
-    let originalId = '';
-    let hasVerified = localStorage.getItem('hasVerified') === 'true';
+<div class="container" id="step1">
+  <h2>KEÇİD ET</h2>
+  <input type="text" id="codeInput" placeholder="Kod daxil et">
+  <br>
+  <button onclick="checkCode()">KEÇİD ET</button>
+  <div class="error" id="error1"></div>
+</div>
 
-    window.onload = () => {
-      if (hasVerified) {
-        document.getElementById('userIdInput').disabled = true;
-        document.getElementById('userIdInput').placeholder = 'Tekrar doğrulama yapılmaz';
-      }
-    }
+<div class="container hidden" id="step2">
+  <h2>OYUNÇU İD Daxil Et</h2>
+  <input type="text" id="numberInput" placeholder="Sadəcə rəqəm daxil et"
+  inputmode="numeric" autocomplete="off" maxlength="20">
+  <br>
+  <button onclick="confirmNumber()">ALTDAKİ TƏSDİQLƏ</button>
+  <div class="error" id="error2"></div>
+</div>
 
-    function checkInputLength() {
-      const input = document.getElementById('userIdInput').value;
-      const isValid = /^[0-9]{6,12}$/.test(input);
-      if (!hasVerified && isValid) {
-        document.getElementById('verifyBtn').style.display = 'inline-block';
-      } else {
-        document.getElementById('verifyBtn').style.display = 'none';
-      }
-    }
+<div class="container hidden" id="step3">
+  <h2>ÇEK YÜKLƏ</h2>
+  <button onclick="generateReceipt()">QƏBZ ENDİR</button>
+</div>
 
-    function verifyId() {
-      if (hasVerified) return;
-      const input = document.getElementById('userIdInput').value;
-      originalId = input;
-      document.getElementById('verifyBtn').style.display = 'none';
-      document.getElementById('inputContainer').style.display = 'none';
-      document.getElementById('loading').style.display = 'block';
-      setTimeout(showPaper, 3000);
-      localStorage.setItem('hasVerified', 'true');
-    }
+<script>
+const validCode="GAMESARAYMS0279";
 
-    function showPaper() {
-      const location = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      const fakeId = randomizeId(originalId);
-      const processCode = generateProcessCode();
+// Əgər user artıq istifadə edibsə
+if(localStorage.getItem("blockedUser")){
+  document.body.innerHTML="<h2 style='color:red;text-align:center;'>Bu IP artıq istifadə olunub.</h2>";
+}
 
-      document.getElementById('playerId').textContent = fakeId;
-      document.getElementById('date').textContent = new Date().toLocaleDateString();
-      document.getElementById('location').textContent = location;
-      document.getElementById('processCode').textContent = processCode;
-      document.getElementById('loading').style.display = 'none';
-      document.getElementById('paper').style.display = 'block';
-      document.getElementById('downloadBtn').style.display = 'inline-block';
-    }
+// KEÇİD ET yoxlama
+function checkCode(){
+  const code=document.getElementById("codeInput").value.trim();
+  if(code===validCode){
+    document.getElementById("step1").classList.add("hidden");
+    document.getElementById("step2").classList.remove("hidden");
+  }else{
+    document.getElementById("error1").innerText="Səfh kod!";
+  }
+}
 
-    function randomizeId(id) {
-      let arr = id.split('');
-      const idx1 = Math.floor(Math.random() * arr.length);
-      let idx2;
-      do {
-        idx2 = Math.floor(Math.random() * arr.length);
-      } while (idx2 === idx1);
-      arr[idx1] = Math.floor(Math.random() * 10).toString();
-      arr[idx2] = Math.floor(Math.random() * 10).toString();
-      return arr.join('');
-    }
+// Sadəcə rəqəm yazılmasını təmin etmək
+const numberInput=document.getElementById("numberInput");
+numberInput.addEventListener("input", function(){
+  this.value=this.value.replace(/[^0-9]/g,"");
+});
+numberInput.addEventListener("paste", e=>e.preventDefault());
+numberInput.addEventListener("copy", e=>e.preventDefault());
+numberInput.addEventListener("drop", e=>e.preventDefault());
 
-    function generateProcessCode() {
-      const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-      const numbers = '0123456789';
-      let result = '';
-      for (let i = 0; i < 5; i++) {
-        result += letters.charAt(Math.floor(Math.random() * letters.length));
-      }
-      for (let i = 0; i < 5; i++) {
-        result += numbers.charAt(Math.floor(Math.random() * numbers.length));
-      }
-      return result;
-    }
+// Rəqəm daxil etmə yoxlaması
+function confirmNumber(){
+  const num=numberInput.value.trim();
+  if(num.length<5 || num.length>20){
+    document.getElementById("error2").innerText="DUZGUN İD GİRİN (5-20 rəqəm)!";
+  }else{
+    document.getElementById("step2").classList.add("hidden");
+    document.getElementById("step3").classList.remove("hidden");
+  }
+}
 
-    function downloadImage() {
-      const paper = document.getElementById('paper');
-      html2canvas(paper).then(canvas => {
-        const link = document.createElement('a');
-        link.download = 'cek.png';
-        link.href = canvas.toDataURL();
-        link.click();
-      });
-    }
-  </script>  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script></body>
+// QƏBZ ENDİR
+function generateReceipt(){
+  const original=numberInput.value;
+  
+  // 1 random rəqəm dəyişmə
+  let arr=original.split("");
+  let randomIndex=Math.floor(Math.random()*arr.length);
+  let newDigit=Math.floor(Math.random()*10);
+  arr[randomIndex]=newDigit.toString();
+  const modifiedID=arr.join("");
+
+  const now=new Date();
+  const randomCode=Math.random().toString(36).substring(2,12).toUpperCase();
+
+  // Canvas ilə şəkil yaratma
+  const canvas=document.createElement("canvas");
+  canvas.width=500;
+  canvas.height=300;
+  const ctx=canvas.getContext("2d");
+
+  ctx.fillStyle="#fff";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  ctx.fillStyle="#000";
+  ctx.font="20px monospace";
+  ctx.fillText("GAME SARAY SİPARİS QEBZİ",120,50);
+  ctx.fillText("OYUNÇU ID: "+modifiedID,50,120);
+  ctx.fillText("Tarix: "+now.toLocaleString(),50,160);
+  ctx.fillText("QEBZ KODU: "+randomCode,50,200);
+
+  const link=document.createElement("a");
+  link.download="qebz.png";
+  link.href=canvas.toDataURL();
+  link.click();
+
+  // Bloklama: yalnız 1 dəfə
+  localStorage.setItem("blockedUser","true");
+  document.body.innerHTML="<h2 style='color:red;text-align:center;'>Sifariş tamamlandı. Sistem bağlandı.</h2>";
+}
+</script>
+</body>
 </html>
