@@ -3,57 +3,90 @@
 <head>
 <meta charset="UTF-8">
 <title>GameSaray Pubg Mobile</title>
+
 <style>
-  body{
-    margin:0;
-    font-family:Arial, sans-serif;
-    background: radial-gradient(circle at top, #0ff, #000);
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
-    color:#fff;
-  }
-  .container{
-    text-align:center;
-    background:#111;
-    padding:40px;
-    border-radius:15px;
-    box-shadow:0 0 25px #0ff;
-    width:350px;
-  }
-  input{
-    padding:10px;
-    font-size:18px;
-    border-radius:8px;
-    border:none;
-    outline:none;
-    margin-bottom:10px;
-    width:90%;
-    text-align:center;
-    background:#222;
-    color:#0ff;
-  }
-  button{
-    padding:10px 20px;
-    font-size:16px;
-    border-radius:8px;
-    border:none;
-    cursor:pointer;
-    background:#0ff;
-    color:#000;
-    font-weight:bold;
-    margin-top:5px;
-  }
-  button:hover{ background:#0aa; }
-  .error{ color:red; margin-top:5px; font-weight:bold; }
-  .hidden{ display:none; }
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background: radial-gradient(circle at top, #00ffff, #000);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  color:#fff;
+  overflow:hidden;
+}
+
+.container{
+  text-align:center;
+  background:#111;
+  padding:40px;
+  border-radius:20px;
+  box-shadow:0 0 30px #00ffff;
+  width:350px;
+  transition:0.4s;
+  animation:fadeIn 0.6s ease;
+}
+
+@keyframes fadeIn{
+  from{opacity:0; transform:scale(0.9);}
+  to{opacity:1; transform:scale(1);}
+}
+
+input{
+  padding:10px;
+  font-size:18px;
+  border-radius:8px;
+  border:none;
+  outline:none;
+  margin-bottom:10px;
+  width:90%;
+  text-align:center;
+  background:#222;
+  color:#0ff;
+}
+
+button{
+  padding:10px 20px;
+  font-size:16px;
+  border-radius:8px;
+  border:none;
+  cursor:pointer;
+  background:#0ff;
+  color:#000;
+  font-weight:bold;
+  margin-top:5px;
+  transition:0.3s;
+}
+
+button:hover{
+  background:#00aaaa;
+  box-shadow:0 0 15px #0ff;
+}
+
+.error{
+  color:red;
+  margin-top:5px;
+  font-weight:bold;
+}
+
+.hidden{display:none;}
+
+.processing{
+  font-size:18px;
+  animation:blink 1s infinite;
+}
+
+@keyframes blink{
+  50%{opacity:0.3;}
+}
+
 </style>
 </head>
 <body>
 
 <div class="container" id="step1">
-  <h2>KEÇİD ET</h2>
+  <h2>KOD DAXİL ET</h2>
   <input type="text" id="codeInput" placeholder="Kod daxil et">
   <br>
   <button onclick="checkCode()">KEÇİD ET</button>
@@ -61,63 +94,92 @@
 </div>
 
 <div class="container hidden" id="step2">
-  <h2>OYUNÇU İD Daxil Et</h2>
-  <input type="text" id="numberInput" placeholder="Sadəcə rəqəm daxil et"
-  inputmode="numeric" autocomplete="off" maxlength="20">
+  <h2>OYUNÇU İD</h2>
+  <input type="text" id="numberInput" inputmode="numeric" maxlength="20" placeholder="Sadəcə rəqəm">
   <br>
-  <button onclick="confirmNumber()">ALTDAKİ TƏSDİQLƏ</button>
+  <button onclick="confirmNumber()">TƏSDİQLƏ</button>
   <div class="error" id="error2"></div>
 </div>
 
+<div class="container hidden" id="processingBox">
+  <h2 class="processing">Processing...</h2>
+</div>
+
 <div class="container hidden" id="step3">
-  <h2>ÇEK YÜKLƏ</h2>
-  <button onclick="generateReceipt()">QƏBZ ENDİR</button>
+  <h2>QƏBZ ENDİR</h2>
+  <button onclick="generateReceipt()">ENDİR</button>
 </div>
 
 <script>
-const validCode="GAMESARAYMS0279";
 
-// Əgər user artıq istifadə edibsə
-if(localStorage.getItem("blockedUser")){
-  document.body.innerHTML="<h2 style='color:red;text-align:center;'>Bu IP artıq istifadə olunub.</h2>";
-}
+// Aktiv kodlar
+const validCodes=[
+  "GAMESARAYMS0279",
+  "GAMESARAY00186KK",
+  "GAMESARAY196028CF"
+];
 
-// KEÇİD ET yoxlama
+let activeCode=null;
+
+// Kod yoxlama
 function checkCode(){
   const code=document.getElementById("codeInput").value.trim();
-  if(code===validCode){
-    document.getElementById("step1").classList.add("hidden");
-    document.getElementById("step2").classList.remove("hidden");
-  }else{
-    document.getElementById("error1").innerText="Səfh kod!";
+
+  if(!validCodes.includes(code)){
+    document.getElementById("error1").innerText="Kod səhvdir!";
+    return;
   }
+
+  // Bu kod bu cihazda istifadə olunub?
+  if(localStorage.getItem("used_"+code)){
+    document.getElementById("error1").innerText="Bu kod artıq istifadə olunub!";
+    return;
+  }
+
+  activeCode=code;
+
+  document.getElementById("step1").classList.add("hidden");
+  document.getElementById("processingBox").classList.remove("hidden");
+
+  setTimeout(()=>{
+    document.getElementById("processingBox").classList.add("hidden");
+    document.getElementById("step2").classList.remove("hidden");
+  },1500);
 }
 
-// Sadəcə rəqəm yazılmasını təmin etmək
+// Rəqəm qoruma
 const numberInput=document.getElementById("numberInput");
-numberInput.addEventListener("input", function(){
+
+numberInput.addEventListener("input",function(){
   this.value=this.value.replace(/[^0-9]/g,"");
 });
-numberInput.addEventListener("paste", e=>e.preventDefault());
-numberInput.addEventListener("copy", e=>e.preventDefault());
-numberInput.addEventListener("drop", e=>e.preventDefault());
 
-// Rəqəm daxil etmə yoxlaması
+numberInput.addEventListener("paste",e=>e.preventDefault());
+numberInput.addEventListener("drop",e=>e.preventDefault());
+
+// ID təsdiq
 function confirmNumber(){
   const num=numberInput.value.trim();
+
   if(num.length<5 || num.length>20){
-    document.getElementById("error2").innerText="DUZGUN İD GİRİN (5-20 rəqəm)!";
-  }else{
-    document.getElementById("step2").classList.add("hidden");
-    document.getElementById("step3").classList.remove("hidden");
+    document.getElementById("error2").innerText="Düzgün ID daxil edin!";
+    return;
   }
+
+  document.getElementById("step2").classList.add("hidden");
+  document.getElementById("processingBox").classList.remove("hidden");
+
+  setTimeout(()=>{
+    document.getElementById("processingBox").classList.add("hidden");
+    document.getElementById("step3").classList.remove("hidden");
+  },1500);
 }
 
-// QƏBZ ENDİR
+// Qəbz
 function generateReceipt(){
+
   const original=numberInput.value;
-  
-  // 1 random rəqəm dəyişmə
+
   let arr=original.split("");
   let randomIndex=Math.floor(Math.random()*arr.length);
   let newDigit=Math.floor(Math.random()*10);
@@ -127,18 +189,17 @@ function generateReceipt(){
   const now=new Date();
   const randomCode=Math.random().toString(36).substring(2,12).toUpperCase();
 
-  // Canvas ilə şəkil yaratma
   const canvas=document.createElement("canvas");
   canvas.width=500;
   canvas.height=300;
   const ctx=canvas.getContext("2d");
 
   ctx.fillStyle="#fff";
-  ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.fillRect(0,0,500,300);
 
   ctx.fillStyle="#000";
   ctx.font="20px monospace";
-  ctx.fillText("GAME SARAY SİPARİS QEBZİ",120,50);
+  ctx.fillText("GAME SARAY SİPARİŞ QƏBZİ",120,50);
   ctx.fillText("OYUNÇU ID: "+modifiedID,50,120);
   ctx.fillText("Tarix: "+now.toLocaleString(),50,160);
   ctx.fillText("QEBZ KODU: "+randomCode,50,200);
@@ -148,10 +209,12 @@ function generateReceipt(){
   link.href=canvas.toDataURL();
   link.click();
 
-  // Bloklama: yalnız 1 dəfə
-  localStorage.setItem("blockedUser","true");
-  document.body.innerHTML="<h2 style='color:red;text-align:center;'>Sifariş tamamlandı. Sistem bağlandı.</h2>";
+  // Bu kodu bu cihaz üçün blokla
+  localStorage.setItem("used_"+activeCode,"true");
+
+  document.body.innerHTML="<h2 style='color:#0ff;text-align:center;'>Əməliyyat tamamlandı.</h2>";
 }
+
 </script>
 </body>
 </html>
