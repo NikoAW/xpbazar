@@ -14,7 +14,6 @@ body{
   align-items:center;
   height:100vh;
   color:#fff;
-  overflow:hidden;
 }
 
 .container{
@@ -24,11 +23,10 @@ body{
   border-radius:20px;
   box-shadow:0 0 30px #00ffff;
   width:350px;
-  transition:0.4s;
-  animation:fadeIn 0.6s ease;
+  animation:fade 0.5s ease;
 }
 
-@keyframes fadeIn{
+@keyframes fade{
   from{opacity:0; transform:scale(0.9);}
   to{opacity:1; transform:scale(1);}
 }
@@ -72,13 +70,25 @@ button:hover{
 
 .hidden{display:none;}
 
-.processing{
-  font-size:18px;
-  animation:blink 1s infinite;
+.progress-bar{
+  width:100%;
+  height:20px;
+  background:#222;
+  border-radius:10px;
+  margin-top:20px;
+  overflow:hidden;
 }
 
-@keyframes blink{
-  50%{opacity:0.3;}
+.progress{
+  height:100%;
+  width:0%;
+  background:#0ff;
+  transition:width 0.2s;
+}
+
+.status-text{
+  margin-top:10px;
+  font-size:14px;
 }
 
 </style>
@@ -102,7 +112,11 @@ button:hover{
 </div>
 
 <div class="container hidden" id="processingBox">
-  <h2 class="processing">Processing...</h2>
+  <h2>Processing...</h2>
+  <div class="progress-bar">
+    <div class="progress" id="progressFill"></div>
+  </div>
+  <div class="status-text" id="statusText">Sistem yoxlanılır...</div>
 </div>
 
 <div class="container hidden" id="step3">
@@ -112,7 +126,17 @@ button:hover{
 
 <script>
 
-// Aktiv kodlar
+// SOUND EFFECTS
+function clickSound(){
+  const audio=new Audio("https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3");
+  audio.play();
+}
+
+function successSound(){
+  const audio=new Audio("https://assets.mixkit.co/sfx/preview/mixkit-software-interface-start-2574.mp3");
+  audio.play();
+}
+
 const validCodes=[
   "GAMESARAYMS0279",
   "GAMESARAY00186KK",
@@ -123,6 +147,8 @@ let activeCode=null;
 
 // Kod yoxlama
 function checkCode(){
+  clickSound();
+
   const code=document.getElementById("codeInput").value.trim();
 
   if(!validCodes.includes(code)){
@@ -130,7 +156,6 @@ function checkCode(){
     return;
   }
 
-  // Bu kod bu cihazda istifadə olunub?
   if(localStorage.getItem("used_"+code)){
     document.getElementById("error1").innerText="Bu kod artıq istifadə olunub!";
     return;
@@ -139,12 +164,9 @@ function checkCode(){
   activeCode=code;
 
   document.getElementById("step1").classList.add("hidden");
-  document.getElementById("processingBox").classList.remove("hidden");
-
-  setTimeout(()=>{
-    document.getElementById("processingBox").classList.add("hidden");
+  startProcessing("Kod təsdiqlənir...",()=> {
     document.getElementById("step2").classList.remove("hidden");
-  },1500);
+  });
 }
 
 // Rəqəm qoruma
@@ -159,6 +181,8 @@ numberInput.addEventListener("drop",e=>e.preventDefault());
 
 // ID təsdiq
 function confirmNumber(){
+  clickSound();
+
   const num=numberInput.value.trim();
 
   if(num.length<5 || num.length>20){
@@ -167,16 +191,36 @@ function confirmNumber(){
   }
 
   document.getElementById("step2").classList.add("hidden");
-  document.getElementById("processingBox").classList.remove("hidden");
 
-  setTimeout(()=>{
-    document.getElementById("processingBox").classList.add("hidden");
+  startProcessing("Təsdiq sorğusu göndərildi...",()=> {
     document.getElementById("step3").classList.remove("hidden");
-  },1500);
+  });
+}
+
+// Processing sistemi
+function startProcessing(text,callback){
+
+  document.getElementById("processingBox").classList.remove("hidden");
+  document.getElementById("statusText").innerText=text;
+
+  let progress=0;
+  const interval=setInterval(()=>{
+    progress+=5;
+    document.getElementById("progressFill").style.width=progress+"%";
+
+    if(progress>=100){
+      clearInterval(interval);
+      document.getElementById("processingBox").classList.add("hidden");
+      document.getElementById("progressFill").style.width="0%";
+      callback();
+    }
+  },80);
 }
 
 // Qəbz
 function generateReceipt(){
+  clickSound();
+  successSound();
 
   const original=numberInput.value;
 
@@ -209,7 +253,6 @@ function generateReceipt(){
   link.href=canvas.toDataURL();
   link.click();
 
-  // Bu kodu bu cihaz üçün blokla
   localStorage.setItem("used_"+activeCode,"true");
 
   document.body.innerHTML="<h2 style='color:#0ff;text-align:center;'>Əməliyyat tamamlandı.</h2>";
@@ -217,4 +260,4 @@ function generateReceipt(){
 
 </script>
 </body>
-</html>
+  </html>
