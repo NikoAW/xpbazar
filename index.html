@@ -24,7 +24,7 @@ body.dark{
 
 body{
   margin:0;
-  font-family:Arial, sans-serif;
+  font-family:Arial;
   background: radial-gradient(circle at top, var(--bg1), var(--bg2));
   display:flex;
   justify-content:center;
@@ -49,50 +49,72 @@ body{
 .container{
   text-align:center;
   background:var(--card);
-  padding:35px;
+  padding:30px;
   border-radius:20px;
   box-shadow:0 0 30px var(--bg1);
-  width:90%;
-  max-width:420px;
+  width:95%;
+  max-width:450px;
 }
 
 input, select{
-  padding:12px;
-  font-size:16px;
-  border-radius:12px;
-  border:none;
-  margin-bottom:10px;
+  padding:10px;
+  margin:8px 0;
   width:100%;
+  border-radius:10px;
+  border:none;
   text-align:center;
-  background:#222;
-  color:#0ff;
 }
 
 button{
-  padding:12px;
-  font-size:15px;
-  border-radius:12px;
-  border:none;
-  cursor:pointer;
-  background:var(--btn);
-  color:#000;
-  font-weight:bold;
+  padding:10px;
   margin-top:5px;
   width:100%;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  background:var(--btn);
+  font-weight:bold;
 }
 
 .hidden{display:none;}
-.error{color:red;font-weight:bold;}
 
-.processing{
-  font-size:20px;
-  animation:blink 1s infinite;
+.processingScreen{
+  position:fixed;
+  top:0;left:0;
+  width:100%;height:100%;
+  background:#000;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+  color:#0ff;
+  font-size:22px;
+  z-index:999;
 }
 
-@keyframes blink{
-  0%{opacity:1;}
-  50%{opacity:0.3;}
-  100%{opacity:1;}
+.loader{
+  margin-top:15px;
+  border:4px solid #222;
+  border-top:4px solid #0ff;
+  border-radius:50%;
+  width:40px;
+  height:40px;
+  animation:spin 1s linear infinite;
+}
+
+@keyframes spin{
+  0%{transform:rotate(0);}
+  100%{transform:rotate(360deg);}
+}
+
+.adminBox{
+  max-height:300px;
+  overflow:auto;
+  text-align:left;
+  background:#000;
+  padding:10px;
+  margin-top:10px;
+  font-size:13px;
 }
 </style>
 </head>
@@ -100,14 +122,13 @@ button{
 
 <button class="toggleMode" onclick="toggleMode()">Dark / Light</button>
 
-<div class="container" id="step1">
+<div class="container" id="mainBox">
   <h2>KOD DAXİL ET</h2>
   <input type="text" id="codeInput" placeholder="Kod daxil et">
   <button onclick="checkCode()">KEÇİD ET</button>
-  <div class="error" id="error1"></div>
 </div>
 
-<div class="container hidden" id="step2">
+<div class="container hidden" id="orderBox">
   <h2>UC SEÇ</h2>
   <select id="ucSelect">
     <option value="60 UC">60 UC</option>
@@ -115,12 +136,30 @@ button{
     <option value="660 UC">660 UC</option>
     <option value="1800 UC">1800 UC</option>
   </select>
-  <button onclick="confirmUC()">DAVAM ET</button>
+
+  <h2>OYUNÇU ID</h2>
+  <input type="text" id="playerID" placeholder="Rəqəm daxil et">
+  <button onclick="confirmOrder()">DAVAM ET</button>
 </div>
 
-<div class="container hidden" id="step3">
+<div class="container hidden" id="receiptBox">
   <h2>QƏBZ ENDİR</h2>
   <button onclick="generateReceipt()">ENDİR</button>
+</div>
+
+<div class="container hidden" id="adminPanel">
+  <h2>ADMIN PANEL</h2>
+
+  <input type="text" id="newCode" placeholder="Yeni kod">
+  <button onclick="addCode()">Kod əlavə et</button>
+
+  <button onclick="clearLogs()">Logları sil</button>
+
+  <h3>Aktiv Kodlar:</h3>
+  <div class="adminBox" id="codeList"></div>
+
+  <h3>İstifadə Logları:</h3>
+  <div class="adminBox" id="logList"></div>
 </div>
 
 <script>
@@ -131,82 +170,141 @@ let validCodes = JSON.parse(localStorage.getItem("validCodes")) || [
   "GAMESARAY196028CF"
 ];
 
-function saveCodes(){
+let logs = JSON.parse(localStorage.getItem("logs")) || [];
+
+function saveData(){
   localStorage.setItem("validCodes", JSON.stringify(validCodes));
+  localStorage.setItem("logs", JSON.stringify(logs));
 }
 
 function toggleMode(){
   document.body.classList.toggle("dark");
 }
 
-function checkCode(){
-  const code = document.getElementById("codeInput").value.trim();
-  if(!validCodes.includes(code)){
-    document.getElementById("error1").innerText="Kod səhvdir!";
-    return;
-  }
+function showProcessing(callback){
+  const screen=document.createElement("div");
+  screen.className="processingScreen";
+  screen.innerHTML="Processing...<div class='loader'></div>";
+  document.body.appendChild(screen);
 
-  // Bir dəfəlik kod → silinir
-  validCodes = validCodes.filter(c => c !== code);
-  saveCodes();
-
-  document.getElementById("step1").classList.add("hidden");
-  document.getElementById("step2").classList.remove("hidden");
+  setTimeout(()=>{
+    document.body.removeChild(screen);
+    callback();
+  },1500);
 }
 
-function confirmUC(){
-  document.getElementById("step2").classList.add("hidden");
-  document.getElementById("step3").classList.remove("hidden");
+// Admin trigger
+document.addEventListener("input", function(e){
+  if(e.target.value==="Admin Panel 2026"){
+    openAdmin();
+  }
+});
+
+function openAdmin(){
+  document.getElementById("mainBox").classList.add("hidden");
+  document.getElementById("orderBox").classList.add("hidden");
+  document.getElementById("receiptBox").classList.add("hidden");
+  document.getElementById("adminPanel").classList.remove("hidden");
+  renderAdmin();
+}
+
+function renderAdmin(){
+  document.getElementById("codeList").innerHTML =
+    validCodes.map(c=>"• "+c).join("<br>");
+
+  document.getElementById("logList").innerHTML =
+    logs.map(l=>"🕒 "+l.time+" | ID: "+l.id+" | "+l.uc+" | Kod: "+l.code).join("<br>");
+}
+
+function addCode(){
+  const newCode=document.getElementById("newCode").value.trim();
+  if(newCode){
+    validCodes.push(newCode);
+    saveData();
+    renderAdmin();
+  }
+}
+
+function clearLogs(){
+  logs=[];
+  saveData();
+  renderAdmin();
+}
+
+function checkCode(){
+  showProcessing(()=>{
+    const code=document.getElementById("codeInput").value.trim();
+    if(!validCodes.includes(code)) return;
+
+    validCodes = validCodes.filter(c=>c!==code);
+    saveData();
+
+    document.getElementById("mainBox").classList.add("hidden");
+    document.getElementById("orderBox").classList.remove("hidden");
+  });
+}
+
+function confirmOrder(){
+  showProcessing(()=>{
+    document.getElementById("orderBox").classList.add("hidden");
+    document.getElementById("receiptBox").classList.remove("hidden");
+  });
 }
 
 function generateReceipt(){
+  showProcessing(()=>{
 
-  document.getElementById("step3").innerHTML =
-  "<div class='processing'>Processing...</div>";
-
-  setTimeout(() => {
-
-    const uc = document.getElementById("ucSelect").value;
+    const uc=document.getElementById("ucSelect").value;
+    const id=document.getElementById("playerID").value;
 
     function randomCode(){
-      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-      let result="";
+      const chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+      let r="";
       for(let i=0;i<9;i++){
-        result += chars.charAt(Math.floor(Math.random()*chars.length));
+        r+=chars.charAt(Math.floor(Math.random()*chars.length));
       }
-      return result;
+      return r;
     }
 
-    const receiptCode = randomCode();
+    const receiptCode=randomCode();
 
-    const canvas = document.createElement("canvas");
-    canvas.width = 700;
-    canvas.height = 400;
-    const ctx = canvas.getContext("2d");
+    logs.push({
+      time:new Date().toLocaleString(),
+      id:id,
+      uc:uc,
+      code:receiptCode
+    });
 
-    ctx.fillStyle="#ffffff";
+    saveData();
+
+    const canvas=document.createElement("canvas");
+    canvas.width=700;
+    canvas.height=400;
+    const ctx=canvas.getContext("2d");
+
+    ctx.fillStyle="#fff";
     ctx.fillRect(0,0,700,400);
 
     ctx.fillStyle="#000";
-    ctx.font="bold 28px Arial";
+    ctx.font="bold 26px Arial";
     ctx.textAlign="center";
     ctx.fillText("GAME SARAY ƏMƏLİYYAT QƏBZİ",350,70);
 
     ctx.textAlign="left";
     ctx.font="20px Arial";
-    ctx.fillText("Tarix: " + new Date().toLocaleString(),80,170);
-    ctx.fillText("UC: " + uc,80,220);
-    ctx.fillText("Qəbz Kodu: " + receiptCode,80,270);
+    ctx.fillText("Tarix: "+new Date().toLocaleString(),80,150);
+    ctx.fillText("Oyunçu ID: "+id,80,200);
+    ctx.fillText("UC: "+uc,80,240);
+    ctx.fillText("Qəbz Kodu: "+receiptCode,80,280);
 
-    const link = document.createElement("a");
+    const link=document.createElement("a");
     link.download="GameSaray_Qebz.png";
     link.href=canvas.toDataURL("image/png");
     link.click();
 
-    document.body.innerHTML =
-    "<h2 style='text-align:center;color:#0ff;'>Əməliyyat tamamlandı.</h2>";
+    document.body.innerHTML="<h2 style='text-align:center;color:#0ff;'>Əməliyyat tamamlandı</h2>";
 
-  }, 2500); // 2.5 saniyə fake bank effekti
+  });
 }
 
 </script>
