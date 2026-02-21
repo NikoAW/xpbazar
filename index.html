@@ -2,6 +2,7 @@
 <html lang="az">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GameSaray Pubg Mobile</title>
 
 <style>
@@ -12,7 +13,8 @@ body{
   display:flex;
   justify-content:center;
   align-items:center;
-  height:100vh;
+  min-height:100vh;
+  padding:20px;
   color:#fff;
 }
 
@@ -22,7 +24,8 @@ body{
   padding:40px;
   border-radius:20px;
   box-shadow:0 0 30px #00ffff;
-  width:350px;
+  width:90%;
+  max-width:400px;
   animation:fade 0.5s ease;
 }
 
@@ -32,22 +35,23 @@ body{
 }
 
 input{
-  padding:10px;
+  padding:12px;
   font-size:18px;
-  border-radius:8px;
+  border-radius:12px;
   border:none;
   outline:none;
   margin-bottom:10px;
-  width:90%;
+  width:100%;
   text-align:center;
   background:#222;
   color:#0ff;
+  box-sizing:border-box;
 }
 
 button{
-  padding:10px 20px;
+  padding:12px 20px;
   font-size:16px;
-  border-radius:8px;
+  border-radius:12px;
   border:none;
   cursor:pointer;
   background:#0ff;
@@ -55,6 +59,7 @@ button{
   font-weight:bold;
   margin-top:5px;
   transition:0.3s;
+  width:100%;
 }
 
 button:hover{
@@ -91,173 +96,4 @@ button:hover{
   font-size:14px;
 }
 
-</style>
-</head>
-<body>
-
-<div class="container" id="step1">
-  <h2>KOD DAXİL ET</h2>
-  <input type="text" id="codeInput" placeholder="Kod daxil et">
-  <br>
-  <button onclick="checkCode()">KEÇİD ET</button>
-  <div class="error" id="error1"></div>
-</div>
-
-<div class="container hidden" id="step2">
-  <h2>OYUNÇU İD</h2>
-  <input type="text" id="numberInput" inputmode="numeric" maxlength="20" placeholder="Sadəcə rəqəm">
-  <br>
-  <button onclick="confirmNumber()">TƏSDİQLƏ</button>
-  <div class="error" id="error2"></div>
-</div>
-
-<div class="container hidden" id="processingBox">
-  <h2>Processing...</h2>
-  <div class="progress-bar">
-    <div class="progress" id="progressFill"></div>
-  </div>
-  <div class="status-text" id="statusText">Sistem yoxlanılır...</div>
-</div>
-
-<div class="container hidden" id="step3">
-  <h2>QƏBZ ENDİR</h2>
-  <button onclick="generateReceipt()">ENDİR</button>
-</div>
-
-<script>
-
-// SOUND EFFECTS
-function clickSound(){
-  const audio=new Audio("https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3");
-  audio.play();
-}
-
-function successSound(){
-  const audio=new Audio("https://assets.mixkit.co/sfx/preview/mixkit-software-interface-start-2574.mp3");
-  audio.play();
-}
-
-const validCodes=[
-  "GAMESARAYMS0279",
-  "GAMESARAY00186KK",
-  "GAMESARAY196028CF"
-];
-
-let activeCode=null;
-
-// Kod yoxlama
-function checkCode(){
-  clickSound();
-
-  const code=document.getElementById("codeInput").value.trim();
-
-  if(!validCodes.includes(code)){
-    document.getElementById("error1").innerText="Kod səhvdir!";
-    return;
-  }
-
-  if(localStorage.getItem("used_"+code)){
-    document.getElementById("error1").innerText="Bu kod artıq istifadə olunub!";
-    return;
-  }
-
-  activeCode=code;
-
-  document.getElementById("step1").classList.add("hidden");
-  startProcessing("Kod təsdiqlənir...",()=> {
-    document.getElementById("step2").classList.remove("hidden");
-  });
-}
-
-// Rəqəm qoruma
-const numberInput=document.getElementById("numberInput");
-
-numberInput.addEventListener("input",function(){
-  this.value=this.value.replace(/[^0-9]/g,"");
-});
-
-numberInput.addEventListener("paste",e=>e.preventDefault());
-numberInput.addEventListener("drop",e=>e.preventDefault());
-
-// ID təsdiq
-function confirmNumber(){
-  clickSound();
-
-  const num=numberInput.value.trim();
-
-  if(num.length<5 || num.length>20){
-    document.getElementById("error2").innerText="Düzgün ID daxil edin!";
-    return;
-  }
-
-  document.getElementById("step2").classList.add("hidden");
-
-  startProcessing("Təsdiq sorğusu göndərildi...",()=> {
-    document.getElementById("step3").classList.remove("hidden");
-  });
-}
-
-// Processing sistemi
-function startProcessing(text,callback){
-
-  document.getElementById("processingBox").classList.remove("hidden");
-  document.getElementById("statusText").innerText=text;
-
-  let progress=0;
-  const interval=setInterval(()=>{
-    progress+=5;
-    document.getElementById("progressFill").style.width=progress+"%";
-
-    if(progress>=100){
-      clearInterval(interval);
-      document.getElementById("processingBox").classList.add("hidden");
-      document.getElementById("progressFill").style.width="0%";
-      callback();
-    }
-  },80);
-}
-
-// Qəbz
-function generateReceipt(){
-  clickSound();
-  successSound();
-
-  const original=numberInput.value;
-
-  let arr=original.split("");
-  let randomIndex=Math.floor(Math.random()*arr.length);
-  let newDigit=Math.floor(Math.random()*10);
-  arr[randomIndex]=newDigit.toString();
-  const modifiedID=arr.join("");
-
-  const now=new Date();
-  const randomCode=Math.random().toString(36).substring(2,12).toUpperCase();
-
-  const canvas=document.createElement("canvas");
-  canvas.width=500;
-  canvas.height=300;
-  const ctx=canvas.getContext("2d");
-
-  ctx.fillStyle="#fff";
-  ctx.fillRect(0,0,500,300);
-
-  ctx.fillStyle="#000";
-  ctx.font="20px monospace";
-  ctx.fillText("GAME SARAY SİPARİŞ QƏBZİ",120,50);
-  ctx.fillText("OYUNÇU ID: "+modifiedID,50,120);
-  ctx.fillText("Tarix: "+now.toLocaleString(),50,160);
-  ctx.fillText("QEBZ KODU: "+randomCode,50,200);
-
-  const link=document.createElement("a");
-  link.download="qebz.png";
-  link.href=canvas.toDataURL();
-  link.click();
-
-  localStorage.setItem("used_"+activeCode,"true");
-
-  document.body.innerHTML="<h2 style='color:#0ff;text-align:center;'>Əməliyyat tamamlandı.</h2>";
-}
-
-</script>
-</body>
-  </html>
+/* MOBİL ÜÇÜN XÜS
