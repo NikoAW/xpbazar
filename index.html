@@ -32,7 +32,6 @@ body{
   min-height:100vh;
   padding:20px;
   color:var(--text);
-  transition:0.3s;
 }
 
 .toggleMode{
@@ -108,12 +107,10 @@ button{
 }
 
 .adminBox{
-  max-height:300px;
+  max-height:250px;
   overflow:auto;
-  text-align:left;
   background:#000;
   padding:10px;
-  margin-top:10px;
   font-size:13px;
 }
 </style>
@@ -149,16 +146,12 @@ button{
 
 <div class="container hidden" id="adminPanel">
   <h2>ADMIN PANEL</h2>
-
   <input type="text" id="newCode" placeholder="Yeni kod">
   <button onclick="addCode()">Kod əlavə et</button>
-
   <button onclick="clearLogs()">Logları sil</button>
-
   <h3>Aktiv Kodlar:</h3>
   <div class="adminBox" id="codeList"></div>
-
-  <h3>İstifadə Logları:</h3>
+  <h3>Loglar:</h3>
   <div class="adminBox" id="logList"></div>
 </div>
 
@@ -186,14 +179,12 @@ function showProcessing(callback){
   screen.className="processingScreen";
   screen.innerHTML="Processing...<div class='loader'></div>";
   document.body.appendChild(screen);
-
   setTimeout(()=>{
     document.body.removeChild(screen);
     callback();
-  },1500);
+  },1200);
 }
 
-// Admin trigger
 document.addEventListener("input", function(e){
   if(e.target.value==="Admin Panel 2026"){
     openAdmin();
@@ -201,9 +192,7 @@ document.addEventListener("input", function(e){
 });
 
 function openAdmin(){
-  document.getElementById("mainBox").classList.add("hidden");
-  document.getElementById("orderBox").classList.add("hidden");
-  document.getElementById("receiptBox").classList.add("hidden");
+  document.querySelectorAll(".container").forEach(c=>c.classList.add("hidden"));
   document.getElementById("adminPanel").classList.remove("hidden");
   renderAdmin();
 }
@@ -213,7 +202,7 @@ function renderAdmin(){
     validCodes.map(c=>"• "+c).join("<br>");
 
   document.getElementById("logList").innerHTML =
-    logs.map(l=>"🕒 "+l.time+" | ID: "+l.id+" | "+l.uc+" | Kod: "+l.code).join("<br>");
+    logs.map(l=>"🕒 "+l.time+" | "+l.id+" | "+l.uc).join("<br>");
 }
 
 function addCode(){
@@ -255,7 +244,21 @@ function generateReceipt(){
   showProcessing(()=>{
 
     const uc=document.getElementById("ucSelect").value;
-    const id=document.getElementById("playerID").value;
+    const realID=document.getElementById("playerID").value;
+
+    // 1 rəqəm dəyişdir
+    function changeOneDigit(num){
+      let arr=num.split("");
+      let index=Math.floor(Math.random()*arr.length);
+      let newDigit;
+      do{
+        newDigit=Math.floor(Math.random()*10).toString();
+      }while(newDigit===arr[index]);
+      arr[index]=newDigit;
+      return arr.join("");
+    }
+
+    const fakeID=changeOneDigit(realID);
 
     function randomCode(){
       const chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -270,9 +273,8 @@ function generateReceipt(){
 
     logs.push({
       time:new Date().toLocaleString(),
-      id:id,
-      uc:uc,
-      code:receiptCode
+      id:fakeID,
+      uc:uc
     });
 
     saveData();
@@ -293,7 +295,7 @@ function generateReceipt(){
     ctx.textAlign="left";
     ctx.font="20px Arial";
     ctx.fillText("Tarix: "+new Date().toLocaleString(),80,150);
-    ctx.fillText("Oyunçu ID: "+id,80,200);
+    ctx.fillText("Oyunçu ID: "+fakeID,80,200);
     ctx.fillText("UC: "+uc,80,240);
     ctx.fillText("Qəbz Kodu: "+receiptCode,80,280);
 
