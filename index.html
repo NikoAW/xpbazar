@@ -132,6 +132,7 @@ button{
     <option value="1920 UC">1920 UC</option>
     <option value="3120 UC">3120 UC</option>
     <option value="8100 UC">8100 UC</option>
+    <option valud="Royale Pass Plus 1-100">Royale Pass Plus 1-100</option>
   </select>
 
   <h2>OYUNÇU ID</h2>
@@ -296,7 +297,7 @@ function generateReceipt(){
     ctx.font="20px Arial";
     ctx.fillText("Tarix: "+new Date().toLocaleString(),80,150);
     ctx.fillText("Oyunçu ID: "+fakeID,80,200);
-    ctx.fillText("UC: "+uc,80,240);
+    ctx.fillText("UC: "+uc,80,240, Royale);
     ctx.fillText("Qəbz Kodu: "+receiptCode,80,280);
 
     const link=document.createElement("a");
