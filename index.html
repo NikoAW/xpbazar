@@ -6,252 +6,139 @@
 <title>Game Saray</title>
 
 <style>
-:root{
-  --bg1:#00ffff;
-  --bg2:#000;
-  --card:#111;
-  --text:#fff;
-  --btn:#0ff;
-}
-
-body.dark{
-  --bg1:#000;
-  --bg2:#111;
-  --card:#000;
-  --text:#00ffff;
-  --btn:#00aaaa;
-}
-
 body{
   margin:0;
   font-family:Arial;
-  background: radial-gradient(circle at top, var(--bg1), var(--bg2));
+  background: radial-gradient(circle at top,#00ffff,#000);
   display:flex;
   justify-content:center;
   align-items:center;
   min-height:100vh;
-  padding:20px;
-  color:var(--text);
-}
-
-.toggleMode{
-  position:fixed;
-  top:10px;
-  right:10px;
-  padding:8px 15px;
-  border:none;
-  border-radius:10px;
-  cursor:pointer;
-  font-weight:bold;
+  color:white;
 }
 
 .container{
-  text-align:center;
-  background:var(--card);
+  background:#111;
   padding:30px;
   border-radius:20px;
-  box-shadow:0 0 30px var(--bg1);
+  box-shadow:0 0 25px cyan;
   width:95%;
-  max-width:450px;
+  max-width:420px;
+  text-align:center;
 }
 
-input, select{
+input,select,button{
+  width:100%;
   padding:10px;
   margin:8px 0;
-  width:100%;
   border-radius:10px;
   border:none;
   text-align:center;
 }
 
 button{
-  padding:10px;
-  margin-top:5px;
-  width:100%;
-  border:none;
-  border-radius:10px;
-  cursor:pointer;
-  background:var(--btn);
+  background:cyan;
   font-weight:bold;
+  cursor:pointer;
 }
 
 .hidden{display:none;}
 
-.processingScreen{
+.processing{
   position:fixed;
   top:0;left:0;
   width:100%;height:100%;
-  background:#000;
+  background:black;
   display:flex;
   justify-content:center;
   align-items:center;
   flex-direction:column;
-  color:#0ff;
+  color:cyan;
   font-size:22px;
-  z-index:999;
-}
-
-.loader{
-  margin-top:15px;
-  border:4px solid #222;
-  border-top:4px solid #0ff;
-  border-radius:50%;
-  width:40px;
-  height:40px;
-  animation:spin 1s linear infinite;
-}
-
-@keyframes spin{
-  0%{transform:rotate(0);}
-  100%{transform:rotate(360deg);}
-}
-
-.adminBox{
-  max-height:200px;
-  overflow:auto;
-  background:#000;
-  padding:10px;
-  font-size:13px;
 }
 </style>
 </head>
 <body>
 
-<button class="toggleMode" onclick="toggleMode()">Dark / Light</button>
-
-<div class="container" id="mainBox">
-  <h2>KOD DAXİL ET</h2>
-  <input type="text" id="codeInput" placeholder="Kod daxil et">
-  <button onclick="checkCode()">KEÇİD ET</button>
+<div class="container" id="step1">
+<h2>KOD DAXİL ET</h2>
+<input type="text" id="codeInput">
+<button onclick="checkCode()">KEÇİD ET</button>
+<p id="error" style="color:red;"></p>
 </div>
 
-<div class="container hidden" id="orderBox">
-  <h2>PAKET SEÇ</h2>
-  <select id="ucSelect">
-    <option value="660 UC">660 UC</option>
-    <option value="1920 UC">1920 UC</option>
-    <option value="3120 UC">3120 UC</option>
-    <option value="8100 UC">8100 UC</option>
-    <option value="Royale Pass Plus 1-100">Royale Pass Plus 1-100</option>
-  </select>
+<div class="container hidden" id="step2">
+<h2>PAKET SEÇ</h2>
+<select id="ucSelect">
+<option>660 UC</option>
+<option>1920 UC</option>
+<option>3120 UC</option>
+<option>8100 UC</option>
+<option>Royale Pass Plus 1-100</option>
+</select>
 
-  <h2>OYUNÇU ID</h2>
-  <input type="text" id="playerID" placeholder="Rəqəm daxil et">
-  <button onclick="confirmOrder()">DAVAM ET</button>
+<h2>OYUNÇU ID</h2>
+<input type="text" id="playerID">
+<button onclick="goReceipt()">DAVAM ET</button>
 </div>
 
-<div class="container hidden" id="receiptBox">
-  <h2>QƏBZ ENDİR</h2>
-  <button onclick="generateReceipt()">ENDİR</button>
-</div>
-
-<div class="container hidden" id="adminPanel">
-  <h2>ADMIN PANEL</h2>
-  <input type="text" id="newCode" placeholder="Yeni kod">
-  <button onclick="addCode()">Kod əlavə et</button>
-  <button onclick="clearLogs()">Logları sil</button>
-  <h3>Aktiv Kodlar:</h3>
-  <div class="adminBox" id="codeList"></div>
-  <h3>Loglar:</h3>
-  <div class="adminBox" id="logList"></div>
+<div class="container hidden" id="step3">
+<h2>QƏBZ ENDİR</h2>
+<button onclick="generateReceipt()">ENDİR</button>
 </div>
 
 <script>
 
-let validCodes = JSON.parse(localStorage.getItem("validCodes")) || [
-  "GAMESARAYMS0279"
-  "GAMESARAY0011"
-  "GAMESARAY0909"
+const validCodes = [
+  "GAMESARAYMS0279",
+  "VIP2026",
+  "ROYAL100"
 ];
 
-let logs = JSON.parse(localStorage.getItem("logs")) || [];
+function processing(callback){
+  const div=document.createElement("div");
+  div.className="processing";
+  div.innerHTML="Processing...";
+  document.body.appendChild(div);
 
-function saveData(){
-  localStorage.setItem("validCodes", JSON.stringify(validCodes));
-  localStorage.setItem("logs", JSON.stringify(logs));
-}
-
-function toggleMode(){
-  document.body.classList.toggle("dark");
-}
-
-function showProcessing(callback){
-  const screen=document.createElement("div");
-  screen.className="processingScreen";
-  screen.innerHTML="Processing...<div class='loader'></div>";
-  document.body.appendChild(screen);
   setTimeout(()=>{
-    document.body.removeChild(screen);
+    document.body.removeChild(div);
     callback();
-  },1200);
+  },1000);
 }
 
-document.addEventListener("input", function(e){
-  if(e.target.value==="Admin Panel 2026"){
-    openAdmin();
-  }
-});
+function checkCode(){
+  processing(()=>{
+    const code=document.getElementById("codeInput").value.trim();
 
-function openAdmin(){
-  document.querySelectorAll(".container").forEach(c=>c.classList.add("hidden"));
-  document.getElementById("adminPanel").classList.remove("hidden");
-  renderAdmin();
-}
-
-function renderAdmin(){
-  document.getElementById("codeList").innerHTML =
-    validCodes.map(c=>"• "+c).join("<br>");
-
-  document.getElementById("logList").innerHTML =
-    logs.map(l=>"🕒 "+l.time+" | "+l.id+" | "+l.uc).join("<br>");
-}
-
-function addCode(){
-  showProcessing(()=>{
-    const newCode=document.getElementById("newCode").value.trim();
-    if(newCode){
-      validCodes.push(newCode);
-      saveData();
-      renderAdmin();
+    if(validCodes.includes(code)){
+      document.getElementById("step1").classList.add("hidden");
+      document.getElementById("step2").classList.remove("hidden");
+    }else{
+      document.getElementById("error").innerText="Səfh kod!";
     }
   });
 }
 
-function clearLogs(){
-  showProcessing(()=>{
-    logs=[];
-    saveData();
-    renderAdmin();
-  });
-}
+function goReceipt(){
+  processing(()=>{
+    const id=document.getElementById("playerID").value;
 
-function checkCode(){
-  showProcessing(()=>{
-    const code=document.getElementById("codeInput").value.trim();
-    if(!validCodes.includes(code)) return;
+    if(id.length<5){
+      alert("ID minimum 5 rəqəm olmalıdır");
+      return;
+    }
 
-    validCodes = validCodes.filter(c=>c!==code);
-    saveData();
-
-    document.getElementById("mainBox").classList.add("hidden");
-    document.getElementById("orderBox").classList.remove("hidden");
-  });
-}
-
-function confirmOrder(){
-  showProcessing(()=>{
-    document.getElementById("orderBox").classList.add("hidden");
-    document.getElementById("receiptBox").classList.remove("hidden");
+    document.getElementById("step2").classList.add("hidden");
+    document.getElementById("step3").classList.remove("hidden");
   });
 }
 
 function generateReceipt(){
-  showProcessing(()=>{
+  processing(()=>{
 
-    const uc=document.getElementById("ucSelect").value;
     const realID=document.getElementById("playerID").value;
-
-    if(realID.length<5) return;
+    const uc=document.getElementById("ucSelect").value;
 
     function changeOneDigit(num){
       let arr=num.split("");
@@ -269,21 +156,13 @@ function generateReceipt(){
     function randomCode(){
       const chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
       let r="";
-      for(let i=0;i<9;i++){
+      for(let i=0;i<8;i++){
         r+=chars.charAt(Math.floor(Math.random()*chars.length));
       }
       return r;
     }
 
     const receiptCode=randomCode();
-
-    logs.push({
-      time:new Date().toLocaleString(),
-      id:fakeID,
-      uc:uc
-    });
-
-    saveData();
 
     const canvas=document.createElement("canvas");
     canvas.width=700;
@@ -307,11 +186,8 @@ function generateReceipt(){
 
     const link=document.createElement("a");
     link.download="GameSaray_Qebz.png";
-    link.href=canvas.toDataURL("image/png");
+    link.href=canvas.toDataURL();
     link.click();
-
-    document.body.innerHTML="<h2 style='text-align:center;color:#0ff;'>Əməliyyat tamamlandı</h2>";
-
   });
 }
 
