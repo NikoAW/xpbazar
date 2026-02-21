@@ -107,7 +107,7 @@ button{
 }
 
 .adminBox{
-  max-height:250px;
+  max-height:200px;
   overflow:auto;
   background:#000;
   padding:10px;
@@ -126,14 +126,14 @@ button{
 </div>
 
 <div class="container hidden" id="orderBox">
-  <h2>UC SEÇ</h2>
-<select id="ucSelect">
-  <option value="660 UC">660 UC</option>
-  <option value="1920 UC">1920 UC</option>
-  <option value="3120 UC">3120 UC</option>
-  <option value="8100 UC">8100 UC</option>
-  <option value="Royale Pass Plus 1-100">Royale Pass Plus 1-100</option>
-</select>
+  <h2>PAKET SEÇ</h2>
+  <select id="ucSelect">
+    <option value="660 UC">660 UC</option>
+    <option value="1920 UC">1920 UC</option>
+    <option value="3120 UC">3120 UC</option>
+    <option value="8100 UC">8100 UC</option>
+    <option value="Royale Pass Plus 1-100">Royale Pass Plus 1-100</option>
+  </select>
 
   <h2>OYUNÇU ID</h2>
   <input type="text" id="playerID" placeholder="Rəqəm daxil et">
@@ -159,9 +159,7 @@ button{
 <script>
 
 let validCodes = JSON.parse(localStorage.getItem("validCodes")) || [
-  "GAMESARAYMS0279",
-  "GAMESARAY00186KK",
-  "GAMESARAY196028CF"
+  "GAMESARAYMS0279"
 ];
 
 let logs = JSON.parse(localStorage.getItem("logs")) || [];
@@ -207,18 +205,22 @@ function renderAdmin(){
 }
 
 function addCode(){
-  const newCode=document.getElementById("newCode").value.trim();
-  if(newCode){
-    validCodes.push(newCode);
-    saveData();
-    renderAdmin();
-  }
+  showProcessing(()=>{
+    const newCode=document.getElementById("newCode").value.trim();
+    if(newCode){
+      validCodes.push(newCode);
+      saveData();
+      renderAdmin();
+    }
+  });
 }
 
 function clearLogs(){
-  logs=[];
-  saveData();
-  renderAdmin();
+  showProcessing(()=>{
+    logs=[];
+    saveData();
+    renderAdmin();
+  });
 }
 
 function checkCode(){
@@ -247,7 +249,8 @@ function generateReceipt(){
     const uc=document.getElementById("ucSelect").value;
     const realID=document.getElementById("playerID").value;
 
-    // 1 rəqəm dəyişdir
+    if(realID.length<5) return;
+
     function changeOneDigit(num){
       let arr=num.split("");
       let index=Math.floor(Math.random()*arr.length);
@@ -297,7 +300,7 @@ function generateReceipt(){
     ctx.font="20px Arial";
     ctx.fillText("Tarix: "+new Date().toLocaleString(),80,150);
     ctx.fillText("Oyunçu ID: "+fakeID,80,200);
-    ctx.fillText("UC: "+uc,80,240, Royale);
+    ctx.fillText("Paket: "+uc,80,240);
     ctx.fillText("Qəbz Kodu: "+receiptCode,80,280);
 
     const link=document.createElement("a");
