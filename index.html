@@ -34,7 +34,9 @@ body{
   to{opacity:1; transform:scale(1);}
 }
 
-.shake{ animation:shake 0.4s; }
+.shake{
+  animation:shake 0.4s;
+}
 
 @keyframes shake{
   0%{transform:translateX(0);}
@@ -49,11 +51,13 @@ input, select{
   font-size:16px;
   border-radius:12px;
   border:none;
+  outline:none;
   margin-bottom:10px;
   width:100%;
   text-align:center;
   background:#222;
   color:#0ff;
+  box-sizing:border-box;
 }
 
 button{
@@ -69,21 +73,13 @@ button{
   width:100%;
 }
 
-button:hover{ background:#00aaaa; }
+button:hover{
+  background:#00aaaa;
+}
 
 .error{color:red;font-weight:bold;}
 .hidden{display:none;}
-
-.adminPanel{
-  background:#000;
-  border:2px solid #0ff;
-  max-height:250px;
-  overflow:auto;
-  margin-top:10px;
-  padding:10px;
-  text-align:left;
-  font-size:13px;
-}
+.adminPanel{background:#000;border:2px solid #0ff;max-height:300px;overflow:auto;margin-top:10px;padding:10px;text-align:left;font-size:13px;}
 </style>
 </head>
 <body>
@@ -104,4 +100,165 @@ button:hover{ background:#00aaaa; }
     <option value="1800 UC">1800 UC</option>
   </select>
   <h2>OYUNÇU İD</h2>
-  <input type="text" id="number
+  <input type="text" id="numberInput" maxlength="20" placeholder="Sadəcə rəqəm">
+  <button onclick="confirmNumber()">TƏSDİQLƏ</button>
+  <div class="error" id="error2"></div>
+</div>
+
+<div class="container hidden" id="step3">
+  <h2>QƏBZ ENDİR</h2>
+  <button onclick="generateReceipt()">ENDİR</button>
+</div>
+
+<div class="container hidden" id="adminBox">
+  <h2>ADMIN PANEL</h2>
+  <input type="text" id="newCode" placeholder="Yeni kod əlavə et">
+  <button onclick="addCode()">KOD ƏLAVƏ ET</button>
+  <button onclick="clearLogs()">LOGLARI SİL</button>
+  <div class="adminPanel" id="logArea"></div>
+</div>
+
+<script>
+let validCodes=JSON.parse(localStorage.getItem("validCodes")) || [
+  "GAMESARAYMS0279",
+  "GAMESARAY00186KK",
+  "GAMESARAY196028CF"
+];
+
+let logs=JSON.parse(localStorage.getItem("logs")) || [];
+let activeCode=null;
+
+// ADMIN trigger
+document.addEventListener("input", function(e){
+  if(e.target.value==="Admin Panel 2026"){
+    openAdmin();
+  }
+});
+
+function openAdmin(){
+  document.querySelectorAll(".container").forEach(c=>c.classList.add("hidden"));
+  document.getElementById("adminBox").classList.remove("hidden");
+  renderLogs();
+}
+
+function renderLogs(){
+  const area=document.getElementById("logArea");
+  area.innerHTML="";
+  logs.forEach(l=>{
+    area.innerHTML+=`<div>🕒 ${l.time} | Kod: ${l.code}</div>`;
+  });
+}
+
+function addCode(){
+  const newCode=document.getElementById("newCode").value.trim();
+  if(newCode){
+    validCodes.push(newCode);
+    localStorage.setItem("validCodes",JSON.stringify(validCodes));
+    alert("Kod əlavə edildi");
+  }
+}
+
+function clearLogs(){
+  logs=[];
+  localStorage.removeItem("logs");
+  renderLogs();
+}
+
+function checkCode(){
+  const box=document.getElementById("step1");
+  const code=document.getElementById("codeInput").value.trim();
+
+  if(!validCodes.includes(code)){
+    box.classList.add("shake");
+    setTimeout(()=>box.classList.remove("shake"),400);
+    document.getElementById("error1").innerText="Kod səhvdir!";
+    return;
+  }
+
+  activeCode=code;
+  logs.push({code:code,time:new Date().toLocaleString()});
+  localStorage.setItem("logs",JSON.stringify(logs));
+
+  document.getElementById("step1").classList.add("hidden");
+  document.getElementById("step2").classList.remove("hidden");
+}
+
+document.getElementById("numberInput").addEventListener("input",function(){
+  this.value=this.value.replace(/[^0-9]/g,"");
+});
+
+function confirmNumber(){
+  const num=document.getElementById("numberInput").value.trim();
+  const box=document.getElementById("step2");
+
+  if(num.length<5){
+    box.classList.add("shake");
+    setTimeout(()=>box.classList.remove("shake"),400);
+    document.getElementById("error2").innerText="ID səhvdir!";
+    return;
+  }
+
+  document.getElementById("step2").classList.add("hidden");
+  document.getElementById("step3").classList.remove("hidden");
+}
+
+// --- BURASI YENİ QƏBZ CANVAS FUNKSIYASI ---
+function generateReceipt(){
+
+  const uc = document.getElementById("ucSelect").value;
+
+  // Random qəbz kodu
+  function randomCode(){
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let result = "";
+    for(let i=0;i<9;i++){
+      result += chars.charAt(Math.floor(Math.random()*chars.length));
+    }
+    return result;
+  }
+
+  const receiptCode = randomCode();
+
+  // Canvas yaradılır
+  const canvas = document.createElement("canvas");
+  canvas.width = 700;
+  canvas.height = 400;
+
+  const ctx = canvas.getContext("2d");
+
+  // Ağ fon
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  // Başlıq
+  ctx.fillStyle = "#000000";
+  ctx.font = "bold 28px Arial";
+  ctx.textAlign = "center";
+  ctx.fillText("GAME SARAY ƏMƏLİYYAT QƏBZİ", canvas.width/2, 60);
+
+  // Alt məlumatlar
+  ctx.textAlign = "left";
+  ctx.font = "20px Arial";
+  ctx.fillText("Tarix: " + new Date().toLocaleString(), 80, 150);
+  ctx.fillText("UC: " + uc, 80, 200);
+  ctx.fillText("Qəbz Kodu: " + receiptCode, 80, 250);
+
+  // Alt xətt
+  ctx.strokeStyle = "#000";
+  ctx.beginPath();
+  ctx.moveTo(70, 300);
+  ctx.lineTo(630, 300);
+  ctx.stroke();
+
+  // PNG kimi yükləmə
+  const link = document.createElement("a");
+  link.download = "GameSaray_Qebz.png";
+  link.href = canvas.toDataURL("image/png");
+  link.click();
+
+  // Saytı bağlama mesajı
+  document.body.innerHTML = "<h2 style='text-align:center;color:#0ff;'>Əməliyyat tamamlandı.</h2>";
+}
+</script>
+</body>
+</html>
