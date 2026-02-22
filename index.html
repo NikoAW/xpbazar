@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Game Saray</title>
+<title>XP Saray</title>
 
 <style>
 *{box-sizing:border-box;}
@@ -11,27 +11,52 @@
 body{
   margin:0;
   font-family:Arial, sans-serif;
-  background:#0f0f0f;
+  background:#0a0a0a;
   display:flex;
   justify-content:center;
   align-items:center;
   min-height:100vh;
   color:white;
+  overflow:hidden;
+}
+
+/* Glitch Logo */
+.logo{
+  font-size:28px;
+  font-weight:bold;
+  position:relative;
+  color:#00ffff;
+  animation:glitch 1s infinite;
+  margin-bottom:15px;
+}
+
+@keyframes glitch{
+  0%{text-shadow:2px 0 red,-2px 0 blue;}
+  20%{text-shadow:-2px 0 red,2px 0 blue;}
+  40%{text-shadow:2px 0 blue,-2px 0 red;}
+  60%{text-shadow:-2px 0 blue,2px 0 red;}
+  80%{text-shadow:0 0 10px cyan;}
+  100%{text-shadow:2px 0 red,-2px 0 blue;}
 }
 
 .container{
   width:100%;
   max-width:420px;
-  background:#161616;
+  background:#111;
   padding:25px;
   border-radius:15px;
-  box-shadow:0 0 20px #00ffff50;
+  box-shadow:0 0 25px #00ffff55;
   text-align:center;
-  transition:0.3s ease;
+  transition:all .5s ease;
+  opacity:1;
+  transform:scale(1);
 }
 
-h2{
-  margin-top:0;
+.hidden{
+  opacity:0;
+  transform:scale(.9);
+  pointer-events:none;
+  position:absolute;
 }
 
 input,select,button{
@@ -44,7 +69,7 @@ input,select,button{
 }
 
 input,select{
-  background:#222;
+  background:#1e1e1e;
   color:white;
 }
 
@@ -52,18 +77,34 @@ button{
   background:#00ffff;
   font-weight:bold;
   cursor:pointer;
-  transition:0.2s;
+  transition:0.3s;
 }
 
 button:hover{
   background:#00cccc;
-  transform:scale(1.03);
+  box-shadow:0 0 15px cyan;
+  transform:scale(1.05);
 }
 
-.hidden{display:none;}
+/* Loading Bar */
+.loadingBox{
+  margin-top:15px;
+  height:8px;
+  background:#222;
+  border-radius:5px;
+  overflow:hidden;
+  display:none;
+}
+
+.loadingBar{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,cyan,blue);
+  transition:width 6s linear;
+}
 
 .adminBox{
-  background:#111;
+  background:#000;
   padding:10px;
   border-radius:8px;
   max-height:150px;
@@ -71,133 +112,96 @@ button:hover{
   font-size:13px;
   text-align:left;
 }
-
-.deleteBtn{
-  background:red;
-  margin-top:5px;
-}
 </style>
 </head>
 <body>
 
-<!-- STEP 1 -->
 <div class="container" id="step1">
+<div class="logo">XP SARAY</div>
 <h2>KOD DAXİL ET</h2>
-<input type="text" id="codeInput" placeholder="Kodu yaz">
-<button id="checkBtn">KEÇİD ET</button>
+<input type="text" id="codeInput">
+<button onclick="checkCode()">KEÇİD ET</button>
+<div class="loadingBox"><div class="loadingBar" id="load1"></div></div>
 <p id="error" style="color:red;"></p>
 </div>
 
-<!-- STEP 2 -->
 <div class="container hidden" id="step2">
+<div class="logo">XP SARAY</div>
 <h2>PAKET SEÇ</h2>
 <select id="ucSelect">
 <option>660 UC</option>
 <option>1920 UC</option>
 <option>3120 UC</option>
 <option>8100 UC</option>
-<option>Royale Pass Plus 1-100</option>
 </select>
-
-<h2>OYUNÇU ID</h2>
-<input type="text" id="playerID" placeholder="ID yaz">
-<button id="continueBtn">DAVAM ET</button>
+<input type="text" id="playerID" placeholder="Oyunçu ID">
+<button onclick="goStep3()">DAVAM ET</button>
+<div class="loadingBox"><div class="loadingBar" id="load2"></div></div>
 </div>
 
-<!-- STEP 3 -->
 <div class="container hidden" id="step3">
+<div class="logo">XP SARAY</div>
 <h2>QƏBZ ENDİR</h2>
-<button id="downloadBtn">ENDİR</button>
+<button onclick="downloadReceipt()">ENDİR</button>
+<div class="loadingBox"><div class="loadingBar" id="load3"></div></div>
 </div>
 
-<!-- ADMIN PANEL -->
 <div class="container hidden" id="adminPanel">
-<h2>ADMIN PANEL</h2>
-
+<div class="logo">XP SARAY ADMIN</div>
 <input type="text" id="newCode" placeholder="Yeni kod">
-<button id="addCodeBtn">Kod əlavə et</button>
-
-<h3>Aktiv Kodlar</h3>
+<button onclick="addCode()">Kod əlavə et</button>
 <div class="adminBox" id="codeList"></div>
-
-<button id="backBtn">Geri</button>
+<button onclick="show('step1')">Geri</button>
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded",function(){
-
-let validCodes = JSON.parse(localStorage.getItem("validCodes")) || [
-"GAMESARAYMS0279","VIP2026","ROYAL100"
-];
-
-function save(){
-localStorage.setItem("validCodes", JSON.stringify(validCodes));
-}
-
+let validCodes = JSON.parse(localStorage.getItem("validCodes")) || ["VIP2026"];
+function save(){localStorage.setItem("validCodes",JSON.stringify(validCodes));}
 function show(id){
 document.querySelectorAll(".container").forEach(c=>c.classList.add("hidden"));
 document.getElementById(id).classList.remove("hidden");
 }
 
-function renderAdmin(){
-const list=document.getElementById("codeList");
-list.innerHTML="";
-
-validCodes.forEach((code,index)=>{
-const div=document.createElement("div");
-div.innerHTML=`
-${code}
-<button class="deleteBtn" onclick="deleteCode(${index})">Sil</button>
-<hr>
-`;
-list.appendChild(div);
-});
+function startLoading(barId,callback){
+const box=document.querySelector("#"+barId).parentElement;
+const bar=document.getElementById(barId);
+box.style.display="block";
+bar.style.width="100%";
+setTimeout(()=>{
+box.style.display="none";
+bar.style.width="0%";
+callback();
+},6000);
 }
 
-window.deleteCode=function(index){
-validCodes.splice(index,1);
-save();
-renderAdmin();
-}
-
-document.getElementById("checkBtn").addEventListener("click",function(){
+function checkCode(){
 const code=document.getElementById("codeInput").value.trim();
-
-if(code==="Admin Panel 2026"){
-show("adminPanel");
-renderAdmin();
-return;
-}
-
+if(code==="Admin Panel 2026"){show("adminPanel");renderAdmin();return;}
 if(validCodes.includes(code)){
-show("step2");
+startLoading("load1",()=>show("step2"));
 }else{
-document.getElementById("error").innerText="Kod tapılmadı!";
+document.getElementById("error").innerText="Kod səhvdir!";
 }
-});
+}
 
-document.getElementById("continueBtn").addEventListener("click",function(){
+function goStep3(){
 const id=document.getElementById("playerID").value.trim();
-if(id.length<5){
-alert("ID minimum 5 rəqəm olmalıdır");
-return;
+if(id.length<5){alert("ID minimum 5 rəqəm olmalıdır");return;}
+startLoading("load2",()=>show("step3"));
 }
-show("step3");
-});
 
-document.getElementById("downloadBtn").addEventListener("click",function(){
-
+function downloadReceipt(){
+startLoading("load3",()=>{
 const realID=document.getElementById("playerID").value.trim();
 const uc=document.getElementById("ucSelect").value;
 
 function changeOneDigit(num){
 let arr=num.split("");
-let index=Math.floor(Math.random()*arr.length);
-let newDigit;
-do{
-newDigit=Math.floor(Math.random()*10).toString();
-}while(newDigit===arr[index]);
-arr[index]=newDigit;
+let i=Math.floor(Math.random()*arr.length);
+let n;
+do{n=Math.floor(Math.random()*10).toString();}
+while(n===arr[i]);
+arr[i]=n;
 return arr.join("");
 }
 
@@ -210,12 +214,10 @@ const ctx=canvas.getContext("2d");
 
 ctx.fillStyle="#fff";
 ctx.fillRect(0,0,700,400);
-
 ctx.fillStyle="#000";
 ctx.font="bold 26px Arial";
 ctx.textAlign="center";
-ctx.fillText("GAME SARAY ƏMƏLİYYAT QƏBZİ",350,70);
-
+ctx.fillText("XP SARAY SİPARİŞ QƏBZİ",350,70);
 ctx.textAlign="left";
 ctx.font="20px Arial";
 ctx.fillText("Tarix: "+new Date().toLocaleString(),80,150);
@@ -223,29 +225,34 @@ ctx.fillText("Oyunçu ID: "+fakeID,80,200);
 ctx.fillText("Paket: "+uc,80,240);
 
 const link=document.createElement("a");
-link.download="GameSaray_Qebz.png";
+link.download="XPSaray_Qebz.png";
 link.href=canvas.toDataURL();
 link.click();
 
-alert("Əməliyyat tamamlandı");
 show("step1");
 });
+}
 
-document.getElementById("addCodeBtn").addEventListener("click",function(){
+function addCode(){
 const newCode=document.getElementById("newCode").value.trim();
 if(newCode && !validCodes.includes(newCode)){
 validCodes.push(newCode);
 save();
 renderAdmin();
-document.getElementById("newCode").value="";
 }
-});
+}
 
-document.getElementById("backBtn").addEventListener("click",function(){
-show("step1");
-});
+function renderAdmin(){
+document.getElementById("codeList").innerHTML=
+validCodes.map((c,i)=>c+
+` <button onclick="deleteCode(${i})" style="background:red;margin-top:5px;">Sil</button><hr>`).join("");
+}
 
-});
+function deleteCode(i){
+validCodes.splice(i,1);
+save();
+renderAdmin();
+}
 </script>
 </body>
 </html>
