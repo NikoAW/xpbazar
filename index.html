@@ -4,154 +4,92 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Game Saray</title>
+
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');
+*{box-sizing:border-box;}
 
-body {
-    margin:0;
-    font-family:'Orbitron', sans-serif;
-    background: radial-gradient(circle at top, #0ff, #000);
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    min-height:100vh;
-    color:#fff;
-    overflow:hidden;
-    transition: background 0.5s ease;
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:#0f0f0f;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+  color:white;
 }
 
-.container {
-    background:#111;
-    padding:30px;
-    border-radius:20px;
-    width:95%;
-    max-width:450px;
-    text-align:center;
-    box-shadow:0 0 25px #0ff;
-    opacity:0;
-    transform:scale(0.95);
-    transition: all 0.5s ease;
+.container{
+  width:100%;
+  max-width:420px;
+  background:#161616;
+  padding:25px;
+  border-radius:15px;
+  box-shadow:0 0 20px #00ffff50;
+  text-align:center;
+  transition:0.3s ease;
 }
 
-.container.show{
-    opacity:1;
-    transform:scale(1);
+h2{
+  margin-top:0;
 }
 
-h1.glitch {
-  font-size:32px;
-  color:#0ff;
-  position:relative;
-  animation:glitch 1s infinite;
-}
-@keyframes glitch {
-  0%{text-shadow:2px 0 #f0f, -2px 0 #0ff;}
-  20%{text-shadow:-2px -2px #f0f, 2px 2px #0ff;}
-  40%{text-shadow:2px 2px #f0f, -2px -2px #0ff;}
-  60%{text-shadow:-2px 0 #f0f, 2px 0 #0ff;}
-  80%{text-shadow:2px -2px #f0f, -2px 2px #0ff;}
-  100%{text-shadow:2px 0 #f0f, -2px 0 #0ff;}
+input,select,button{
+  width:100%;
+  padding:12px;
+  margin:10px 0;
+  border-radius:8px;
+  border:none;
+  font-size:14px;
 }
 
-input, select, button {
-    width:100%;
-    padding:12px;
-    margin:10px 0;
-    border-radius:12px;
-    border:none;
-    text-align:center;
-    font-weight:bold;
-    background:#222;
-    color:#0ff;
-    transition: all 0.3s ease;
+input,select{
+  background:#222;
+  color:white;
 }
 
 button{
-    background:#0ff;
-    cursor:pointer;
+  background:#00ffff;
+  font-weight:bold;
+  cursor:pointer;
+  transition:0.2s;
 }
+
 button:hover{
-    background:#0aa;
-    box-shadow:0 0 15px #0ff;
+  background:#00cccc;
+  transform:scale(1.03);
 }
 
 .hidden{display:none;}
 
-.processingScreen{
-  position:fixed;
-  top:0; left:0;
-  width:100%; height:100%;
-  background:#000;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  flex-direction:column;
-  color:#0ff;
-  font-size:24px;
-  z-index:9999;
-}
-
-.loader{
-  margin-top:20px;
-  border:5px solid #222;
-  border-top:5px solid #0ff;
-  border-radius:50%;
-  width:50px;
-  height:50px;
-  animation:spin 1s linear infinite;
-}
-
-@keyframes spin{
-  0%{transform:rotate(0);}
-  100%{transform:rotate(360deg);}
-}
-
 .adminBox{
-    background:#000;
-    padding:10px;
-    border-radius:12px;
-    max-height:200px;
-    overflow:auto;
-    font-size:13px;
-    text-align:left;
-    margin-top:10px;
-}
-
-.tooltip{
-  font-size:14px;
-  color:#0ff;
-  text-decoration:underline;
-  cursor:pointer;
-  margin-top:5px;
-}
-
-.tooltipContent{
   background:#111;
-  padding:15px;
-  border-radius:12px;
-  margin-top:10px;
-  display:none;
+  padding:10px;
+  border-radius:8px;
+  max-height:150px;
+  overflow:auto;
   font-size:13px;
-  line-height:1.4;
-  box-shadow:0 0 15px #0ff;
+  text-align:left;
+}
+
+.deleteBtn{
+  background:red;
+  margin-top:5px;
 }
 </style>
 </head>
 <body>
 
-<div class="container show" id="step1">
-<h1 class="glitch">GAME SARAY</h1>
+<!-- STEP 1 -->
+<div class="container" id="step1">
 <h2>KOD DAXİL ET</h2>
-<input type="text" id="codeInput">
+<input type="text" id="codeInput" placeholder="Kodu yaz">
 <button id="checkBtn">KEÇİD ET</button>
 <p id="error" style="color:red;"></p>
-<div class="tooltip" onclick="toggleTip()">Necə sipariş vermək olar?</div>
-<div class="tooltipContent" id="tipContent">
-Tiktok və ya WhatsApp xətti ilə operatorlarımıza əlaqə saxlayın. Canlı şəkildə kartla ödəniş edərək sizə özəl kod alın. Kodu buradakı bölməyə yazın, keçid et düyməsinə basın. Sonra ID-nizi yazın və sondakı çeki mütləq götürün. Siparişiniz avtomatik 5-10 dəqiqə ərzində tamamlanacaq.
-</div>
 </div>
 
-<div class="container" id="step2">
+<!-- STEP 2 -->
+<div class="container hidden" id="step2">
 <h2>PAKET SEÇ</h2>
 <select id="ucSelect">
 <option>660 UC</option>
@@ -162,148 +100,150 @@ Tiktok və ya WhatsApp xətti ilə operatorlarımıza əlaqə saxlayın. Canlı 
 </select>
 
 <h2>OYUNÇU ID</h2>
-<input type="text" id="playerID">
+<input type="text" id="playerID" placeholder="ID yaz">
 <button id="continueBtn">DAVAM ET</button>
 </div>
 
-<div class="container" id="step3">
+<!-- STEP 3 -->
+<div class="container hidden" id="step3">
 <h2>QƏBZ ENDİR</h2>
 <button id="downloadBtn">ENDİR</button>
 </div>
 
-<div class="container" id="adminPanel">
+<!-- ADMIN PANEL -->
+<div class="container hidden" id="adminPanel">
 <h2>ADMIN PANEL</h2>
-<input type="text" id="newCode" placeholder="Yeni kod əlavə et">
+
+<input type="text" id="newCode" placeholder="Yeni kod">
 <button id="addCodeBtn">Kod əlavə et</button>
+
 <h3>Aktiv Kodlar</h3>
 <div class="adminBox" id="codeList"></div>
-<h3>Loglar</h3>
-<div class="adminBox" id="logList"></div>
+
 <button id="backBtn">Geri</button>
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", function(){
+document.addEventListener("DOMContentLoaded",function(){
 
-let validCodes = JSON.parse(localStorage.getItem("validCodes")) || ["GAMESARAYMS0279","VIP2026","ROYAL100"];
-let logs = JSON.parse(localStorage.getItem("logs")) || [];
+let validCodes = JSON.parse(localStorage.getItem("validCodes")) || [
+"GAMESARAYMS0279","VIP2026","ROYAL100"
+];
 
-function saveData(){
-  localStorage.setItem("validCodes", JSON.stringify(validCodes));
-  localStorage.setItem("logs", JSON.stringify(logs));
+function save(){
+localStorage.setItem("validCodes", JSON.stringify(validCodes));
 }
 
 function show(id){
-  document.querySelectorAll(".container").forEach(c=>{
-    c.classList.add("hidden");
-    c.classList.remove("show");
-  });
-  const el=document.getElementById(id);
-  el.classList.remove("hidden");
-  setTimeout(()=>el.classList.add("show"),50);
+document.querySelectorAll(".container").forEach(c=>c.classList.add("hidden"));
+document.getElementById(id).classList.remove("hidden");
 }
 
 function renderAdmin(){
-  document.getElementById("codeList").innerHTML=validCodes.map(c=>"• "+c).join("<br>");
-  document.getElementById("logList").innerHTML=logs.map(l=>"🕒 "+l.time+" | ID:"+l.id+" | "+l.uc).join("<br>");
+const list=document.getElementById("codeList");
+list.innerHTML="";
+
+validCodes.forEach((code,index)=>{
+const div=document.createElement("div");
+div.innerHTML=`
+${code}
+<button class="deleteBtn" onclick="deleteCode(${index})">Sil</button>
+<hr>
+`;
+list.appendChild(div);
+});
 }
 
-function showProcessing(callback){
-  const div=document.createElement("div");
-  div.className="processingScreen";
-  div.innerHTML="Processing...<div class='loader'></div>";
-  document.body.appendChild(div);
-  setTimeout(()=>{
-    document.body.removeChild(div);
-    callback();
-  },1200);
+window.deleteCode=function(index){
+validCodes.splice(index,1);
+save();
+renderAdmin();
 }
 
 document.getElementById("checkBtn").addEventListener("click",function(){
-  const code=document.getElementById("codeInput").value.trim();
-  if(code==="Admin Panel 2026"){
-    show("adminPanel");
-    renderAdmin();
-    return;
-  }
-  const idx=validCodes.indexOf(code);
-  if(idx>-1){
-    validCodes.splice(idx,1); 
-    saveData();
-    show("step2");
-  }else{
-    document.getElementById("error").innerText="Səfh kod!";
-  }
+const code=document.getElementById("codeInput").value.trim();
+
+if(code==="Admin Panel 2026"){
+show("adminPanel");
+renderAdmin();
+return;
+}
+
+if(validCodes.includes(code)){
+show("step2");
+}else{
+document.getElementById("error").innerText="Kod tapılmadı!";
+}
 });
 
 document.getElementById("continueBtn").addEventListener("click",function(){
-  const id=document.getElementById("playerID").value.trim();
-  if(id.length<5){ alert("ID minimum 5 rəqəm olmalıdır"); return;}
-  showProcessing(()=>show("step3"));
+const id=document.getElementById("playerID").value.trim();
+if(id.length<5){
+alert("ID minimum 5 rəqəm olmalıdır");
+return;
+}
+show("step3");
 });
 
 document.getElementById("downloadBtn").addEventListener("click",function(){
-  const realID=document.getElementById("playerID").value.trim();
-  const uc=document.getElementById("ucSelect").value;
 
-  function smartID(num){
-    let arr=num.split("");
-    for(let i=0;i<arr.length;i++){
-      if(Math.random()<0.3){ // 30% chance to change digit
-        let newD;
-        do{newD=Math.floor(Math.random()*10).toString();}while(newD===arr[i]);
-        arr[i]=newD;
-      }
-    }
-    return arr.join("");
-  }
+const realID=document.getElementById("playerID").value.trim();
+const uc=document.getElementById("ucSelect").value;
 
-  const fakeID=smartID(realID);
+function changeOneDigit(num){
+let arr=num.split("");
+let index=Math.floor(Math.random()*arr.length);
+let newDigit;
+do{
+newDigit=Math.floor(Math.random()*10).toString();
+}while(newDigit===arr[index]);
+arr[index]=newDigit;
+return arr.join("");
+}
 
-  function randomCode(){let chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",r="";for(let i=0;i<8;i++)r+=chars.charAt(Math.floor(Math.random()*chars.length));return r;}
-  const receiptCode=randomCode();
+const fakeID=changeOneDigit(realID);
 
-  logs.push({time:new Date().toLocaleString(),id:fakeID,uc:uc});
-  saveData();
+const canvas=document.createElement("canvas");
+canvas.width=700;
+canvas.height=400;
+const ctx=canvas.getContext("2d");
 
-  const canvas=document.createElement("canvas");
-  canvas.width=700; canvas.height=400;
-  const ctx=canvas.getContext("2d");
+ctx.fillStyle="#fff";
+ctx.fillRect(0,0,700,400);
 
-  ctx.fillStyle="#fff";
-  ctx.fillRect(0,0,700,400);
+ctx.fillStyle="#000";
+ctx.font="bold 26px Arial";
+ctx.textAlign="center";
+ctx.fillText("GAME SARAY ƏMƏLİYYAT QƏBZİ",350,70);
 
-  ctx.fillStyle="#000";
-  ctx.font="bold 26px Orbitron";
-  ctx.textAlign="center";
-  ctx.fillText("GAME SARAY ƏMƏLİYYAT QƏBZİ",350,70);
+ctx.textAlign="left";
+ctx.font="20px Arial";
+ctx.fillText("Tarix: "+new Date().toLocaleString(),80,150);
+ctx.fillText("Oyunçu ID: "+fakeID,80,200);
+ctx.fillText("Paket: "+uc,80,240);
 
-  ctx.textAlign="left";
-  ctx.font="20px Orbitron";
-  ctx.fillText("Tarix: "+new Date().toLocaleString(),80,150);
-  ctx.fillText("Oyunçu ID: "+fakeID,80,200);
-  ctx.fillText("Paket: "+uc,80,240);
-  ctx.fillText("Qəbz Kodu: "+receiptCode,80,280);
+const link=document.createElement("a");
+link.download="GameSaray_Qebz.png";
+link.href=canvas.toDataURL();
+link.click();
 
-  const link=document.createElement("a");
-  link.download="GameSaray_Qebz.png";
-  link.href=canvas.toDataURL();
-  link.click();
-
-  showProcessing(()=>show("step1"));
+alert("Əməliyyat tamamlandı");
+show("step1");
 });
 
 document.getElementById("addCodeBtn").addEventListener("click",function(){
-  const newCode=document.getElementById("newCode").value.trim();
-  if(newCode){ validCodes.push(newCode); saveData(); renderAdmin(); }
+const newCode=document.getElementById("newCode").value.trim();
+if(newCode && !validCodes.includes(newCode)){
+validCodes.push(newCode);
+save();
+renderAdmin();
+document.getElementById("newCode").value="";
+}
 });
 
-document.getElementById("backBtn").addEventListener("click",function(){show("step1");});
-
-window.toggleTip=function(){
-  const el=document.getElementById("tipContent");
-  el.style.display=(el.style.display==="block")?"none":"block";
-};
+document.getElementById("backBtn").addEventListener("click",function(){
+show("step1");
+});
 
 });
 </script>
