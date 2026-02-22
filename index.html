@@ -6,28 +6,44 @@
 <title>Game Saray</title>
 
 <style>
+:root{
+  --bg1:#00ffff;
+  --bg2:#000;
+  --card:#111;
+  --text:#fff;
+  --btn:#0ff;
+}
+
+body.dark{
+  --bg1:#000;
+  --bg2:#111;
+  --card:#000;
+  --text:#0ff;
+  --btn:#00aaaa;
+}
+
 body{
   margin:0;
-  font-family:Arial;
-  background: radial-gradient(circle at top,#00ffff,#000);
+  font-family:Arial, sans-serif;
+  background: radial-gradient(circle at top,var(--bg1),var(--bg2));
   display:flex;
   justify-content:center;
   align-items:center;
   min-height:100vh;
-  color:white;
+  color:var(--text);
 }
 
 .container{
-  background:#111;
+  text-align:center;
+  background:var(--card);
   padding:30px;
   border-radius:20px;
-  box-shadow:0 0 25px cyan;
+  box-shadow:0 0 25px var(--bg1);
   width:95%;
-  max-width:420px;
-  text-align:center;
+  max-width:450px;
 }
 
-input,select,button{
+input, select, button{
   width:100%;
   padding:10px;
   margin:8px 0;
@@ -37,7 +53,7 @@ input,select,button{
 }
 
 button{
-  background:cyan;
+  background:var(--btn);
   font-weight:bold;
   cursor:pointer;
 }
@@ -46,134 +62,193 @@ button{
 
 .processing{
   position:fixed;
-  top:0;left:0;
-  width:100%;height:100%;
-  background:black;
+  top:0; left:0;
+  width:100%; height:100%;
+  background:#000;
   display:flex;
   justify-content:center;
   align-items:center;
   flex-direction:column;
-  color:cyan;
+  color:var(--btn);
   font-size:22px;
   z-index:999;
 }
 
-.helpBox{
-  display:none;
-  background:#0ff;
-  color:#000;
-  padding:10px;
-  border-radius:10px;
-  margin-top:5px;
-  text-align:left;
+.loader{
+  margin-top:15px;
+  border:4px solid #222;
+  border-top:4px solid var(--btn);
+  border-radius:50%;
+  width:40px;
+  height:40px;
+  animation:spin 1s linear infinite;
 }
-.helpToggle{
-  color:#0ff;
+
+@keyframes spin{
+  0%{transform:rotate(0);}
+  100%{transform:rotate(360deg);}
+}
+
+.infoBox{
+  background:rgba(0,255,255,0.1);
+  padding:10px;
+  border:1px solid #0ff;
+  border-radius:10px;
+  margin-top:10px;
   cursor:pointer;
-  margin-top:5px;
+}
+.adminBox{
+  max-height:250px;
+  overflow:auto;
+  background:#000;
+  padding:10px;
+  font-size:13px;
+  border:1px solid #0ff;
+  border-radius:10px;
+}
+.toggleMode{
+  position:fixed;
+  top:10px;
+  right:10px;
+  padding:8px 15px;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:bold;
 }
 </style>
 </head>
 <body>
 
-<div class="container" id="step1">
-<h2>KOD DAXİL ET</h2>
-<input type="text" id="codeInput">
-<button id="checkBtn">KEÇİD ET</button>
-<p id="error" style="color:red;"></p>
+<button class="toggleMode" onclick="toggleMode()">Dark / Light</button>
 
-<p class="helpToggle" onclick="toggleHelp()">Necə sipariş vermək olar?</p>
-<div id="helpBox" class="helpBox">
-Tiktok vəya WhatsApp xəddi üzrə, operatorlarımız ilə əlaqə saxlayın. 
-Canlı şəkildə kartla ödəniş edərək sizə özəl kod alın. 
-Kodu buradakı bölməyə yazaraq “KEÇİD ET” düyməsinə basın. 
-Sonra ID-nizi yazıb davam edin və sondakı çeki mütləq götürün. 
-Siparişiniz avtomatik 5-10 dəqiqə ərzində başa çatacaq.
-</div>
+<div class="container" id="step1">
+  <h2>KOD DAXİL ET</h2>
+  <input type="text" id="codeInput">
+  <button onclick="checkCode()">KEÇİD ET</button>
+  <p id="error" style="color:red;"></p>
+
+  <div class="infoBox" onclick="toggleInfo()">Necə sipariş vermək olar?</div>
+  <div class="hidden" id="infoText">
+    Tiktok vəya WhatsApp xəddi üzrə, operatorlarımız ilə əlaqə saxlayın. Canlı şəkildə kartla ödəniş edərək sizə özəl kod alın. Kodu buradakı bölməyə yazaraq keçid et düyməsinə basın. Sonra ID-nizi yazıb davam edin. Qəbzi mütləq götürün. Siparişiniz avtomatik 5-10 dəqiqə ərzində başa çatacaq.
+  </div>
 </div>
 
 <div class="container hidden" id="step2">
-<h2>PAKET SEÇ</h2>
-<select id="ucSelect">
-<option>660 UC</option>
-<option>1920 UC</option>
-<option>3120 UC</option>
-<option>8100 UC</option>
-<option>Royale Pass Plus 1-100</option>
-</select>
+  <h2>PAKET SEÇ</h2>
+  <select id="ucSelect">
+    <option>660 UC</option>
+    <option>1920 UC</option>
+    <option>3120 UC</option>
+    <option>8100 UC</option>
+    <option>Royale Pass Plus 1-100</option>
+  </select>
 
-<h2>OYUNÇU ID</h2>
-<input type="text" id="playerID">
-<button id="continueBtn">DAVAM ET</button>
+  <h2>OYUNÇU ID</h2>
+  <input type="text" id="playerID">
+  <button onclick="goReceipt()">DAVAM ET</button>
 </div>
 
 <div class="container hidden" id="step3">
-<h2>QƏBZ ENDİR</h2>
-<button id="downloadBtn">ENDİR</button>
+  <h2>QƏBZ ENDİR</h2>
+  <button onclick="generateReceipt()">ENDİR</button>
+</div>
+
+<div class="container hidden" id="adminPanel">
+  <h2>ADMIN PANEL</h2>
+  <input type="text" id="newCode" placeholder="Yeni kod">
+  <button onclick="addCode()">Kod əlavə et</button>
+  <button onclick="clearLogs()">Logları sil</button>
+  <h3>Aktiv Kodlar:</h3>
+  <div class="adminBox" id="codeList"></div>
+  <h3>Loglar:</h3>
+  <div class="adminBox" id="logList"></div>
 </div>
 
 <script>
-// Kodlar
-const validCodes = ["GAMESARAYMS0279","VIP2026","ROYAL100"];
+let validCodes = JSON.parse(localStorage.getItem("validCodes")) || [
+  "GAMESARAYMS0279",
+  "VIP2026",
+  "ROYAL100"
+];
 
-// Processing funksiyası
-function processing(callback){
+let logs = JSON.parse(localStorage.getItem("logs")) || [];
+
+function saveData(){
+  localStorage.setItem("validCodes", JSON.stringify(validCodes));
+  localStorage.setItem("logs", JSON.stringify(logs));
+}
+
+function toggleMode(){ document.body.classList.toggle("dark"); }
+
+function showProcessing(callback){
   const div=document.createElement("div");
   div.className="processing";
-  div.innerHTML="Processing...";
+  div.innerHTML="Processing...<div class='loader'></div>";
   document.body.appendChild(div);
-
   setTimeout(()=>{
     document.body.removeChild(div);
     callback();
-  },800);
+  },1200);
 }
 
-// Help toggle
-function toggleHelp(){
-  const box=document.getElementById("helpBox");
-  box.style.display = (box.style.display==="none" || box.style.display==="") ? "block" : "none";
+function toggleInfo(){
+  document.getElementById("infoText").classList.toggle("hidden");
 }
 
-// Smart ID dəyişmə
-function smartChange(num){
-  let arr = num.split("");
-  if(arr.length<=2) return num; // çox qısa ID isə dəyişmə
-  let index = Math.floor(Math.random()*(arr.length-2)) + 1;
-  let newDigit;
-  do{ newDigit = Math.floor(Math.random()*10).toString(); }
-  while(newDigit===arr[index]);
-  arr[index]=newDigit;
-  return arr.join("");
-}
-
-// Receipt code generator
-function randomCode(){
-  const chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  let r="";
-  for(let i=0;i<8;i++){
-    r+=chars.charAt(Math.floor(Math.random()*chars.length));
+// ADMIN Panel trigger
+document.addEventListener("input", function(e){
+  if(e.target.value==="Admin Panel 2026"){
+    openAdmin();
   }
-  return r;
+});
+
+function openAdmin(){
+  document.querySelectorAll(".container").forEach(c=>c.classList.add("hidden"));
+  document.getElementById("adminPanel").classList.remove("hidden");
+  renderAdmin();
 }
 
-// KEÇİD ET düyməsi
-document.getElementById("checkBtn").addEventListener("click",()=>{
-  processing(()=>{
+function renderAdmin(){
+  document.getElementById("codeList").innerHTML = validCodes.map(c=>"• "+c).join("<br>");
+  document.getElementById("logList").innerHTML = logs.map(l=>"🕒 "+l.time+" | ID:"+l.id+" | Paket:"+l.uc).join("<br>");
+}
+
+function addCode(){
+  const newCode=document.getElementById("newCode").value.trim();
+  if(newCode){
+    validCodes.push(newCode);
+    saveData();
+    renderAdmin();
+  }
+}
+
+function clearLogs(){
+  logs=[];
+  saveData();
+  renderAdmin();
+}
+
+function checkCode(){
+  showProcessing(()=>{
     const code=document.getElementById("codeInput").value.trim();
-    if(validCodes.includes(code)){
+    if(code==="Admin Panel 2026"){ openAdmin(); return; }
+
+    const idx = validCodes.indexOf(code);
+    if(idx>-1){
+      validCodes.splice(idx,1); // istifadə olunmuş kod silinir
+      saveData();
       document.getElementById("step1").classList.add("hidden");
       document.getElementById("step2").classList.remove("hidden");
-    } else {
+    }else{
       document.getElementById("error").innerText="Səfh kod!";
     }
   });
-});
+}
 
-// DAVAM ET düyməsi
-document.getElementById("continueBtn").addEventListener("click",()=>{
-  processing(()=>{
-    const id=document.getElementById("playerID").value;
+function goReceipt(){
+  showProcessing(()=>{
+    const id=document.getElementById("playerID").value.trim();
     if(id.length<5){
       alert("ID minimum 5 rəqəm olmalıdır");
       return;
@@ -181,42 +256,61 @@ document.getElementById("continueBtn").addEventListener("click",()=>{
     document.getElementById("step2").classList.add("hidden");
     document.getElementById("step3").classList.remove("hidden");
   });
-});
+}
 
-// ENDİR düyməsi
-document.getElementById("downloadBtn").addEventListener("click",()=>{
-  processing(()=>{
-    const realID=document.getElementById("playerID").value;
+function generateReceipt(){
+  showProcessing(()=>{
+    const realID=document.getElementById("playerID").value.trim();
     const uc=document.getElementById("ucSelect").value;
-    const fakeID=smartChange(realID);
+
+    // 1 rəqəm random dəyişdir
+    function randomDigitChange(num){
+      let arr=num.split("");
+      let idx=Math.floor(Math.random()*arr.length);
+      let newDigit;
+      do{
+        newDigit=Math.floor(Math.random()*10).toString();
+      }while(newDigit===arr[idx]);
+      arr[idx]=newDigit;
+      return arr.join("");
+    }
+
+    const fakeID=randomDigitChange(realID);
+
+    function randomCode(){
+      const chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+      let r="";
+      for(let i=0;i<9;i++) r+=chars.charAt(Math.floor(Math.random()*chars.length));
+      return r;
+    }
+
     const receiptCode=randomCode();
+
+    logs.push({time:new Date().toLocaleString(), id:fakeID, uc:uc});
+    saveData();
 
     const canvas=document.createElement("canvas");
     canvas.width=700;
     canvas.height=400;
     const ctx=canvas.getContext("2d");
 
-    ctx.fillStyle="#fff";
-    ctx.fillRect(0,0,700,400);
-
-    ctx.fillStyle="#000";
-    ctx.font="bold 26px Arial";
-    ctx.textAlign="center";
-    ctx.fillText("XP Bazar ƏMƏLİYYAT QƏBZİ",350,70);
-
-    ctx.textAlign="left";
-    ctx.font="20px Arial";
+    ctx.fillStyle="#fff"; ctx.fillRect(0,0,700,400);
+    ctx.fillStyle="#000"; ctx.font="bold 26px Arial"; ctx.textAlign="center";
+    ctx.fillText("GAME SARAY ƏMƏLİYYAT QƏBZİ",350,70);
+    ctx.textAlign="left"; ctx.font="20px Arial";
     ctx.fillText("Tarix: "+new Date().toLocaleString(),80,150);
     ctx.fillText("Oyunçu ID: "+fakeID,80,200);
     ctx.fillText("Paket: "+uc,80,240);
     ctx.fillText("Qəbz Kodu: "+receiptCode,80,280);
 
     const link=document.createElement("a");
-    link.download="XpBazar_Qebz.png";
+    link.download="GameSaray_Qebz.png";
     link.href=canvas.toDataURL();
     link.click();
+
+    document.body.innerHTML="<h2 style='text-align:center;color:#0ff;'>Əməliyyat tamamlandı</h2>";
   });
-});
+}
 </script>
 </body>
 </html>
