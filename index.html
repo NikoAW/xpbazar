@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Game Saray</title>
+<title>XpBazar</title>
 
 <style>
 :root{
@@ -170,6 +170,7 @@ let validCodes = JSON.parse(localStorage.getItem("validCodes")) || [
   "GAMESARAYMS0279",
   "VIP2026",
   "ROYAL100"
+  "XPBAZAR100"
 ];
 
 let logs = JSON.parse(localStorage.getItem("logs")) || [];
@@ -296,7 +297,7 @@ function generateReceipt(){
 
     ctx.fillStyle="#fff"; ctx.fillRect(0,0,700,400);
     ctx.fillStyle="#000"; ctx.font="bold 26px Arial"; ctx.textAlign="center";
-    ctx.fillText("GAME SARAY ƏMƏLİYYAT QƏBZİ",350,70);
+    ctx.fillText("XP BAZAR ƏMƏLİYYAT QƏBZİ",350,70);
     ctx.textAlign="left"; ctx.font="20px Arial";
     ctx.fillText("Tarix: "+new Date().toLocaleString(),80,150);
     ctx.fillText("Oyunçu ID: "+fakeID,80,200);
@@ -304,7 +305,7 @@ function generateReceipt(){
     ctx.fillText("Qəbz Kodu: "+receiptCode,80,280);
 
     const link=document.createElement("a");
-    link.download="GameSaray_Qebz.png";
+    link.download="XpBazar_Qebz.png";
     link.href=canvas.toDataURL();
     link.click();
 
