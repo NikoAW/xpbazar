@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>XP Saray</title>
+<title>XP Bazar</title>
 
 <style>
 *{box-sizing:border-box;}
@@ -17,25 +17,19 @@ body{
   align-items:center;
   min-height:100vh;
   color:white;
-  overflow:hidden;
 }
 
-/* Glitch Logo */
 .logo{
-  font-size:28px;
+  font-size:26px;
   font-weight:bold;
-  position:relative;
   color:#00ffff;
-  animation:glitch 1s infinite;
+  animation:glitch 1.2s infinite;
   margin-bottom:15px;
 }
 
 @keyframes glitch{
   0%{text-shadow:2px 0 red,-2px 0 blue;}
-  20%{text-shadow:-2px 0 red,2px 0 blue;}
-  40%{text-shadow:2px 0 blue,-2px 0 red;}
-  60%{text-shadow:-2px 0 blue,2px 0 red;}
-  80%{text-shadow:0 0 10px cyan;}
+  50%{text-shadow:-2px 0 red,2px 0 blue;}
   100%{text-shadow:2px 0 red,-2px 0 blue;}
 }
 
@@ -45,19 +39,12 @@ body{
   background:#111;
   padding:25px;
   border-radius:15px;
-  box-shadow:0 0 25px #00ffff55;
+  box-shadow:0 0 20px #00ffff55;
   text-align:center;
-  transition:all .5s ease;
-  opacity:1;
-  transform:scale(1);
+  transition:.4s ease;
 }
 
-.hidden{
-  opacity:0;
-  transform:scale(.9);
-  pointer-events:none;
-  position:absolute;
-}
+.hidden{display:none;}
 
 input,select,button{
   width:100%;
@@ -77,7 +64,7 @@ button{
   background:#00ffff;
   font-weight:bold;
   cursor:pointer;
-  transition:0.3s;
+  transition:.3s;
 }
 
 button:hover{
@@ -86,47 +73,60 @@ button:hover{
   transform:scale(1.05);
 }
 
-/* Loading Bar */
+/* Loading */
 .loadingBox{
   margin-top:15px;
-  height:8px;
-  background:#222;
-  border-radius:5px;
-  overflow:hidden;
   display:none;
 }
 
+.loadingText{
+  margin-top:8px;
+  font-size:13px;
+  color:#00ffff;
+  letter-spacing:2px;
+}
+
 .loadingBar{
-  height:100%;
+  height:8px;
   width:0%;
-  background:linear-gradient(90deg,cyan,blue);
+  background:#00ffff;
+  border-radius:5px;
   transition:width 6s linear;
 }
 
+/* Admin */
 .adminBox{
   background:#000;
   padding:10px;
   border-radius:8px;
-  max-height:150px;
+  max-height:130px;
   overflow:auto;
   font-size:13px;
   text-align:left;
+  margin-bottom:10px;
 }
 </style>
 </head>
 <body>
 
+<!-- STEP 1 -->
 <div class="container" id="step1">
-<div class="logo">XP SARAY</div>
+<div class="logo">XP BAZAR</div>
 <h2>KOD DAXİL ET</h2>
 <input type="text" id="codeInput">
 <button onclick="checkCode()">KEÇİD ET</button>
-<div class="loadingBox"><div class="loadingBar" id="load1"></div></div>
+
+<div class="loadingBox" id="loadBox1">
+<div class="loadingBar" id="load1"></div>
+<div class="loadingText">YÜKLƏNİR...</div>
+</div>
+
 <p id="error" style="color:red;"></p>
 </div>
 
+<!-- STEP 2 -->
 <div class="container hidden" id="step2">
-<div class="logo">XP SARAY</div>
+<div class="logo">XP BAZAR</div>
 <h2>PAKET SEÇ</h2>
 <select id="ucSelect">
 <option>660 UC</option>
@@ -136,35 +136,58 @@ button:hover{
 </select>
 <input type="text" id="playerID" placeholder="Oyunçu ID">
 <button onclick="goStep3()">DAVAM ET</button>
-<div class="loadingBox"><div class="loadingBar" id="load2"></div></div>
+
+<div class="loadingBox" id="loadBox2">
+<div class="loadingBar" id="load2"></div>
+<div class="loadingText">YÜKLƏNİR...</div>
+</div>
 </div>
 
+<!-- STEP 3 -->
 <div class="container hidden" id="step3">
-<div class="logo">XP SARAY</div>
+<div class="logo">XP BAZAR</div>
 <h2>QƏBZ ENDİR</h2>
 <button onclick="downloadReceipt()">ENDİR</button>
-<div class="loadingBox"><div class="loadingBar" id="load3"></div></div>
+
+<div class="loadingBox" id="loadBox3">
+<div class="loadingBar" id="load3"></div>
+<div class="loadingText">YÜKLƏNİR...</div>
+</div>
 </div>
 
+<!-- ADMIN -->
 <div class="container hidden" id="adminPanel">
-<div class="logo">XP SARAY ADMIN</div>
+<div class="logo">XP BAZAR ADMIN</div>
+
 <input type="text" id="newCode" placeholder="Yeni kod">
 <button onclick="addCode()">Kod əlavə et</button>
+
+<h3>Aktiv Kodlar</h3>
 <div class="adminBox" id="codeList"></div>
+
+<h3>Loglar</h3>
+<div class="adminBox" id="logList"></div>
+
 <button onclick="show('step1')">Geri</button>
 </div>
 
 <script>
 let validCodes = JSON.parse(localStorage.getItem("validCodes")) || ["VIP2026"];
-function save(){localStorage.setItem("validCodes",JSON.stringify(validCodes));}
+let logs = JSON.parse(localStorage.getItem("logs")) || [];
+
+function save(){
+localStorage.setItem("validCodes",JSON.stringify(validCodes));
+localStorage.setItem("logs",JSON.stringify(logs));
+}
+
 function show(id){
 document.querySelectorAll(".container").forEach(c=>c.classList.add("hidden"));
 document.getElementById(id).classList.remove("hidden");
 }
 
-function startLoading(barId,callback){
-const box=document.querySelector("#"+barId).parentElement;
+function startLoading(barId,boxId,callback){
 const bar=document.getElementById(barId);
+const box=document.getElementById(boxId);
 box.style.display="block";
 bar.style.width="100%";
 setTimeout(()=>{
@@ -176,9 +199,15 @@ callback();
 
 function checkCode(){
 const code=document.getElementById("codeInput").value.trim();
-if(code==="Admin Panel 2026"){show("adminPanel");renderAdmin();return;}
+
+if(code==="Admin Panel 2026"){
+show("adminPanel");
+renderAdmin();
+return;
+}
+
 if(validCodes.includes(code)){
-startLoading("load1",()=>show("step2"));
+startLoading("load1","loadBox1",()=>show("step2"));
 }else{
 document.getElementById("error").innerText="Kod səhvdir!";
 }
@@ -187,11 +216,11 @@ document.getElementById("error").innerText="Kod səhvdir!";
 function goStep3(){
 const id=document.getElementById("playerID").value.trim();
 if(id.length<5){alert("ID minimum 5 rəqəm olmalıdır");return;}
-startLoading("load2",()=>show("step3"));
+startLoading("load2","loadBox2",()=>show("step3"));
 }
 
 function downloadReceipt(){
-startLoading("load3",()=>{
+startLoading("load3","loadBox3",()=>{
 const realID=document.getElementById("playerID").value.trim();
 const uc=document.getElementById("ucSelect").value;
 
@@ -207,6 +236,13 @@ return arr.join("");
 
 const fakeID=changeOneDigit(realID);
 
+logs.push({
+time:new Date().toLocaleString(),
+id:fakeID,
+uc:uc
+});
+save();
+
 const canvas=document.createElement("canvas");
 canvas.width=700;
 canvas.height=400;
@@ -217,7 +253,7 @@ ctx.fillRect(0,0,700,400);
 ctx.fillStyle="#000";
 ctx.font="bold 26px Arial";
 ctx.textAlign="center";
-ctx.fillText("XP SARAY SİPARİŞ QƏBZİ",350,70);
+ctx.fillText("XP BAZAR BANK QƏBZİ",350,70);
 ctx.textAlign="left";
 ctx.font="20px Arial";
 ctx.fillText("Tarix: "+new Date().toLocaleString(),80,150);
@@ -225,7 +261,7 @@ ctx.fillText("Oyunçu ID: "+fakeID,80,200);
 ctx.fillText("Paket: "+uc,80,240);
 
 const link=document.createElement("a");
-link.download="XPSaray_Qebz.png";
+link.download="XPBazar_Qebz.png";
 link.href=canvas.toDataURL();
 link.click();
 
@@ -246,6 +282,9 @@ function renderAdmin(){
 document.getElementById("codeList").innerHTML=
 validCodes.map((c,i)=>c+
 ` <button onclick="deleteCode(${i})" style="background:red;margin-top:5px;">Sil</button><hr>`).join("");
+
+document.getElementById("logList").innerHTML=
+logs.map(l=>"🕒 "+l.time+" | ID:"+l.id+" | "+l.uc+"<hr>").join("");
 }
 
 function deleteCode(i){
@@ -255,4 +294,4 @@ renderAdmin();
 }
 </script>
 </body>
-</html>
+  </html>
