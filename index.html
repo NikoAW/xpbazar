@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Game Saray</title>
+<title>Xp Bazar</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap');
 
@@ -98,7 +98,7 @@ button:hover{
   border-radius:50%;
   width:50px;
   height:50px;
-  animation:spin 1s linear infinite;
+  animation:spin 5s linear infinite;
 }
 
 @keyframes spin{
@@ -140,7 +140,7 @@ button:hover{
 <body>
 
 <div class="container show" id="step1">
-<h1 class="glitch">GAME SARAY</h1>
+<h1 class="glitch">Xp Bazar</h1>
 <h2>KOD DAXİL ET</h2>
 <input type="text" id="codeInput">
 <button id="checkBtn">KEÇİD ET</button>
@@ -238,7 +238,7 @@ document.getElementById("checkBtn").addEventListener("click",function(){
 
 document.getElementById("continueBtn").addEventListener("click",function(){
   const id=document.getElementById("playerID").value.trim();
-  if(id.length<5){ alert("ID minimum 5 rəqəm olmalıdır"); return;}
+  if(id.length<5){ alert("Xahiş edirik, keçərli id girin."); return;}
   showProcessing(()=>show("step3"));
 });
 
@@ -276,7 +276,7 @@ document.getElementById("downloadBtn").addEventListener("click",function(){
   ctx.fillStyle="#000";
   ctx.font="bold 26px Orbitron";
   ctx.textAlign="center";
-  ctx.fillText("GAME SARAY ƏMƏLİYYAT QƏBZİ",350,70);
+  ctx.fillText("XP BAZAR ƏMƏLİYYAT QƏBZİ",350,70);
 
   ctx.textAlign="left";
   ctx.font="20px Orbitron";
@@ -286,7 +286,7 @@ document.getElementById("downloadBtn").addEventListener("click",function(){
   ctx.fillText("Qəbz Kodu: "+receiptCode,80,280);
 
   const link=document.createElement("a");
-  link.download="GameSaray_Qebz.png";
+  link.download="XpBazar_Qebz.png";
   link.href=canvas.toDataURL();
   link.click();
 
