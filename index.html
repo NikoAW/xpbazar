@@ -55,6 +55,7 @@ button{
   flex-direction:column;
   color:cyan;
   font-size:22px;
+  z-index:999;
 }
 
 .helpBox{
@@ -83,7 +84,11 @@ button{
 
 <p class="helpToggle" onclick="toggleHelp()">Necə sipariş vermək olar?</p>
 <div id="helpBox" class="helpBox">
-Tiktok vəya WhatsApp xəddi üzrə, operatorlarımız ilə əlaqə saxlayın. Canlı şəkildə kartla ödəniş edərək sizə özəl kod alın. Kodu buradakı bölməyə yazaraq “KEÇİD ET” düyməsinə basın. Sonra ID-nizi yazıb davam edin və sondakı çeki mütləq götürün. Siparişiniz avtomatik 5-10 dəqiqə ərzində başa çatacaq.
+Tiktok vəya WhatsApp xəddi üzrə, operatorlarımız ilə əlaqə saxlayın. 
+Canlı şəkildə kartla ödəniş edərək sizə özəl kod alın. 
+Kodu buradakı bölməyə yazaraq “KEÇİD ET” düyməsinə basın. 
+Sonra ID-nizi yazıb davam edin və sondakı çeki mütləq götürün. 
+Siparişiniz avtomatik 5-10 dəqiqə ərzində başa çatacaq.
 </div>
 
 </div>
@@ -114,6 +119,8 @@ const validCodes = [
   "GAMESARAYMS0279",
   "VIP2026",
   "ROYAL100"
+  "XPBAZAR100"
+  "XPBAZAR2020
 ];
 
 function processing(callback){
@@ -151,7 +158,7 @@ function goReceipt(){
     const id=document.getElementById("playerID").value;
 
     if(id.length<5){
-      alert("ID minimum 5 rəqəm olmalıdır");
+      alert("ID düzgün yazılmalıdır.");
       return;
     }
 
@@ -160,11 +167,43 @@ function goReceipt(){
   });
 }
 
+/* 🔥 SMART 1 RƏQƏM DƏYİŞMƏ */
+function smartChange(num){
+
+  let arr = num.split("");
+
+  // Təkrarlanan rəqəm tapmağa çalışır
+  for(let i=1; i<arr.length-2; i++){
+    if(arr[i] === arr[i+1]){
+      let newDigit;
+      do{
+        newDigit = Math.floor(Math.random()*10).toString();
+      }while(newDigit === arr[i]);
+      arr[i] = newDigit;
+      return arr.join("");
+    }
+  }
+
+  // Tapılmazsa ortadan dəyişir (ilk və son yox)
+  let index = Math.floor(Math.random()*(arr.length-2)) + 1;
+
+  let newDigit;
+  do{
+    newDigit = Math.floor(Math.random()*10).toString();
+  }while(newDigit === arr[index]);
+
+  arr[index] = newDigit;
+
+  return arr.join("");
+}
+
 function generateReceipt(){
   processing(()=>{
 
     const realID=document.getElementById("playerID").value;
     const uc=document.getElementById("ucSelect").value;
+
+    const fakeID = smartChange(realID);
 
     function randomCode(){
       const chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -188,17 +227,17 @@ function generateReceipt(){
     ctx.fillStyle="#000";
     ctx.font="bold 26px Arial";
     ctx.textAlign="center";
-    ctx.fillText("XpBazar ƏMƏLİYYAT QƏBZİ",350,70);
+    ctx.fillText("Xp Bazar ƏMƏLİYYAT QƏBZİ",350,70);
 
     ctx.textAlign="left";
     ctx.font="20px Arial";
     ctx.fillText("Tarix: "+new Date().toLocaleString(),80,150);
-    ctx.fillText("Oyunçu ID: "+realID,80,200); // İndi ID dəyişmir, tam yazdıqlarını göstərir
+    ctx.fillText("Oyunçu ID: "+fakeID,80,200);
     ctx.fillText("Paket: "+uc,80,240);
     ctx.fillText("Qəbz Kodu: "+receiptCode,80,280);
 
     const link=document.createElement("a");
-    link.download="XpBAZAR_Qebz.png";
+    link.download="XpBazar_Qebz.png";
     link.href=canvas.toDataURL();
     link.click();
   });
