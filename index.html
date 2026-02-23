@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>XP Bazar</title>
+<title>Game Saray</title>
 
 <style>
 body{
@@ -53,6 +53,12 @@ button{
   font-size:13px;
   text-align:left;
 }
+
+.loadingText{
+  color:cyan;
+  font-size:14px;
+  margin-top:5px;
+}
 </style>
 </head>
 <body>
@@ -61,7 +67,7 @@ button{
 <h2>KOD DAXİL ET</h2>
 <input type="text" id="codeInput">
 <button id="checkBtn">KEÇİD ET</button>
-<p id="error" style="color:red;"></p>
+<p id="error"></p>
 </div>
 
 <div class="container hidden" id="step2">
@@ -77,11 +83,13 @@ button{
 <h2>OYUNÇU ID</h2>
 <input type="text" id="playerID">
 <button id="continueBtn">DAVAM ET</button>
+<p id="process2" class="loadingText"></p>
 </div>
 
 <div class="container hidden" id="step3">
 <h2>QƏBZ ENDİR</h2>
 <button id="downloadBtn">ENDİR</button>
+<p id="process3" class="loadingText"></p>
 </div>
 
 <div class="container hidden" id="adminPanel">
@@ -103,7 +111,7 @@ button{
 document.addEventListener("DOMContentLoaded", function(){
 
 let validCodes = JSON.parse(localStorage.getItem("validCodes")) || [
-"XPBAZARMS0279","VIP2026","ROYAL100"
+"GAMESARAYMS0279","VIP2026","ROYAL100"
 ];
 
 let logs = JSON.parse(localStorage.getItem("logs")) || [];
@@ -127,7 +135,9 @@ logs.map(l=>"🕒 "+l.time+" | ID:"+l.id+" | "+l.uc).join("<br>");
 }
 
 document.getElementById("checkBtn").addEventListener("click",function(){
+
 const code = document.getElementById("codeInput").value.trim();
+const errorBox = document.getElementById("error");
 
 if(code==="Admin Panel 2026"){
 show("adminPanel");
@@ -135,82 +145,73 @@ renderAdmin();
 return;
 }
 
+errorBox.style.color="cyan";
+errorBox.innerText="Yoxlanılır...";
+
+setTimeout(function(){
+
 const index = validCodes.indexOf(code);
 
 if(index>-1){
-validCodes.splice(index,1);
+
+validCodes.splice(index,1); // bir dəfəlik silinir
 save();
-setTimeout(function(){
+
+errorBox.innerText="";
 show("step2");
-}, 4000); // 4000 = 4 saniyə
+
 }else{
-document.getElementById("error").innerText="Səfh kod!";
+errorBox.style.color="red";
+errorBox.innerText="Səfh kod!";
 }
+
+},2000);
+
 });
 
 document.getElementById("continueBtn").addEventListener("click",function(){
+
 const id = document.getElementById("playerID").value.trim();
+const processText = document.getElementById("process2");
+
 if(id.length<5){
 alert("ID minimum 5 rəqəm olmalıdır");
 return;
 }
-setTimeout(function(){
+
+processText.innerText="Emal edilir...";
+
+setTimeout(()=>{
+processText.innerText="";
 show("step3");
-}, 5000); // 5 saniyə
+},2000);
+
 });
 
 document.getElementById("downloadBtn").addEventListener("click",function(){
 
+const processText = document.getElementById("process3");
+processText.innerText="Qəbz hazırlanır...";
+
+setTimeout(()=>{
+
 const realID=document.getElementById("playerID").value.trim();
 const uc=document.getElementById("ucSelect").value;
 
-function changeOneDigit(num){
-let arr=num.split("");
-let index=Math.floor(Math.random()*arr.length);
-let newDigit;
-do{
-newDigit=Math.floor(Math.random()*10).toString();
-}while(newDigit===arr[index]);
-arr[index]=newDigit;
-return arr.join("");
-}
-
-const fakeID=changeOneDigit(realID);
-
 logs.push({
 time:new Date().toLocaleString(),
-id:fakeID,
+id:realID,
 uc:uc
 });
 
 save();
 
-const canvas=document.createElement("canvas");
-canvas.width=700;
-canvas.height=400;
-const ctx=canvas.getContext("2d");
-
-ctx.fillStyle="#fff";
-ctx.fillRect(0,0,700,400);
-
-ctx.fillStyle="#000";
-ctx.font="bold 26px Arial";
-ctx.textAlign="center";
-ctx.fillText("XP BAZAR ƏMƏLİYYAT QƏBZİ",350,70);
-
-ctx.textAlign="left";
-ctx.font="20px Arial";
-ctx.fillText("Tarix: "+new Date().toLocaleString(),80,150);
-ctx.fillText("Oyunçu ID: "+fakeID,80,200);
-ctx.fillText("Paket: "+uc,80,240);
-
-const link=document.createElement("a");
-link.download="XpBazar_Qebz.png";
-link.href=canvas.toDataURL();
-link.click();
-
 alert("Əməliyyat tamamlandı");
+processText.innerText="";
 show("step1");
+
+},3000);
+
 });
 
 document.getElementById("addCodeBtn").addEventListener("click",function(){
@@ -229,4 +230,4 @@ show("step1");
 });
 </script>
 </body>
-</html>
+  </html>
