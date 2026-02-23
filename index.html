@@ -4,81 +4,61 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>XP Bazar</title>
-
 <style>
 *{box-sizing:border-box;}
-
 body{
-  margin:0;
-  font-family:Arial;
-  background:#050505;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  min-height:100vh;
-  color:white;
+margin:0;
+font-family:Arial;
+background:#050505;
+display:flex;
+justify-content:center;
+align-items:center;
+min-height:100vh;
+color:white;
 }
-
 .logo{
-  font-size:26px;
-  font-weight:bold;
-  color:#00ffff;
-  text-shadow:0 0 10px cyan;
-  margin-bottom:15px;
+font-size:26px;
+font-weight:bold;
+color:#00ffff;
+text-shadow:0 0 10px cyan;
+margin-bottom:15px;
 }
-
 .container{
-  width:100%;
-  max-width:420px;
-  background:#111;
-  padding:25px;
-  border-radius:15px;
-  box-shadow:0 0 20px #00ffff55;
-  text-align:center;
+width:100%;
+max-width:420px;
+background:#111;
+padding:25px;
+border-radius:15px;
+box-shadow:0 0 20px #00ffff55;
+text-align:center;
 }
-
 .hidden{display:none;}
-
 input,select,button{
-  width:100%;
-  padding:12px;
-  margin:8px 0;
-  border-radius:8px;
-  border:none;
+width:100%;
+padding:12px;
+margin:8px 0;
+border-radius:8px;
+border:none;
 }
-
 input,select{background:#1e1e1e;color:white;}
-
 button{
-  background:#00ffff;
-  font-weight:bold;
-  cursor:pointer;
+background:#00ffff;
+font-weight:bold;
+cursor:pointer;
 }
-
-button:hover{
-  box-shadow:0 0 15px cyan;
-}
-
 .loadingBox{
-  margin-top:10px;
-  height:8px;
-  background:#222;
-  border-radius:6px;
-  overflow:hidden;
-  display:none;
+margin-top:10px;
+height:8px;
+background:#222;
+border-radius:6px;
+overflow:hidden;
+display:none;
 }
-
 .loadingBar{
-  height:100%;
-  width:0%;
-  background:linear-gradient(90deg,cyan,blue);
-  transition:width 6s linear;
-}
-
-.statusText{
-  font-size:13px;
-  margin-top:5px;
-  color:#00ffff;
+height:100%;
+width:0%;
+background:linear-gradient(90deg,cyan,blue);
+transition:width 6s linear;
 }
 </style>
 </head>
@@ -88,101 +68,65 @@ button:hover{
 <div class="logo">XP BAZAR</div>
 <h3>KOD DAXİL ET</h3>
 <input type="text" id="codeInput">
-<button id="checkBtn">KEÇİD ET</button>
-
-<div class="loadingBox">
-<div class="loadingBar" id="load1"></div>
-</div>
-<div class="statusText" id="status1"></div>
-
+<button onclick="checkCode()">KEÇİD ET</button>
+<div class="loadingBox"><div class="loadingBar" id="load1"></div></div>
 <p id="error" style="color:red;"></p>
 </div>
 
 <div class="container hidden" id="step2">
 <div class="logo">XP BAZAR</div>
-
 <select id="ucSelect">
 <option>660 UC</option>
 <option>1920 UC</option>
 <option>3120 UC</option>
 <option>8100 UC</option>
 </select>
-
 <input type="text" id="playerID" placeholder="Oyunçu ID">
 <input type="text" id="phoneNumber" placeholder="+994XXXXXXXXX">
-
-<button id="nextBtn">DAVAM ET</button>
-
-<div class="loadingBox">
-<div class="loadingBar" id="load2"></div>
-</div>
-<div class="statusText" id="status2"></div>
-</div>
-
-<div class="container hidden" id="step3">
-<div class="logo">XP BAZAR</div>
-<h3>QƏBZ ENDİR</h3>
-<button id="downloadBtn">ENDİR</button>
-
-<div class="loadingBox">
-<div class="loadingBar" id="load3"></div>
-</div>
-<div class="statusText" id="status3"></div>
+<button onclick="goStep3()">DAVAM ET</button>
 </div>
 
 <script>
 
-// HƏR DƏFƏ TƏZƏ BAŞLAYIR
-let validCodes = [
+// Əgər ilk dəfə açılırsa kodları yaddaşa yazır
+if(!localStorage.getItem("validCodes")){
+localStorage.setItem("validCodes",JSON.stringify([
 "XP-BAZAR-619679",
 "XP-BAZAR-926863",
 "XP-BAZAR-297973",
 "XP-BAZAR-000196",
 "XP-BAZAR-445821"
-];
+]));
+}
+
+function getCodes(){
+return JSON.parse(localStorage.getItem("validCodes"));
+}
+
+function saveCodes(codes){
+localStorage.setItem("validCodes",JSON.stringify(codes));
+}
 
 function show(id){
 document.querySelectorAll(".container").forEach(c=>c.classList.add("hidden"));
 document.getElementById(id).classList.remove("hidden");
 }
 
-function startLoading(barId,statusId,callback){
-const bar=document.getElementById(barId);
-const box=bar.parentElement;
-const status=document.getElementById(statusId);
-
-box.style.display="block";
-bar.style.width="100%";
-
-let texts=["Yüklənilir...","Emal edilir...","Hazırlanır..."];
-let i=0;
-
-let interval=setInterval(()=>{
-status.innerText=texts[i%texts.length];
-i++;
-},1500);
-
-setTimeout(()=>{
-clearInterval(interval);
-box.style.display="none";
-bar.style.width="0%";
-status.innerText="";
-callback();
-},6000);
-}
-
-document.getElementById("checkBtn").onclick=function(){
+function checkCode(){
+let codes=getCodes();
 const code=document.getElementById("codeInput").value.trim();
 
-if(validCodes.includes(code)){
-validCodes = validCodes.filter(c=>c!==code);
-startLoading("load1","status1",()=>show("step2"));
+if(codes.includes(code)){
+// silinir
+codes=codes.filter(c=>c!==code);
+saveCodes(codes);
+show("step2");
 }else{
-document.getElementById("error").innerText="Kod səhvdir və ya istifadə olunub!";
+document.getElementById("error").innerText="Kod səhvdir və ya artıq istifadə olunub!";
 }
-};
+}
 
-document.getElementById("nextBtn").onclick=function(){
+function goStep3(){
 const id=document.getElementById("playerID").value.trim();
 const phone=document.getElementById("phoneNumber").value.trim();
 
@@ -192,41 +136,9 @@ alert("Nömrə +994 ilə başlamalıdır!");
 return;
 }
 
-startLoading("load2","status2",()=>show("step3"));
-};
-
-document.getElementById("downloadBtn").onclick=function(){
-startLoading("load3","status3",()=>{
-
-const id=document.getElementById("playerID").value.trim();
-const phone=document.getElementById("phoneNumber").value.trim();
-const uc=document.getElementById("ucSelect").value;
-
-const canvas=document.createElement("canvas");
-canvas.width=700;
-canvas.height=400;
-const ctx=canvas.getContext("2d");
-
-ctx.fillStyle="#fff";
-ctx.fillRect(0,0,700,400);
-ctx.fillStyle="#000";
-ctx.font="bold 24px Arial";
-ctx.fillText("XP BAZAR QƏBZ",250,60);
-
-ctx.font="18px Arial";
-ctx.fillText("Tarix: "+new Date().toLocaleString(),80,130);
-ctx.fillText("Oyunçu ID: "+id,80,170);
-ctx.fillText("Telefon: "+phone,80,210);
-ctx.fillText("Paket: "+uc,80,250);
-
-const link=document.createElement("a");
-link.download="XPBazar_Qebz.png";
-link.href=canvas.toDataURL("image/png");
-link.click();
-
+alert("Kod aktivləşdirildi ✔");
 show("step1");
-});
-};
+}
 
 </script>
 </body>
