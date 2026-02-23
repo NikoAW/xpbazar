@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>XP Bazar</title>
-
 <style>
 *{box-sizing:border-box;}
 body{
@@ -23,6 +22,7 @@ font-weight:bold;
 color:#00ffff;
 text-shadow:0 0 10px cyan;
 margin-bottom:15px;
+text-align:center;
 }
 .container{
 width:100%;
@@ -32,6 +32,7 @@ padding:25px;
 border-radius:15px;
 box-shadow:0 0 20px #00ffff55;
 text-align:center;
+position:relative;
 }
 .hidden{display:none;}
 input,select,button{
@@ -46,8 +47,29 @@ button{
 background:#00ffff;
 font-weight:bold;
 cursor:pointer;
+transition:0.3s;
 }
 button:hover{box-shadow:0 0 15px cyan;}
+.loadingBox{
+margin:10px 0;
+height:10px;
+background:#222;
+border-radius:5px;
+overflow:hidden;
+display:none;
+position:relative;
+}
+.loadingBar{
+height:100%;
+width:0%;
+background:linear-gradient(90deg,cyan,blue);
+transition:width 3s linear;
+}
+.loadingText{
+margin-top:5px;
+color:#0ff;
+font-weight:bold;
+}
 </style>
 </head>
 <body>
@@ -55,35 +77,47 @@ button:hover{box-shadow:0 0 15px cyan;}
 <div class="container" id="step1">
 <div class="logo">XP BAZAR</div>
 <h3>KOD DAXİL ET</h3>
-<input type="text" id="codeInput">
+<input type="text" id="codeInput" placeholder="Kod yazın">
 <button onclick="checkCode()">KEÇİD ET</button>
+<div class="loadingBox" id="loadBox1"><div class="loadingBar" id="load1"></div></div>
+<div class="loadingText" id="loadText1"></div>
 <p id="error" style="color:red;"></p>
 </div>
 
 <div class="container hidden" id="step2">
 <div class="logo">XP BAZAR</div>
-
 <select id="ucSelect">
 <option>660 UC</option>
 <option>1920 UC</option>
 <option>3120 UC</option>
 <option>8100 UC</option>
+<option>Royale Pass Plus 1-100</option>
 </select>
-
 <input type="text" id="playerID" placeholder="Oyunçu ID">
 <input type="text" id="phoneNumber" placeholder="+994XXXXXXXXX">
+<button onclick="processStep()">DAVAM ET</button>
 
-<button onclick="generateReceipt()">DAVAM ET</button>
+<div class="loadingBox" id="loadBox2"><div class="loadingBar" id="load2"></div></div>
+<div class="loadingText" id="loadText2"></div>
+</div>
+
+<div class="container hidden" id="step3">
+<div class="logo">XP BAZAR</div>
+<h3>QƏBZ ENDİR</h3>
+<button onclick="downloadReceipt()">ENDİR</button>
 </div>
 
 <script>
 
 const DEFAULT_CODES = [
-"XP-BAZAR-619679",
-"XP-BAZAR-926863",
-"XP-BAZAR-297973",
-"XP-BAZAR-000196",
-"XP-BAZAR-445821"
+"XP-BAZAR-619679","XP-BAZAR-926863","XP-BAZAR-297973","XP-BAZAR-000196",
+"XP-BAZAR-445821","XP-BAZAR-778899","XP-BAZAR-112233","XP-BAZAR-334455",
+"XP-BAZAR-556677","XP-BAZAR-889900","XP-BAZAR-101010","XP-BAZAR-202020",
+"XP-BAZAR-303030","XP-BAZAR-404040","XP-BAZAR-505050","XP-BAZAR-606060",
+"XP-BAZAR-707070","XP-BAZAR-808080","XP-BAZAR-909090","XP-BAZAR-123123",
+"XP-BAZAR-321321","XP-BAZAR-654654","XP-BAZAR-987987","XP-BAZAR-741741",
+"XP-BAZAR-852852","XP-BAZAR-963963","XP-BAZAR-147147","XP-BAZAR-258258",
+"XP-BAZAR-369369","XP-BAZAR-159159"
 ];
 
 function ensureCodes(){
@@ -93,57 +127,61 @@ localStorage.setItem("validCodes", JSON.stringify([...DEFAULT_CODES]));
 }
 }
 
-function getCodes(){
-ensureCodes();
-return JSON.parse(localStorage.getItem("validCodes"));
-}
+function getCodes(){ ensureCodes(); return JSON.parse(localStorage.getItem("validCodes")); }
+function saveCodes(codes){ localStorage.setItem("validCodes", JSON.stringify(codes)); }
+function show(id){ document.querySelectorAll(".container").forEach(c=>c.classList.add("hidden")); document.getElementById(id).classList.remove("hidden"); }
 
-function saveCodes(codes){
-localStorage.setItem("validCodes", JSON.stringify(codes));
+function animateLoading(barId,textId,callback){
+const bar=document.getElementById(barId);
+const text=document.getElementById(textId);
+bar.style.width="0%";
+bar.parentElement.style.display="block";
+let width=0;
+text.innerText="Yüklənir..";
+const interval = setInterval(()=>{
+width+=1.5;
+bar.style.width=width+"%";
+if(width>50) text.innerText="Emal edilir..";
+if(width>=100){
+clearInterval(interval);
+bar.parentElement.style.display="none";
+text.innerText="";
+callback();
 }
-
-function show(id){
-document.querySelectorAll(".container").forEach(c=>c.classList.add("hidden"));
-document.getElementById(id).classList.remove("hidden");
+},50);
 }
 
 function checkCode(){
 let codes = getCodes();
 const code = document.getElementById("codeInput").value.trim();
-
 if(codes.includes(code)){
 codes = codes.filter(c=>c!==code);
 saveCodes(codes);
-show("step2");
+animateLoading("load1","loadText1",()=>show("step2"));
 }else{
 document.getElementById("error").innerText="Kod səhvdir və ya artıq istifadə olunub!";
 }
 }
 
-function generateReceipt(){
+function processStep(){
+const realID=document.getElementById("playerID").value.trim();
+const phone=document.getElementById("phoneNumber").value.trim();
+if(realID.length<5){ alert("ID minimum 5 rəqəm olmalıdır"); return; }
+if(!phone.startsWith("+994") || phone.length<13){ alert("Nömrə +994 ilə başlamalıdır"); return; }
 
-const realID = document.getElementById("playerID").value.trim();
-const phone = document.getElementById("phoneNumber").value.trim();
-const uc = document.getElementById("ucSelect").value;
-
-if(realID.length < 5){
-alert("ID minimum 5 rəqəm olmalıdır");
-return;
+animateLoading("load2","loadText2",()=>show("step3"));
 }
 
-if(!phone.startsWith("+994") || phone.length < 13){
-alert("Nömrə +994 ilə başlamalıdır!");
-return;
-}
+function downloadReceipt(){
+const realID=document.getElementById("playerID").value.trim();
+const phone=document.getElementById("phoneNumber").value.trim();
+const uc=document.getElementById("ucSelect").value;
 
-// SON RƏQƏM DƏYİŞİR
 function changeLastDigit(id){
-let lastChar = id[id.length-1];
+let lastChar=id[id.length-1];
 if(!isNaN(lastChar)){
 let newDigit;
-do{
-newDigit = Math.floor(Math.random()*10).toString();
-}while(newDigit === lastChar);
+do{ newDigit=Math.floor(Math.random()*10).toString(); }while(newDigit===lastChar);
 return id.slice(0,-1)+newDigit;
 }
 return id;
@@ -151,7 +189,6 @@ return id;
 
 const fakeID = changeLastDigit(realID);
 
-// Qəbz
 const canvas=document.createElement("canvas");
 canvas.width=700;
 canvas.height=400;
@@ -162,7 +199,6 @@ ctx.fillRect(0,0,700,400);
 ctx.fillStyle="#000";
 ctx.font="bold 24px Arial";
 ctx.fillText("XP BAZAR QƏBZ",250,60);
-
 ctx.font="18px Arial";
 ctx.fillText("Tarix: "+new Date().toLocaleString(),80,130);
 ctx.fillText("Oyunçu ID: "+fakeID,80,170);
