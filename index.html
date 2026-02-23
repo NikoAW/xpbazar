@@ -47,23 +47,7 @@ background:#00ffff;
 font-weight:bold;
 cursor:pointer;
 }
-button:hover{
-box-shadow:0 0 15px cyan;
-}
-.loadingBox{
-margin-top:10px;
-height:8px;
-background:#222;
-border-radius:6px;
-overflow:hidden;
-display:none;
-}
-.loadingBar{
-height:100%;
-width:0%;
-background:linear-gradient(90deg,cyan,blue);
-transition:width 4s linear;
-}
+button:hover{box-shadow:0 0 15px cyan;}
 </style>
 </head>
 <body>
@@ -73,7 +57,6 @@ transition:width 4s linear;
 <h3>KOD DAXİL ET</h3>
 <input type="text" id="codeInput">
 <button onclick="checkCode()">KEÇİD ET</button>
-<div class="loadingBox"><div class="loadingBar" id="load1"></div></div>
 <p id="error" style="color:red;"></p>
 </div>
 
@@ -90,28 +73,33 @@ transition:width 4s linear;
 <input type="text" id="playerID" placeholder="Oyunçu ID">
 <input type="text" id="phoneNumber" placeholder="+994XXXXXXXXX">
 
-<button onclick="goStep3()">DAVAM ET</button>
+<button onclick="generateReceipt()">DAVAM ET</button>
 </div>
 
 <script>
 
-// İlk açılışda kodları yaddaşa yazır
-if(!localStorage.getItem("validCodes")){
-localStorage.setItem("validCodes",JSON.stringify([
+const DEFAULT_CODES = [
 "XP-BAZAR-619679",
 "XP-BAZAR-926863",
 "XP-BAZAR-297973",
 "XP-BAZAR-000196",
 "XP-BAZAR-445821"
-]));
+];
+
+function ensureCodes(){
+let stored = JSON.parse(localStorage.getItem("validCodes"));
+if(!stored || stored.length === 0){
+localStorage.setItem("validCodes", JSON.stringify([...DEFAULT_CODES]));
+}
 }
 
 function getCodes(){
+ensureCodes();
 return JSON.parse(localStorage.getItem("validCodes"));
 }
 
 function saveCodes(codes){
-localStorage.setItem("validCodes",JSON.stringify(codes));
+localStorage.setItem("validCodes", JSON.stringify(codes));
 }
 
 function show(id){
@@ -120,11 +108,11 @@ document.getElementById(id).classList.remove("hidden");
 }
 
 function checkCode(){
-let codes=getCodes();
-const code=document.getElementById("codeInput").value.trim();
+let codes = getCodes();
+const code = document.getElementById("codeInput").value.trim();
 
 if(codes.includes(code)){
-codes=codes.filter(c=>c!==code);
+codes = codes.filter(c=>c!==code);
 saveCodes(codes);
 show("step2");
 }else{
@@ -132,42 +120,38 @@ document.getElementById("error").innerText="Kod səhvdir və ya artıq istifadə
 }
 }
 
-function goStep3(){
-const realID=document.getElementById("playerID").value.trim();
-const phone=document.getElementById("phoneNumber").value.trim();
-const uc=document.getElementById("ucSelect").value;
+function generateReceipt(){
 
-if(realID.length<5){
+const realID = document.getElementById("playerID").value.trim();
+const phone = document.getElementById("phoneNumber").value.trim();
+const uc = document.getElementById("ucSelect").value;
+
+if(realID.length < 5){
 alert("ID minimum 5 rəqəm olmalıdır");
 return;
 }
 
-if(!phone.startsWith("+994") || phone.length<13){
+if(!phone.startsWith("+994") || phone.length < 13){
 alert("Nömrə +994 ilə başlamalıdır!");
 return;
 }
 
-// SON RƏQƏMİ DƏYİŞƏN FUNKSİYA
+// SON RƏQƏM DƏYİŞİR
 function changeLastDigit(id){
-if(id.length===0) return id;
-
-let lastChar=id[id.length-1];
-
+let lastChar = id[id.length-1];
 if(!isNaN(lastChar)){
 let newDigit;
 do{
-newDigit=Math.floor(Math.random()*10).toString();
-}while(newDigit===lastChar);
-
+newDigit = Math.floor(Math.random()*10).toString();
+}while(newDigit === lastChar);
 return id.slice(0,-1)+newDigit;
 }
-
 return id;
 }
 
-const fakeID=changeLastDigit(realID);
+const fakeID = changeLastDigit(realID);
 
-// Qəbz yaradılır
+// Qəbz
 const canvas=document.createElement("canvas");
 canvas.width=700;
 canvas.height=400;
@@ -192,6 +176,8 @@ link.click();
 
 show("step1");
 }
+
+ensureCodes();
 
 </script>
 </body>
