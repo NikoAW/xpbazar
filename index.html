@@ -17,14 +17,13 @@ body{
   align-items:center;
   min-height:100vh;
   color:white;
-  overflow:hidden;
 }
 
 .logo{
   font-size:26px;
   font-weight:bold;
   color:#00ffff;
-  text-shadow:0 0 10px cyan,0 0 20px blue;
+  text-shadow:0 0 10px cyan;
   margin-bottom:15px;
 }
 
@@ -34,7 +33,7 @@ body{
   background:#111;
   padding:25px;
   border-radius:15px;
-  box-shadow:0 0 25px #00ffff55;
+  box-shadow:0 0 20px #00ffff55;
   text-align:center;
 }
 
@@ -58,12 +57,11 @@ button{
 
 button:hover{
   box-shadow:0 0 15px cyan;
-  transform:scale(1.05);
 }
 
 .loadingBox{
   margin-top:10px;
-  height:10px;
+  height:8px;
   background:#222;
   border-radius:6px;
   overflow:hidden;
@@ -73,7 +71,8 @@ button:hover{
 .loadingBar{
   height:100%;
   width:0%;
-  background:linear-gradient(90deg,cyan,blue,cyan);
+  background:linear-gradient(90deg,cyan,blue);
+  transition:width 6s linear;
 }
 
 .statusText{
@@ -89,10 +88,10 @@ button:hover{
 <div class="logo">XP BAZAR</div>
 <h3>KOD DAXİL ET</h3>
 <input type="text" id="codeInput">
-<button onclick="checkCode()">KEÇİD ET</button>
+<button id="checkBtn">KEÇİD ET</button>
 
 <div class="loadingBox">
-  <div class="loadingBar" id="load1"></div>
+<div class="loadingBar" id="load1"></div>
 </div>
 <div class="statusText" id="status1"></div>
 
@@ -112,41 +111,35 @@ button:hover{
 <input type="text" id="playerID" placeholder="Oyunçu ID">
 <input type="text" id="phoneNumber" placeholder="+994XXXXXXXXX">
 
-<button onclick="goStep3()">DAVAM ET</button>
+<button id="nextBtn">DAVAM ET</button>
 
 <div class="loadingBox">
-  <div class="loadingBar" id="load2"></div>
+<div class="loadingBar" id="load2"></div>
 </div>
 <div class="statusText" id="status2"></div>
 </div>
 
 <div class="container hidden" id="step3">
-<div class="logo">XP Bazar</div>
+<div class="logo">XP BAZAR</div>
 <h3>QƏBZ ENDİR</h3>
-<button onclick="downloadReceipt()">ENDİR</button>
+<button id="downloadBtn">ENDİR</button>
 
 <div class="loadingBox">
-  <div class="loadingBar" id="load3"></div>
+<div class="loadingBar" id="load3"></div>
 </div>
 <div class="statusText" id="status3"></div>
 </div>
 
 <script>
 
-// HAZIR 5 KOD
-let validCodes = JSON.parse(localStorage.getItem("validCodes")) || [
+// HƏR DƏFƏ TƏZƏ BAŞLAYIR
+let validCodes = [
 "XP-BAZAR-619679",
 "XP-BAZAR-926863",
 "XP-BAZAR-297973",
 "XP-BAZAR-000196",
 "XP-BAZAR-445821"
-"XP-BAZAR-161692"
-"XP-BAZAR-001002"
 ];
-
-function save(){
-localStorage.setItem("validCodes",JSON.stringify(validCodes));
-}
 
 function show(id){
 document.querySelectorAll(".container").forEach(c=>c.classList.add("hidden"));
@@ -159,7 +152,7 @@ const box=bar.parentElement;
 const status=document.getElementById(statusId);
 
 box.style.display="block";
-bar.style.width="0%";
+bar.style.width="100%";
 
 let texts=["Yüklənilir...","Emal edilir...","Hazırlanır..."];
 let i=0;
@@ -169,29 +162,27 @@ status.innerText=texts[i%texts.length];
 i++;
 },1500);
 
-setTimeout(()=>{bar.style.width="100%";},100);
-
 setTimeout(()=>{
 clearInterval(interval);
 box.style.display="none";
+bar.style.width="0%";
 status.innerText="";
 callback();
 },6000);
 }
 
-function checkCode(){
+document.getElementById("checkBtn").onclick=function(){
 const code=document.getElementById("codeInput").value.trim();
 
 if(validCodes.includes(code)){
 validCodes = validCodes.filter(c=>c!==code);
-save();
 startLoading("load1","status1",()=>show("step2"));
 }else{
-document.getElementById("error").innerText="Kod səhvdir və ya artıq istifadə olunub!";
+document.getElementById("error").innerText="Kod səhvdir və ya istifadə olunub!";
 }
-}
+};
 
-function goStep3(){
+document.getElementById("nextBtn").onclick=function(){
 const id=document.getElementById("playerID").value.trim();
 const phone=document.getElementById("phoneNumber").value.trim();
 
@@ -202,9 +193,9 @@ return;
 }
 
 startLoading("load2","status2",()=>show("step3"));
-}
+};
 
-function downloadReceipt(){
+document.getElementById("downloadBtn").onclick=function(){
 startLoading("load3","status3",()=>{
 
 const id=document.getElementById("playerID").value.trim();
@@ -213,14 +204,14 @@ const uc=document.getElementById("ucSelect").value;
 
 const canvas=document.createElement("canvas");
 canvas.width=700;
-canvas.height=420;
+canvas.height=400;
 const ctx=canvas.getContext("2d");
 
 ctx.fillStyle="#fff";
-ctx.fillRect(0,0,700,420);
+ctx.fillRect(0,0,700,400);
 ctx.fillStyle="#000";
 ctx.font="bold 24px Arial";
-ctx.fillText("XP BAZAR ƏMƏLİYYAT QƏBZİ",250,60);
+ctx.fillText("XP BAZAR QƏBZ",250,60);
 
 ctx.font="18px Arial";
 ctx.fillText("Tarix: "+new Date().toLocaleString(),80,130);
@@ -231,13 +222,11 @@ ctx.fillText("Paket: "+uc,80,250);
 const link=document.createElement("a");
 link.download="XPBazar_Qebz.png";
 link.href=canvas.toDataURL("image/png");
-document.body.appendChild(link);
 link.click();
-document.body.removeChild(link);
 
 show("step1");
 });
-}
+};
 
 </script>
 </body>
