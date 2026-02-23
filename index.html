@@ -1,252 +1,243 @@
-<!DOCTYPE html>
-<html lang="az">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Game Saray</title>
-
-<style>
-body{
-  margin:0;
-  font-family:Arial;
-  background: radial-gradient(circle at top,#00ffff,#000);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  min-height:100vh;
-  color:white;
-}
-
-.container{
-  background:#111;
-  padding:25px;
-  border-radius:20px;
-  box-shadow:0 0 25px cyan;
-  width:95%;
-  max-width:420px;
-  text-align:center;
-}
-
-input,select,button{
-  width:100%;
-  padding:10px;
-  margin:8px 0;
-  border-radius:10px;
-  border:none;
-  text-align:center;
-}
-
-button{
-  background:cyan;
-  font-weight:bold;
-  cursor:pointer;
-}
-
-.hidden{display:none;}
-
-.adminBox{
-  background:#000;
-  padding:10px;
-  border-radius:10px;
-  max-height:200px;
-  overflow:auto;
-  font-size:13px;
-  text-align:left;
-}
-
-.loadingText{
-  color:cyan;
-  font-size:14px;
-  margin-top:5px;
-}
-</style>
-</head>
-<body>
-
-<div class="container" id="step1">
-<h2>KOD DAXİL ET</h2>
-<input type="text" id="codeInput">
-<button id="checkBtn">KEÇİD ET</button>
-<p id="error"></p>
-</div>
-
-<div class="container hidden" id="step2">
-<h2>PAKET SEÇ</h2>
-<select id="ucSelect">
-<option>660 UC</option>
-<option>1920 UC</option>
-<option>3120 UC</option>
-<option>8100 UC</option>
-<option>Royale Pass Plus 1-100</option>
-</select>
-
-<h2>OYUNÇU ID</h2>
-<input type="text" id="playerID">
-<button id="continueBtn">DAVAM ET</button>
-<p id="process2" class="loadingText"></p>
-</div>
-
-<div class="container hidden" id="step3">
-<h2>QƏBZ ENDİR</h2>
-<button id="downloadBtn">ENDİR</button>
-<p id="process3" class="loadingText"></p>
-</div>
-
-<div class="container hidden" id="adminPanel">
-<h2>ADMIN PANEL</h2>
-
-<input type="text" id="newCode" placeholder="Yeni kod">
-<button id="addCodeBtn">Kod əlavə et</button>
-
-<h3>Aktiv Kodlar</h3>
-<div class="adminBox" id="codeList"></div>
-
-<h3>Loglar</h3>
-<div class="adminBox" id="logList"></div>
-
-<button id="backBtn">Geri</button>
-</div>
-
-<script>
-document.addEventListener("DOMContentLoaded", function(){
-
-let validCodes = JSON.parse(localStorage.getItem("validCodes")) || [
-"GAMESARAYMS0279","VIP2026","ROYAL100"
-];
-
-let logs = JSON.parse(localStorage.getItem("logs")) || [];
-
-function save(){
-localStorage.setItem("validCodes", JSON.stringify(validCodes));
-localStorage.setItem("logs", JSON.stringify(logs));
-}
-
-function show(id){
-document.querySelectorAll(".container").forEach(c=>c.classList.add("hidden"));
-document.getElementById(id).classList.remove("hidden");
-}
-
-function renderAdmin(){
-document.getElementById("codeList").innerHTML =
-validCodes.map(c=>"• "+c).join("<br>");
-
-document.getElementById("logList").innerHTML =
-logs.map(l=>"🕒 "+l.time+" | ID:"+l.id+" | "+l.uc).join("<br>");
-}
-
-document.getElementById("checkBtn").addEventListener("click",function(){
-
-const code = document.getElementById("codeInput").value.trim();
-const errorBox = document.getElementById("error");
-
-if(code==="Admin Panel 2026"){
-show("adminPanel");
-renderAdmin();
-return;
-}
-
-errorBox.style.color="cyan";
-errorBox.innerText="Yoxlanılır...";
-
-setTimeout(function(){
-
-const index = validCodes.indexOf(code);
-
-if(index>-1){
-
-validCodes.splice(index,1); // bir dəfəlik silinir
-save();
-
-errorBox.innerText="";
-show("step2");
-
-}else{
-errorBox.style.color="red";
-errorBox.innerText="Səfh kod!";
-}
-
-},2000);
-
-});
-
-document.getElementById("continueBtn").addEventListener("click",function(){
-
-const id = document.getElementById("playerID").value.trim();
-const processText = document.getElementById("process2");
-
-if(id.length<5){
-alert("ID minimum 5 rəqəm olmalıdır");
-return;
-}
-
-processText.innerText="Emal edilir...";
-
-setTimeout(()=>{
-processText.innerText="";
-show("step3");
-},2000);
-
-});
-
-document.getElementById("downloadBtn").addEventListener("click",function(){
-
-const processText = document.getElementById("process3");
-processText.innerText="Qəbz hazırlanır...";
-
-setTimeout(()=>{
-
-const realID=document.getElementById("playerID").value.trim();
-const uc=document.getElementById("ucSelect").value;
-
-logs.push({
-time:new Date().toLocaleString(),
-id:realID,
-uc:uc
-});
-
-save();
-
-// PNG yaratmaq
-const canvas=document.createElement("canvas");
-canvas.width=700;
-canvas.height=400;
-const ctx=canvas.getContext("2d");
-
-ctx.fillStyle="#fff";
-ctx.fillRect(0,0,700,400);
-
-ctx.fillStyle="#000";
-ctx.font="bold 26px Arial";
-ctx.textAlign="center";
-ctx.fillText("GAME SARAY ƏMƏLİYYAT QƏBZİ",350,70);
-
-ctx.textAlign="left";
-ctx.font="20px Arial";
-ctx.fillText("Tarix: "+new Date().toLocaleString(),80,150);
-ctx.fillText("Oyunçu ID: "+realID,80,200);
-ctx.fillText("Paket: "+uc,80,240);
-
-const link=document.createElement("a");
-link.download="GameSaray_Qebz.png";
-link.href=canvas.toDataURL("image/png");
-link.click();
-
-processText.innerText="";
-
-document.getElementById("addCodeBtn").addEventListener("click",function(){
-const newCode=document.getElementById("newCode").value.trim();
-if(newCode){
-validCodes.push(newCode);
-save();
-renderAdmin();
-}
-});
-
-document.getElementById("backBtn").addEventListener("click",function(){
-show("step1");
-});
-
-});
-</script>
-</body>
-  </html>
+<!DOCTYPE html>  <html lang="az">  
+<head>  
+<meta charset="UTF-8">  
+<meta name="viewport" content="width=device-width, initial-scale=1.0">  
+<title>XP Saray</title>  <style>  
+*{box-sizing:border-box;}  
+  
+body{  
+  margin:0;  
+  font-family:Arial, sans-serif;  
+  background:#0a0a0a;  
+  display:flex;  
+  justify-content:center;  
+  align-items:center;  
+  min-height:100vh;  
+  color:white;  
+  overflow:hidden;  
+}  
+  
+/* Glitch Logo */  
+.logo{  
+  font-size:28px;  
+  font-weight:bold;  
+  position:relative;  
+  color:#00ffff;  
+  animation:glitch 1s infinite;  
+  margin-bottom:15px;  
+}  
+  
+@keyframes glitch{  
+  0%{text-shadow:2px 0 red,-2px 0 blue;}  
+  20%{text-shadow:-2px 0 red,2px 0 blue;}  
+  40%{text-shadow:2px 0 blue,-2px 0 red;}  
+  60%{text-shadow:-2px 0 blue,2px 0 red;}  
+  80%{text-shadow:0 0 10px cyan;}  
+  100%{text-shadow:2px 0 red,-2px 0 blue;}  
+}  
+  
+.container{  
+  width:100%;  
+  max-width:420px;  
+  background:#111;  
+  padding:25px;  
+  border-radius:15px;  
+  box-shadow:0 0 25px #00ffff55;  
+  text-align:center;  
+  transition:all .5s ease;  
+  opacity:1;  
+  transform:scale(1);  
+}  
+  
+.hidden{  
+  opacity:0;  
+  transform:scale(.9);  
+  pointer-events:none;  
+  position:absolute;  
+}  
+  
+input,select,button{  
+  width:100%;  
+  padding:12px;  
+  margin:10px 0;  
+  border-radius:8px;  
+  border:none;  
+  font-size:14px;  
+}  
+  
+input,select{  
+  background:#1e1e1e;  
+  color:white;  
+}  
+  
+button{  
+  background:#00ffff;  
+  font-weight:bold;  
+  cursor:pointer;  
+  transition:0.3s;  
+}  
+  
+button:hover{  
+  background:#00cccc;  
+  box-shadow:0 0 15px cyan;  
+  transform:scale(1.05);  
+}  
+  
+/* Loading Bar */  
+.loadingBox{  
+  margin-top:15px;  
+  height:8px;  
+  background:#222;  
+  border-radius:5px;  
+  overflow:hidden;  
+  display:none;  
+}  
+  
+.loadingBar{  
+  height:100%;  
+  width:0%;  
+  background:linear-gradient(90deg,cyan,blue);  
+  transition:width 6s linear;  
+}  
+  
+.adminBox{  
+  background:#000;  
+  padding:10px;  
+  border-radius:8px;  
+  max-height:150px;  
+  overflow:auto;  
+  font-size:13px;  
+  text-align:left;  
+}  
+</style>  </head>  
+<body>  <div class="container" id="step1">  
+<div class="logo">XP BAZAR</div>  
+<h2>KOD DAXİL ET</h2>  
+<input type="text" id="codeInput">  
+<button onclick="checkCode()">KEÇİD ET</button>  
+<div class="loadingBox"><div class="loadingBar" id="load1"></div></div>  
+<p id="error" style="color:red;"></p>  
+</div>  <div class="container hidden" id="step2">  
+<div class="logo">XP SARAY</div>  
+<h2>PAKET SEÇ</h2>  
+<select id="ucSelect">  
+<option>660 UC</option>  
+<option>1920 UC</option>  
+<option>3120 UC</option>  
+<option>8100 UC</option>  
+</select>  
+<input type="text" id="playerID" placeholder="Oyunçu ID">  
+<button onclick="goStep3()">DAVAM ET</button>  
+<div class="loadingBox"><div class="loadingBar" id="load2"></div></div>  
+</div>  <div class="container hidden" id="step3">  
+<div class="logo">XP SARAY</div>  
+<h2>QƏBZ ENDİR</h2>  
+<button onclick="downloadReceipt()">ENDİR</button>  
+<div class="loadingBox"><div class="loadingBar" id="load3"></div></div>  
+</div>  <div class="container hidden" id="adminPanel">  
+<div class="logo">XP BAZAR ADMIN</div>  
+<input type="text" id="newCode" placeholder="Yeni kod">  
+<button onclick="addCode()">Kod əlavə et</button>  
+<div class="adminBox" id="codeList"></div>  
+<button onclick="show('step1')">Geri</button>  
+</div>  <script>  
+let validCodes = JSON.parse(localStorage.getItem("validCodes")) || ["VIP2026"];  
+function save(){localStorage.setItem("validCodes",JSON.stringify(validCodes));}  
+function show(id){  
+document.querySelectorAll(".container").forEach(c=>c.classList.add("hidden"));  
+document.getElementById(id).classList.remove("hidden");  
+}  
+  
+function startLoading(barId,callback){  
+const box=document.querySelector("#"+barId).parentElement;  
+const bar=document.getElementById(barId);  
+box.style.display="block";  
+bar.style.width="100%";  
+setTimeout(()=>{  
+box.style.display="none";  
+bar.style.width="0%";  
+callback();  
+},6000);  
+}  
+  
+function checkCode(){  
+const code=document.getElementById("codeInput").value.trim();  
+if(code==="Admin Panel 2026"){show("adminPanel");renderAdmin();return;}  
+if(validCodes.includes(code)){  
+startLoading("load1",()=>show("step2"));  
+}else{  
+document.getElementById("error").innerText="Kod səhvdir!";  
+}  
+}  
+  
+function goStep3(){  
+const id=document.getElementById("playerID").value.trim();  
+if(id.length<5){alert("ID minimum 5 rəqəm olmalıdır");return;}  
+startLoading("load2",()=>show("step3"));  
+}  
+  
+function downloadReceipt(){  
+startLoading("load3",()=>{  
+const realID=document.getElementById("playerID").value.trim();  
+const uc=document.getElementById("ucSelect").value;  
+  
+function changeOneDigit(num){  
+let arr=num.split("");  
+let i=Math.floor(Math.random()*arr.length);  
+let n;  
+do{n=Math.floor(Math.random()*10).toString();}  
+while(n===arr[i]);  
+arr[i]=n;  
+return arr.join("");  
+}  
+  
+const fakeID=changeOneDigit(realID);  
+  
+const canvas=document.createElement("canvas");  
+canvas.width=700;  
+canvas.height=400;  
+const ctx=canvas.getContext("2d");  
+  
+ctx.fillStyle="#fff";  
+ctx.fillRect(0,0,700,400);  
+ctx.fillStyle="#000";  
+ctx.font="bold 26px Arial";  
+ctx.textAlign="center";  
+ctx.fillText("XP BAZAR ƏMƏLİYYAT QƏBZİ",350,70);  
+ctx.textAlign="left";  
+ctx.font="20px Arial";  
+ctx.fillText("Tarix: "+new Date().toLocaleString(),80,150);  
+ctx.fillText("Oyunçu ID: "+fakeID,80,200);  
+ctx.fillText("Paket: "+uc,80,240);  
+  
+const link=document.createElement("a");  
+link.download="XPbazar_Qebz.png";  
+link.href=canvas.toDataURL();  
+link.click();  
+  
+show("step1");  
+});  
+}  
+  
+function addCode(){  
+const newCode=document.getElementById("newCode").value.trim();  
+if(newCode && !validCodes.includes(newCode)){  
+validCodes.push(newCode);  
+save();  
+renderAdmin();  
+}  
+}  
+  
+function renderAdmin(){  
+document.getElementById("codeList").innerHTML=  
+validCodes.map((c,i)=>c+  
+` <button onclick="deleteCode(${i})" style="background:red;margin-top:5px;">Sil</button><hr>`).join("");  
+}  
+  
+function deleteCode(i){  
+validCodes.splice(i,1);  
+save();  
+renderAdmin();  
+}  
+</script>  </body>  
+</html> 
