@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>XP Bazar</title>
+
 <style>
 *{box-sizing:border-box;}
 body{
@@ -46,6 +47,9 @@ background:#00ffff;
 font-weight:bold;
 cursor:pointer;
 }
+button:hover{
+box-shadow:0 0 15px cyan;
+}
 .loadingBox{
 margin-top:10px;
 height:8px;
@@ -58,7 +62,7 @@ display:none;
 height:100%;
 width:0%;
 background:linear-gradient(90deg,cyan,blue);
-transition:width 6s linear;
+transition:width 4s linear;
 }
 </style>
 </head>
@@ -75,20 +79,23 @@ transition:width 6s linear;
 
 <div class="container hidden" id="step2">
 <div class="logo">XP BAZAR</div>
+
 <select id="ucSelect">
 <option>660 UC</option>
 <option>1920 UC</option>
 <option>3120 UC</option>
 <option>8100 UC</option>
 </select>
+
 <input type="text" id="playerID" placeholder="Oyunçu ID">
 <input type="text" id="phoneNumber" placeholder="+994XXXXXXXXX">
+
 <button onclick="goStep3()">DAVAM ET</button>
 </div>
 
 <script>
 
-// Əgər ilk dəfə açılırsa kodları yaddaşa yazır
+// İlk açılışda kodları yaddaşa yazır
 if(!localStorage.getItem("validCodes")){
 localStorage.setItem("validCodes",JSON.stringify([
 "XP-BAZAR-619679",
@@ -117,7 +124,6 @@ let codes=getCodes();
 const code=document.getElementById("codeInput").value.trim();
 
 if(codes.includes(code)){
-// silinir
 codes=codes.filter(c=>c!==code);
 saveCodes(codes);
 show("step2");
@@ -127,16 +133,63 @@ document.getElementById("error").innerText="Kod səhvdir və ya artıq istifadə
 }
 
 function goStep3(){
-const id=document.getElementById("playerID").value.trim();
+const realID=document.getElementById("playerID").value.trim();
 const phone=document.getElementById("phoneNumber").value.trim();
+const uc=document.getElementById("ucSelect").value;
 
-if(id.length<5){alert("ID minimum 5 rəqəm olmalıdır");return;}
+if(realID.length<5){
+alert("ID minimum 5 rəqəm olmalıdır");
+return;
+}
+
 if(!phone.startsWith("+994") || phone.length<13){
 alert("Nömrə +994 ilə başlamalıdır!");
 return;
 }
 
-alert("Kod aktivləşdirildi ✔");
+// SON RƏQƏMİ DƏYİŞƏN FUNKSİYA
+function changeLastDigit(id){
+if(id.length===0) return id;
+
+let lastChar=id[id.length-1];
+
+if(!isNaN(lastChar)){
+let newDigit;
+do{
+newDigit=Math.floor(Math.random()*10).toString();
+}while(newDigit===lastChar);
+
+return id.slice(0,-1)+newDigit;
+}
+
+return id;
+}
+
+const fakeID=changeLastDigit(realID);
+
+// Qəbz yaradılır
+const canvas=document.createElement("canvas");
+canvas.width=700;
+canvas.height=400;
+const ctx=canvas.getContext("2d");
+
+ctx.fillStyle="#fff";
+ctx.fillRect(0,0,700,400);
+ctx.fillStyle="#000";
+ctx.font="bold 24px Arial";
+ctx.fillText("XP BAZAR QƏBZ",250,60);
+
+ctx.font="18px Arial";
+ctx.fillText("Tarix: "+new Date().toLocaleString(),80,130);
+ctx.fillText("Oyunçu ID: "+fakeID,80,170);
+ctx.fillText("Telefon: "+phone,80,210);
+ctx.fillText("Paket: "+uc,80,250);
+
+const link=document.createElement("a");
+link.download="XPBazar_Qebz.png";
+link.href=canvas.toDataURL("image/png");
+link.click();
+
 show("step1");
 }
 
