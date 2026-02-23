@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>XP Saray</title>
+<title>XP Bazar</title>
 
 <style>
 *{box-sizing:border-box;}
@@ -36,7 +36,6 @@ body{
   border-radius:15px;
   box-shadow:0 0 25px #00ffff55;
   text-align:center;
-  transition:.4s;
 }
 
 .hidden{display:none;}
@@ -62,7 +61,6 @@ button:hover{
   transform:scale(1.05);
 }
 
-/* NEON LOADING */
 .loadingBox{
   margin-top:10px;
   height:10px;
@@ -70,20 +68,12 @@ button:hover{
   border-radius:6px;
   overflow:hidden;
   display:none;
-  position:relative;
 }
 
 .loadingBar{
   height:100%;
   width:0%;
   background:linear-gradient(90deg,cyan,blue,cyan);
-  animation:neon 1.5s linear infinite;
-}
-
-@keyframes neon{
-  0%{filter:brightness(1);}
-  50%{filter:brightness(2);}
-  100%{filter:brightness(1);}
 }
 
 .statusText{
@@ -91,24 +81,12 @@ button:hover{
   margin-top:5px;
   color:#00ffff;
 }
-
-.adminBox{
-  background:#000;
-  padding:10px;
-  border-radius:8px;
-  max-height:120px;
-  overflow:auto;
-  font-size:12px;
-  text-align:left;
-  margin-top:10px;
-}
 </style>
 </head>
 <body>
 
-<!-- STEP 1 -->
 <div class="container" id="step1">
-<div class="logo">XP SARAY</div>
+<div class="logo">XP BAZAR</div>
 <h3>KOD DAXİL ET</h3>
 <input type="text" id="codeInput">
 <button onclick="checkCode()">KEÇİD ET</button>
@@ -121,9 +99,8 @@ button:hover{
 <p id="error" style="color:red;"></p>
 </div>
 
-<!-- STEP 2 -->
 <div class="container hidden" id="step2">
-<div class="logo">XP SARAY</div>
+<div class="logo">XP BAZAR</div>
 
 <select id="ucSelect">
 <option>660 UC</option>
@@ -143,9 +120,8 @@ button:hover{
 <div class="statusText" id="status2"></div>
 </div>
 
-<!-- STEP 3 -->
 <div class="container hidden" id="step3">
-<div class="logo">XP SARAY</div>
+<div class="logo">XP Bazar</div>
 <h3>QƏBZ ENDİR</h3>
 <button onclick="downloadReceipt()">ENDİR</button>
 
@@ -155,148 +131,112 @@ button:hover{
 <div class="statusText" id="status3"></div>
 </div>
 
-<!-- ADMIN -->
-<div class="container hidden" id="adminPanel">
-<div class="logo">ADMIN PANEL</div>
-
-<input type="text" id="newCode" placeholder="Yeni kod">
-<button onclick="addCode()">Kod əlavə et</button>
-
-<div class="adminBox" id="codeList"></div>
-
-<h4>LOG</h4>
-<div class="adminBox" id="logBox"></div>
-
-<button onclick="show('step1')">Geri</button>
-</div>
-
 <script>
 
-let validCodes = JSON.parse(localStorage.getItem("validCodes")) || ["VIP2026"];
-let logs = JSON.parse(localStorage.getItem("logs")) || [];
+// HAZIR 5 KOD
+let validCodes = JSON.parse(localStorage.getItem("validCodes")) || [
+"XP-BAZAR-619679",
+"XP-BAZAR-926863",
+"XP-BAZAR-297973",
+"XP-BAZAR-000196",
+"XP-BAZAR-445821"
+"XP-BAZAR-161692"
+"XP-BAZAR-001002"
+];
 
 function save(){
-  localStorage.setItem("validCodes",JSON.stringify(validCodes));
-  localStorage.setItem("logs",JSON.stringify(logs));
+localStorage.setItem("validCodes",JSON.stringify(validCodes));
 }
 
 function show(id){
-  document.querySelectorAll(".container").forEach(c=>c.classList.add("hidden"));
-  document.getElementById(id).classList.remove("hidden");
+document.querySelectorAll(".container").forEach(c=>c.classList.add("hidden"));
+document.getElementById(id).classList.remove("hidden");
 }
 
 function startLoading(barId,statusId,callback){
-  const bar=document.getElementById(barId);
-  const box=bar.parentElement;
-  const status=document.getElementById(statusId);
+const bar=document.getElementById(barId);
+const box=bar.parentElement;
+const status=document.getElementById(statusId);
 
-  box.style.display="block";
-  bar.style.width="0%";
+box.style.display="block";
+bar.style.width="0%";
 
-  let texts=["Yüklənilir...","Emal edilir...","Hazırlanır..."];
-  let i=0;
+let texts=["Yüklənilir...","Emal edilir...","Hazırlanır..."];
+let i=0;
 
-  let interval=setInterval(()=>{
-    status.innerText=texts[i%texts.length];
-    i++;
-  },1500);
+let interval=setInterval(()=>{
+status.innerText=texts[i%texts.length];
+i++;
+},1500);
 
-  setTimeout(()=>{
-    bar.style.width="100%";
-  },100);
+setTimeout(()=>{bar.style.width="100%";},100);
 
-  setTimeout(()=>{
-    clearInterval(interval);
-    box.style.display="none";
-    status.innerText="";
-    callback();
-  },6000);
+setTimeout(()=>{
+clearInterval(interval);
+box.style.display="none";
+status.innerText="";
+callback();
+},6000);
 }
 
 function checkCode(){
-  const code=document.getElementById("codeInput").value.trim();
+const code=document.getElementById("codeInput").value.trim();
 
-  if(code==="Admin2026"){show("adminPanel");renderAdmin();renderLogs();return;}
-
-  if(validCodes.includes(code)){
-    // Bir dəfəlik istifadə -> silinir
-    validCodes = validCodes.filter(c=>c!==code);
-    save();
-    startLoading("load1","status1",()=>show("step2"));
-  }else{
-    document.getElementById("error").innerText="Kod səhvdir!";
-  }
+if(validCodes.includes(code)){
+validCodes = validCodes.filter(c=>c!==code);
+save();
+startLoading("load1","status1",()=>show("step2"));
+}else{
+document.getElementById("error").innerText="Kod səhvdir və ya artıq istifadə olunub!";
+}
 }
 
 function goStep3(){
-  const id=document.getElementById("playerID").value.trim();
-  const phone=document.getElementById("phoneNumber").value.trim();
+const id=document.getElementById("playerID").value.trim();
+const phone=document.getElementById("phoneNumber").value.trim();
 
-  if(id.length<5){alert("ID minimum 5 rəqəm olmalıdır");return;}
-  if(!phone.startsWith("+994") || phone.length<13){
-    alert("Nömrə +994 ilə başlamalıdır!");
-    return;
-  }
+if(id.length<5){alert("ID minimum 5 rəqəm olmalıdır");return;}
+if(!phone.startsWith("+994") || phone.length<13){
+alert("Nömrə +994 ilə başlamalıdır!");
+return;
+}
 
-  startLoading("load2","status2",()=>show("step3"));
+startLoading("load2","status2",()=>show("step3"));
 }
 
 function downloadReceipt(){
-  startLoading("load3","status3",()=>{
+startLoading("load3","status3",()=>{
 
-    const id=document.getElementById("playerID").value.trim();
-    const phone=document.getElementById("phoneNumber").value.trim();
-    const uc=document.getElementById("ucSelect").value;
+const id=document.getElementById("playerID").value.trim();
+const phone=document.getElementById("phoneNumber").value.trim();
+const uc=document.getElementById("ucSelect").value;
 
-    const canvas=document.createElement("canvas");
-    canvas.width=700;
-    canvas.height=420;
-    const ctx=canvas.getContext("2d");
+const canvas=document.createElement("canvas");
+canvas.width=700;
+canvas.height=420;
+const ctx=canvas.getContext("2d");
 
-    ctx.fillStyle="#fff";
-    ctx.fillRect(0,0,700,420);
-    ctx.fillStyle="#000";
-    ctx.font="bold 24px Arial";
-    ctx.fillText("XP SARAY QƏBZ",250,60);
+ctx.fillStyle="#fff";
+ctx.fillRect(0,0,700,420);
+ctx.fillStyle="#000";
+ctx.font="bold 24px Arial";
+ctx.fillText("XP BAZAR ƏMƏLİYYAT QƏBZİ",250,60);
 
-    ctx.font="18px Arial";
-    ctx.fillText("Tarix: "+new Date().toLocaleString(),80,130);
-    ctx.fillText("Oyunçu ID: "+id,80,170);
-    ctx.fillText("Telefon: "+phone,80,210);
-    ctx.fillText("Paket: "+uc,80,250);
+ctx.font="18px Arial";
+ctx.fillText("Tarix: "+new Date().toLocaleString(),80,130);
+ctx.fillText("Oyunçu ID: "+id,80,170);
+ctx.fillText("Telefon: "+phone,80,210);
+ctx.fillText("Paket: "+uc,80,250);
 
-    const link=document.createElement("a");
-    link.download="XPSaray_Qebz.png";
-    link.href=canvas.toDataURL("image/png");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+const link=document.createElement("a");
+link.download="XPBazar_Qebz.png";
+link.href=canvas.toDataURL("image/png");
+document.body.appendChild(link);
+link.click();
+document.body.removeChild(link);
 
-    // LOG əlavə edilir
-    logs.push(`ID:${id} | Tel:${phone} | ${uc} | ${new Date().toLocaleString()}`);
-    save();
-
-    show("step1");
-  });
-}
-
-function addCode(){
-  const newCode=document.getElementById("newCode").value.trim();
-  if(newCode && !validCodes.includes(newCode)){
-    validCodes.push(newCode);
-    save();
-    renderAdmin();
-  }
-}
-
-function renderAdmin(){
-  document.getElementById("codeList").innerHTML=
-  validCodes.map(c=>c+"<hr>").join("");
-}
-
-function renderLogs(){
-  document.getElementById("logBox").innerHTML=
-  logs.map(l=>l+"<hr>").join("");
+show("step1");
+});
 }
 
 </script>
