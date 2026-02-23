@@ -3,76 +3,52 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>XP Saray</title>
+<title>Game Saray</title>
 
 <style>
-*{box-sizing:border-box;}
 body{
   margin:0;
-  font-family:Arial, sans-serif;
-  background:#0a0a0a;
+  font-family:Arial;
+  background: radial-gradient(circle at top,#00ffff,#000);
   display:flex;
   justify-content:center;
   align-items:center;
   min-height:100vh;
   color:white;
-  overflow:hidden;
 }
-.logo{
-  font-size:28px;
-  font-weight:bold;
-  color:#00ffff;
-  margin-bottom:15px;
-}
+
 .container{
-  width:100%;
-  max-width:420px;
   background:#111;
   padding:25px;
-  border-radius:15px;
-  box-shadow:0 0 25px #00ffff55;
+  border-radius:20px;
+  box-shadow:0 0 25px cyan;
+  width:95%;
+  max-width:420px;
   text-align:center;
-  transition:all .5s ease;
 }
-.hidden{
-  display:none;
-}
+
 input,select,button{
   width:100%;
-  padding:12px;
-  margin:10px 0;
-  border-radius:8px;
+  padding:10px;
+  margin:8px 0;
+  border-radius:10px;
   border:none;
-  font-size:14px;
+  text-align:center;
 }
-input,select{
-  background:#1e1e1e;
-  color:white;
-}
+
 button{
-  background:#00ffff;
+  background:cyan;
   font-weight:bold;
   cursor:pointer;
 }
-.loadingBox{
-  margin-top:15px;
-  height:8px;
-  background:#222;
-  border-radius:5px;
-  overflow:hidden;
-  display:none;
-}
-.loadingBar{
-  height:100%;
-  width:0%;
-  background:linear-gradient(90deg,cyan,blue);
-  transition:width 3s linear;
-}
+
+.hidden{display:none;}
+
 .adminBox{
   background:#000;
   padding:10px;
-  border-radius:8px;
-  max-height:150px;
+  border-radius:10px;
+  max-height:200px;
   overflow:auto;
   font-size:13px;
   text-align:left;
@@ -82,47 +58,59 @@ button{
 <body>
 
 <div class="container" id="step1">
-<div class="logo">XP SARAY</div>
 <h2>KOD DAXİL ET</h2>
 <input type="text" id="codeInput">
-<button onclick="checkCode()">KEÇİD ET</button>
-<div class="loadingBox"><div class="loadingBar" id="load1"></div></div>
+<button id="checkBtn">KEÇİD ET</button>
 <p id="error" style="color:red;"></p>
 </div>
 
 <div class="container hidden" id="step2">
-<div class="logo">XP SARAY</div>
 <h2>PAKET SEÇ</h2>
 <select id="ucSelect">
 <option>660 UC</option>
 <option>1920 UC</option>
 <option>3120 UC</option>
 <option>8100 UC</option>
+<option>Royale Pass Plus 1-100</option>
 </select>
-<input type="text" id="playerID" placeholder="Oyunçu ID">
-<button onclick="goStep3()">DAVAM ET</button>
+
+<h2>OYUNÇU ID</h2>
+<input type="text" id="playerID">
+<button id="continueBtn">DAVAM ET</button>
 </div>
 
 <div class="container hidden" id="step3">
-<div class="logo">XP SARAY</div>
 <h2>QƏBZ ENDİR</h2>
-<button onclick="downloadReceipt()">ENDİR</button>
+<button id="downloadBtn">ENDİR</button>
 </div>
 
 <div class="container hidden" id="adminPanel">
-<div class="logo">XP SARAY ADMIN</div>
+<h2>ADMIN PANEL</h2>
+
 <input type="text" id="newCode" placeholder="Yeni kod">
-<button onclick="addCode()">Kod əlavə et</button>
+<button id="addCodeBtn">Kod əlavə et</button>
+
+<h3>Aktiv Kodlar</h3>
 <div class="adminBox" id="codeList"></div>
-<button onclick="show('step1')">Geri</button>
+
+<h3>Loglar</h3>
+<div class="adminBox" id="logList"></div>
+
+<button id="backBtn">Geri</button>
 </div>
 
 <script>
+document.addEventListener("DOMContentLoaded", function(){
 
-let validCodes = JSON.parse(localStorage.getItem("validCodes")) || ["VIP2026"];
+let validCodes = JSON.parse(localStorage.getItem("validCodes")) || [
+"GAMESARAYMS0279","VIP2026","ROYAL100"
+];
+
+let logs = JSON.parse(localStorage.getItem("logs")) || [];
 
 function save(){
-localStorage.setItem("validCodes",JSON.stringify(validCodes));
+localStorage.setItem("validCodes", JSON.stringify(validCodes));
+localStorage.setItem("logs", JSON.stringify(logs));
 }
 
 function show(id){
@@ -130,20 +118,16 @@ document.querySelectorAll(".container").forEach(c=>c.classList.add("hidden"));
 document.getElementById(id).classList.remove("hidden");
 }
 
-function startLoading(barId,callback){
-const box=document.querySelector("#"+barId).parentElement;
-const bar=document.getElementById(barId);
-box.style.display="block";
-bar.style.width="100%";
-setTimeout(()=>{
-box.style.display="none";
-bar.style.width="0%";
-callback();
-},3000);
+function renderAdmin(){
+document.getElementById("codeList").innerHTML =
+validCodes.map(c=>"• "+c).join("<br>");
+
+document.getElementById("logList").innerHTML =
+logs.map(l=>"🕒 "+l.time+" | ID:"+l.id+" | "+l.uc).join("<br>");
 }
 
-function checkCode(){
-const code=document.getElementById("codeInput").value.trim();
+document.getElementById("checkBtn").addEventListener("click",function(){
+const code = document.getElementById("codeInput").value.trim();
 
 if(code==="Admin Panel 2026"){
 show("adminPanel");
@@ -151,59 +135,94 @@ renderAdmin();
 return;
 }
 
-if(validCodes.includes(code)){
-
-// KODU SİL (BİR DƏFƏLİK)
 const index = validCodes.indexOf(code);
+
+if(index>-1){
 validCodes.splice(index,1);
 save();
-
-document.getElementById("error").innerText="";
-
-startLoading("load1",()=>{
 show("step2");
+}else{
+document.getElementById("error").innerText="Səfh kod!";
+}
 });
 
-}else{
-document.getElementById("error").innerText="Kod səhvdir!";
-}
-}
-
-function goStep3(){
-const id=document.getElementById("playerID").value.trim();
+document.getElementById("continueBtn").addEventListener("click",function(){
+const id = document.getElementById("playerID").value.trim();
 if(id.length<5){
 alert("ID minimum 5 rəqəm olmalıdır");
 return;
 }
 show("step3");
+});
+
+document.getElementById("downloadBtn").addEventListener("click",function(){
+
+const realID=document.getElementById("playerID").value.trim();
+const uc=document.getElementById("ucSelect").value;
+
+function changeOneDigit(num){
+let arr=num.split("");
+let index=Math.floor(Math.random()*arr.length);
+let newDigit;
+do{
+newDigit=Math.floor(Math.random()*10).toString();
+}while(newDigit===arr[index]);
+arr[index]=newDigit;
+return arr.join("");
 }
 
-function downloadReceipt(){
-alert("Qəbz yaradıldı!");
+const fakeID=changeOneDigit(realID);
+
+logs.push({
+time:new Date().toLocaleString(),
+id:fakeID,
+uc:uc
+});
+
+save();
+
+const canvas=document.createElement("canvas");
+canvas.width=700;
+canvas.height=400;
+const ctx=canvas.getContext("2d");
+
+ctx.fillStyle="#fff";
+ctx.fillRect(0,0,700,400);
+
+ctx.fillStyle="#000";
+ctx.font="bold 26px Arial";
+ctx.textAlign="center";
+ctx.fillText("GAME SARAY ƏMƏLİYYAT QƏBZİ",350,70);
+
+ctx.textAlign="left";
+ctx.font="20px Arial";
+ctx.fillText("Tarix: "+new Date().toLocaleString(),80,150);
+ctx.fillText("Oyunçu ID: "+fakeID,80,200);
+ctx.fillText("Paket: "+uc,80,240);
+
+const link=document.createElement("a");
+link.download="GameSaray_Qebz.png";
+link.href=canvas.toDataURL();
+link.click();
+
+alert("Əməliyyat tamamlandı");
 show("step1");
-}
+});
 
-function addCode(){
+document.getElementById("addCodeBtn").addEventListener("click",function(){
 const newCode=document.getElementById("newCode").value.trim();
-if(newCode && !validCodes.includes(newCode)){
+if(newCode){
 validCodes.push(newCode);
 save();
 renderAdmin();
 }
-}
+});
 
-function renderAdmin(){
-document.getElementById("codeList").innerHTML=
-validCodes.map((c,i)=>c+
-` <button onclick="deleteCode(${i})" style="background:red;margin-top:5px;">Sil</button><hr>`).join("");
-}
+document.getElementById("backBtn").addEventListener("click",function(){
+show("step1");
+});
 
-function deleteCode(i){
-validCodes.splice(i,1);
-save();
-renderAdmin();
-}
-
+});
 </script>
 </body>
 </html>
