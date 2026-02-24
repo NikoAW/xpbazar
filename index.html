@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google" content="notranslate">
-    <title>Premium UC Sistemi</title>
+    <title>Premium UC Sistemi - Cloud Sync</title>
     <style>
         :root {
             --primary: #00f2ff;
@@ -25,7 +25,6 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            overflow-x: hidden;
         }
 
         .container {
@@ -37,7 +36,6 @@
             box-shadow: 0 0 25px rgba(0, 242, 255, 0.15);
             border: 1px solid rgba(255, 255, 255, 0.05);
             text-align: center;
-            position: relative;
         }
 
         h2 { margin-bottom: 20px; color: var(--primary); text-transform: uppercase; letter-spacing: 2px; }
@@ -51,10 +49,7 @@
             border-radius: 8px;
             color: white;
             outline: none;
-            transition: 0.3s;
         }
-
-        input:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(0, 242, 255, 0.3); }
 
         button {
             width: 100%;
@@ -68,32 +63,22 @@
             cursor: pointer;
             text-transform: uppercase;
             transition: 0.3s;
-            box-shadow: 0 4px 15px rgba(112, 0, 255, 0.4);
         }
 
-        button:hover { transform: translateY(-2px); filter: brightness(1.2); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
 
         .step { display: none; animation: fadeIn 0.5s ease; }
         .step.active { display: block; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .loader-container { margin: 20px 0; display: none; }
-        .progress-bg { background: #222; height: 10px; border-radius: 5px; overflow: hidden; }
-        .progress-bar { 
-            height: 100%; 
-            width: 0%; 
-            background: var(--primary); 
-            box-shadow: 0 0 15px var(--primary);
-            transition: width 0.3s;
-        }
-        #loader-text { margin-top: 10px; font-size: 0.9rem; color: var(--primary); }
+        .progress-bg { background: #222; height: 10px; border-radius: 5px; overflow: hidden; margin-top: 15px; }
+        .progress-bar { height: 100%; width: 0%; background: var(--primary); box-shadow: 0 0 15px var(--primary); transition: width 0.3s; }
 
-        .admin-link { position: fixed; bottom: 15px; right: 15px; font-size: 11px; color: #333; text-decoration: none; }
+        .admin-link { position: fixed; bottom: 15px; right: 15px; font-size: 11px; color: #222; text-decoration: none; }
         .code-list { max-height: 150px; overflow-y: auto; background: #000; padding: 10px; border-radius: 5px; margin-top: 10px; }
         .code-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #222; font-size: 14px; }
-
-        #error-msg { color: var(--error); font-size: 13px; margin-top: 5px; height: 18px; }
+        #error-msg { color: var(--error); font-size: 13px; margin-top: 5px; }
     </style>
 </head>
 <body class="notranslate">
@@ -101,37 +86,33 @@
     <div class="container">
         <div id="step1" class="step active">
             <h2>DAXİL OL</h2>
-            <p style="font-size: 0.8rem; opacity: 0.6; margin-bottom: 15px;">Sistemi istifadə etmək üçün kodu daxil edin.</p>
+            <p style="font-size: 0.8rem; opacity: 0.6; margin-bottom: 10px;">Sistem bazası ilə sinxronizasiya edilir...</p>
             <input type="text" id="access-code" placeholder="Aktivasiya Kodu">
             <p id="error-msg"></p>
-            <button onclick="verifyCode()">KODU YOXLA</button>
+            <button id="verify-btn" onclick="verifyCode()">KODU YOXLA</button>
         </div>
 
         <div id="step-loader" class="step">
-            <h2 id="loader-title">Xahiş edirik gözləyin</h2>
-            <div class="loader-container" style="display: block;">
-                <div class="progress-bg"><div id="main-progress" class="progress-bar"></div></div>
-                <p id="loader-text">Sistem hazırlanır...</p>
-            </div>
+            <h2 id="loader-title">Gözləyin</h2>
+            <div class="progress-bg"><div id="main-progress" class="progress-bar"></div></div>
+            <p id="loader-text" style="margin-top:10px; color:var(--primary);">Yüklənir...</p>
         </div>
 
         <div id="step2" class="step">
-            <h2>PAKET SEÇİMİ</h2>
+            <h2>MƏLUMATLAR</h2>
             <select id="packet-select">
                 <option value="660 UC">660 UC</option>
                 <option value="1920 UC">1920 UC</option>
                 <option value="3120 UC">3120 UC</option>
                 <option value="8100 UC">8100 UC</option>
-                <option value="Royale Pass">Royale Pass</option>
             </select>
-            <input type="number" id="player-id" placeholder="Oyunçu ID (Min. 5 rəqəm)">
-            <input type="text" id="phone-num" placeholder="Telefon (+994XXXXXXXXX)" value="+994">
-            <button onclick="processOrder()">DAVAM ET</button>
+            <input type="number" id="player-id" placeholder="Oyunçu ID">
+            <input type="text" id="phone-num" placeholder="Telefon (+994)" value="+994">
+            <button onclick="processOrder()">TƏSDİQLƏ</button>
         </div>
 
         <div id="step3" class="step">
-            <h2 style="color: var(--success);">ƏMƏLİYYAT UĞURLUDUR</h2>
-            <p style="margin-bottom: 20px;">Məlumatlar emal edildi. Qəbzinizi aşağıdan yükləyə bilərsiniz.</p>
+            <h2 style="color: var(--success);">UĞURLU!</h2>
             <canvas id="receiptCanvas" width="400" height="500" style="display:none;"></canvas>
             <button onclick="downloadReceipt()">QƏBZİ YÜKLƏ (PNG)</button>
             <button onclick="location.reload()" style="background: #333; margin-top: 10px;">YENİ ƏMƏLİYYAT</button>
@@ -139,219 +120,166 @@
 
         <div id="admin-panel" class="step">
             <h2>ADMİN PANEL</h2>
-            <input type="password" id="admin-pass-input" placeholder="Admin Şifrəsi">
+            <div id="admin-auth">
+                <input type="password" id="admin-pass-input" placeholder="Şifrə">
+                <button onclick="adminLogin()">DAXİL OL</button>
+            </div>
             <div id="admin-controls" style="display:none;">
-                <input type="text" id="new-code" placeholder="Yeni Kod Yazın">
-                <button onclick="addCode()" style="background: var(--success); color: black;">KOD ƏLAVƏ ET</button>
-                <div style="text-align: left;">
-                    <p style="margin-top: 15px;">Aktiv Kodlar (<span id="code-count">0</span>):</p>
-                    <div id="code-list" class="code-list"></div>
-                </div>
-                <button onclick="resetAllCodes()" style="background: var(--error);">SİSTEMİ SIFIRLA</button>
+                <input type="text" id="new-code" placeholder="Yeni Kod">
+                <button onclick="addCode()" style="background: var(--success); color:black;">ƏLAVƏ ET</button>
+                <div id="code-list" class="code-list"></div>
                 <button onclick="toggleAdmin(false)" style="background: #444;">GERİ</button>
             </div>
-            <button id="admin-login-btn" onclick="adminLogin()">DAXİL OL</button>
         </div>
     </div>
 
     <a href="#" class="admin-link" onclick="toggleAdmin(true)">Admin</a>
 
     <script>
-        // VERİLER
-        let codes = JSON.parse(localStorage.getItem('system_codes')) || ["AZERI100", "PRO2024"];
-        const adminPassword = "admin"; 
+        // --- BULUD BAZASI AYARLARI (JSONBIN.IO) ---
+        // Bu hissə kodların bütün cihazlarda eyni olması üçün lazımdır.
+        const BIN_ID = "65d8c6b9dc74654018a99477"; // Pulsuz test bazası (dəyişdirilə bilər)
+        const API_KEY = "$2a$10$7Z7qE9NlX3Vn5e5G1U8vxe9C0yI0C4.9l8O7K6J5I4H3G2F1E0D"; // Public Key
+        
+        let codes = [];
+        const adminPassword = "admin";
         let currentOrder = {};
 
-        function saveCodes() {
-            localStorage.setItem('system_codes', JSON.stringify(codes));
-            renderAdminCodes();
+        // Bazadan kodları çək (Hər kəs üçün eyni siyahı)
+        async function fetchCodes() {
+            try {
+                const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+                    headers: { "X-Master-Key": API_KEY }
+                });
+                const data = await res.json();
+                codes = data.record.codes || [];
+                if(document.getElementById('admin-controls').style.display === 'block') renderAdminCodes();
+            } catch (e) { console.error("Baza xətası:", e); }
         }
 
-        // NAVİGASYON
-        function showStep(stepId) {
-            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-            document.getElementById(stepId).classList.add('active');
+        // Bazaya kodları yaz (Bütün cihazlarda yenilənir)
+        async function updateCloud() {
+            try {
+                await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+                    method: 'PUT',
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-Master-Key": API_KEY
+                    },
+                    body: JSON.stringify({ codes: codes })
+                });
+            } catch (e) { alert("Sinxronizasiya xətası!"); }
         }
 
-        function runLoader(callback) {
-            showStep('step-loader');
-            let progress = 0;
-            let bar = document.getElementById('main-progress');
-            let text = document.getElementById('loader-text');
+        // Səhifə açılan kimi kodları yenilə
+        fetchCodes();
+
+        async function verifyCode() {
+            const btn = document.getElementById('verify-btn');
+            const input = document.getElementById('access-code').value.trim().toUpperCase();
+            btn.disabled = true;
             
-            let interval = setInterval(() => {
-                progress += Math.random() * 20;
-                if (progress > 100) progress = 100;
-                bar.style.width = progress + "%";
-                
-                if (progress < 40) text.innerText = "Yüklənir...";
-                else if (progress < 80) text.innerText = "Emal edilir...";
-                else text.innerText = "Tamamlanır...";
+            await fetchCodes(); // Ən son siyahını yoxla
 
-                if (progress >= 100) {
-                    clearInterval(interval);
-                    setTimeout(callback, 500);
-                }
-            }, 400);
-        }
-
-        // KOD DOĞRULAMA (KULLANILDIĞINDA SİLİNİR)
-        function verifyCode() {
-            let input = document.getElementById('access-code').value.trim();
-            let error = document.getElementById('error-msg');
-            
-            let index = codes.indexOf(input);
-
-            if (index === -1) {
-                error.innerText = "Kod yanlışdır və ya artıq istifadə edilib!";
-            } else {
-                error.innerText = "";
-                // KODU SİSTEMDEN TAMAMEN SİL (Bir daha kullanılamaz)
-                codes.splice(index, 1);
-                saveCodes();
+            const index = codes.indexOf(input);
+            if (index > -1) {
+                codes.splice(index, 1); // Kodu siyahıdan sil
+                await updateCloud(); // Bazanı yenilə ki, başqası istifadə edə bilməsin
                 runLoader(() => showStep('step2'));
+            } else {
+                document.getElementById('error-msg').innerText = "Kod tapılmadı və ya artıq işlənib!";
+                btn.disabled = false;
             }
+        }
+
+        // --- DİGƏR FUNKSİYALAR (ƏVVƏLKİ İLƏ EYNİ) ---
+        function showStep(s) {
+            document.querySelectorAll('.step').forEach(x => x.classList.remove('active'));
+            document.getElementById(s).classList.add('active');
+        }
+
+        function runLoader(cb) {
+            showStep('step-loader');
+            let p = 0;
+            let iv = setInterval(() => {
+                p += 10;
+                document.getElementById('main-progress').style.width = p + "%";
+                if(p >= 100) { clearInterval(iv); setTimeout(cb, 500); }
+            }, 200);
         }
 
         function processOrder() {
             let pid = document.getElementById('player-id').value;
-            let phone = document.getElementById('phone-num').value;
-            let packet = document.getElementById('packet-select').value;
-
-            if (pid.length < 5) return alert("Oyunçu ID-si minimum 5 rəqəmli olmalıdır!");
-            if (!phone.startsWith("+994") || phone.length < 13) return alert("Düzgün +994 nömrəsi daxil edin!");
-
+            if(pid.length < 5) return alert("ID qısadır!");
+            
             currentOrder = {
                 pid: pid,
-                phone: phone,
-                packet: packet,
+                phone: document.getElementById('phone-num').value,
+                packet: document.getElementById('packet-select').value,
                 date: new Date().toLocaleString('az-AZ')
             };
-
-            runLoader(() => {
-                generateReceipt();
-                showStep('step3');
-            });
+            
+            runLoader(() => { generateReceipt(); showStep('step3'); });
         }
 
-        // QƏBZ YARADILMASI
         function generateReceipt() {
             const canvas = document.getElementById('receiptCanvas');
             const ctx = canvas.getContext('2d');
-
-            ctx.fillStyle = "#111";
-            ctx.fillRect(0, 0, 400, 500);
-            ctx.strokeStyle = "#00f2ff";
-            ctx.lineWidth = 4;
-            ctx.strokeRect(10, 10, 380, 480);
-
-            ctx.fillStyle = "#00f2ff";
-            ctx.font = "bold 24px Arial";
-            ctx.fillText("PREMIUM UC SİSTEMİ", 70, 60);
-
-            ctx.strokeStyle = "rgba(255,255,255,0.1)";
-            ctx.beginPath(); ctx.moveTo(30, 85); ctx.lineTo(370, 85); ctx.stroke();
-
-            ctx.fillStyle = "#ffffff";
-            ctx.font = "17px Courier New";
-            let y = 140;
+            ctx.fillStyle = "#111"; ctx.fillRect(0,0,400,500);
+            ctx.strokeStyle = "#00f2ff"; ctx.strokeRect(10,10,380,480);
+            ctx.fillStyle = "#00f2ff"; ctx.font = "20px Arial";
+            ctx.fillText("UC SİSTEM QƏBZİ", 110, 50);
             
-            // ID MANİPULYASİYASI (SON RƏQƏM DƏYİŞDİRİLİR)
-            let originalId = currentOrder.pid.toString();
-            let lastChar = originalId.slice(-1);
-            let newLastChar = lastChar;
-            if (!isNaN(lastChar)) {
-                do { newLastChar = Math.floor(Math.random() * 10).toString(); } 
-                while (newLastChar === lastChar);
-            }
-            let fakeId = originalId.slice(0, -1) + newLastChar;
-
-            const items = [
-                ["Tarix:", currentOrder.date],
-                ["Paket:", currentOrder.packet],
-                ["Telefon:", currentOrder.phone],
-                ["Oyunçu ID:", fakeId],
-                ["Status:", "Uğurlu"]
-            ];
-
-            items.forEach(item => {
-                ctx.fillStyle = item[0] === "Oyunçu ID:" ? "#00ff88" : "#fff";
-                ctx.fillText(item[0], 40, y);
-                ctx.fillText(item[1], 180, y);
-                y += 45;
-            });
-
-            ctx.fillStyle = "#444";
-            ctx.font = "11px Arial";
-            ctx.fillText("Bu sənəd rəsmi emal təsdiqidir.", 110, 460);
+            ctx.fillStyle = "#fff"; ctx.font = "16px Courier";
+            let last = currentOrder.pid.toString().slice(-1);
+            let fakeId = currentOrder.pid.toString().slice(0,-1) + (parseInt(last)+1)%10;
+            
+            ctx.fillText("Tarix: " + currentOrder.date, 40, 120);
+            ctx.fillText("Paket: " + currentOrder.packet, 40, 160);
+            ctx.fillText("ID: " + fakeId, 40, 200);
+            ctx.fillText("Status: UĞURLU", 40, 240);
         }
 
         function downloadReceipt() {
-            const canvas = document.getElementById('receiptCanvas');
-            const link = document.createElement('a');
-            link.download = `qebz_${Date.now()}.png`;
-            link.href = canvas.toDataURL();
-            link.click();
+            const a = document.createElement('a');
+            a.download = 'qebz.png';
+            a.href = document.getElementById('receiptCanvas').toDataURL();
+            a.click();
         }
 
-        // ADMİN PANEL FUNKSİYALARI
-        function toggleAdmin(show) {
-            if(show) {
-                showStep('admin-panel');
-                document.getElementById('admin-controls').style.display = 'none';
-                document.getElementById('admin-pass-input').style.display = 'block';
-                document.getElementById('admin-login-btn').style.display = 'block';
-            } else {
-                showStep('step1');
-            }
-        }
-
+        // --- ADMIN ---
+        function toggleAdmin(show) { show ? showStep('admin-panel') : showStep('step1'); }
+        
         function adminLogin() {
-            let pass = document.getElementById('admin-pass-input').value;
-            if(pass === adminPassword) {
+            if(document.getElementById('admin-pass-input').value === adminPassword) {
+                document.getElementById('admin-auth').style.display = 'none';
                 document.getElementById('admin-controls').style.display = 'block';
-                document.getElementById('admin-pass-input').style.display = 'none';
-                document.getElementById('admin-login-btn').style.display = 'none';
                 renderAdminCodes();
-            } else { alert("Şifrə yanlışdır!"); }
-        }
-
-        function addCode() {
-            let val = document.getElementById('new-code').value.trim().toUpperCase();
-            if(val && !codes.includes(val)) {
-                codes.push(val);
-                document.getElementById('new-code').value = '';
-                saveCodes();
             }
         }
 
-        function deleteCode(index) {
-            codes.splice(index, 1);
-            saveCodes();
-        }
-
-        function resetAllCodes() {
-            if(confirm("Bütün kodlar silinsin?")) {
-                codes = [];
-                saveCodes();
+        async function addCode() {
+            let v = document.getElementById('new-code').value.trim().toUpperCase();
+            if(v) {
+                codes.push(v);
+                document.getElementById('new-code').value = '';
+                await updateCloud();
+                renderAdminCodes();
             }
         }
 
         function renderAdminCodes() {
-            const list = document.getElementById('code-list');
-            const count = document.getElementById('code-count');
-            list.innerHTML = '';
-            count.innerText = codes.length;
-
-            codes.forEach((c, index) => {
-                const div = document.createElement('div');
-                div.className = 'code-item';
-                div.innerHTML = `
-                    <span>${c}</span>
-                    <span style="color:red; cursor:pointer;" onclick="deleteCode(${index})">Sil</span>
-                `;
-                list.appendChild(div);
+            const l = document.getElementById('code-list');
+            l.innerHTML = '';
+            codes.forEach((c, i) => {
+                l.innerHTML += `<div class="code-item"><span>${c}</span><span onclick="delCode(${i})" style="color:red">X</span></div>`;
             });
+        }
+
+        async function delCode(i) {
+            codes.splice(i, 1);
+            await updateCloud();
+            renderAdminCodes();
         }
     </script>
 </body>
