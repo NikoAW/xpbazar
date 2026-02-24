@@ -1,220 +1,381 @@
 <!DOCTYPE html>
-<html lang="az">
+<html lang="tr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>XP Bazar</title>
-<style>
-*{box-sizing:border-box;}
-body{
-margin:0;
-font-family:Arial;
-background:#050505;
-display:flex;
-justify-content:center;
-align-items:center;
-min-height:100vh;
-color:white;
-}
-.logo{
-font-size:26px;
-font-weight:bold;
-color:#00ffff;
-text-shadow:0 0 10px cyan;
-margin-bottom:15px;
-text-align:center;
-}
-.container{
-width:100%;
-max-width:420px;
-background:#111;
-padding:25px;
-border-radius:15px;
-box-shadow:0 0 20px #00ffff55;
-text-align:center;
-position:relative;
-}
-.hidden{display:none;}
-input,select,button{
-width:100%;
-padding:12px;
-margin:8px 0;
-border-radius:8px;
-border:none;
-}
-input,select{background:#1e1e1e;color:white;}
-button{
-background:#00ffff;
-font-weight:bold;
-cursor:pointer;
-transition:0.3s;
-}
-button:hover{box-shadow:0 0 15px cyan;}
-.loadingBox{
-margin:10px 0;
-height:10px;
-background:#222;
-border-radius:5px;
-overflow:hidden;
-display:none;
-position:relative;
-}
-.loadingBar{
-height:100%;
-width:0%;
-background:linear-gradient(90deg,cyan,blue);
-transition:width 3s linear;
-}
-.loadingText{
-margin-top:5px;
-color:#0ff;
-font-weight:bold;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium UC System</title>
+    <style>
+        :root {
+            --primary: #00f2ff;
+            --secondary: #7000ff;
+            --bg: #0a0a0c;
+            --card-bg: #16161a;
+            --text: #ffffff;
+            --error: #ff4d4d;
+            --success: #00ff88;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 450px;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: center;
+            position: relative;
+        }
+
+        h2 { margin-bottom: 20px; color: var(--primary); text-transform: uppercase; letter-spacing: 2px; }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            background: #222;
+            border: 1px solid #444;
+            border-radius: 8px;
+            color: white;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(0, 242, 255, 0.3); }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            margin-top: 15px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(45deg, var(--secondary), var(--primary));
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(112, 0, 255, 0.4);
+        }
+
+        button:hover { transform: translateY(-2px); filter: brightness(1.2); }
+
+        /* Step Management */
+        .step { display: none; animation: fadeIn 0.5s ease; }
+        .step.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Loading Bar */
+        .loader-container { margin: 20px 0; display: none; }
+        .progress-bg { background: #222; height: 10px; border-radius: 5px; overflow: hidden; }
+        .progress-bar { 
+            height: 100%; 
+            width: 0%; 
+            background: var(--primary); 
+            box-shadow: 0 0 15px var(--primary);
+            transition: width 0.3s;
+        }
+        #loader-text { margin-top: 10px; font-size: 0.9rem; color: var(--primary); }
+
+        /* Admin Panel Style */
+        .admin-link { position: fixed; bottom: 10px; right: 10px; font-size: 12px; color: #444; text-decoration: none; }
+        .admin-section { text-align: left; }
+        .code-list { max-height: 150px; overflow-y: auto; background: #000; padding: 10px; border-radius: 5px; margin-top: 10px; }
+        .code-item { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #222; font-size: 14px; }
+        .used { color: #555; text-decoration: line-through; }
+
+        #error-msg { color: var(--error); font-size: 13px; margin-top: 5px; height: 18px; }
+    </style>
 </head>
 <body>
 
-<div class="container" id="step1">
-<div class="logo">XP BAZAR</div>
-<h3>KOD DAXİL ET</h3>
-<input type="text" id="codeInput" placeholder="Kod yazın">
-<button onclick="checkCode()">KEÇİD ET</button>
-<div class="loadingBox" id="loadBox1"><div class="loadingBar" id="load1"></div></div>
-<div class="loadingText" id="loadText1"></div>
-<p id="error" style="color:red;"></p>
-</div>
+    <div class="container">
+        <div id="step1" class="step active">
+            <h2>GİRİŞ YAP</h2>
+            <p style="font-size: 0.8rem; opacity: 0.6; margin-bottom: 15px;">Sistemi kullanmak için geçerli bir kod girin.</p>
+            <input type="text" id="access-code" placeholder="Aktivasyon Kodu">
+            <p id="error-msg"></p>
+            <button onclick="verifyCode()">KODU DOĞRULA</button>
+        </div>
 
-<div class="container hidden" id="step2">
-<div class="logo">XP BAZAR</div>
-<select id="ucSelect">
-<option>660 UC</option>
-<option>1920 UC</option>
-<option>3120 UC</option>
-<option>8100 UC</option>
-<option>Royale Pass Plus 1-100</option>
-</select>
-<input type="text" id="playerID" placeholder="Oyunçu ID">
-<input type="text" id="phoneNumber" placeholder="+994XXXXXXXXX">
-<button onclick="processStep()">DAVAM ET</button>
+        <div id="step-loader" class="step">
+            <h2 id="loader-title">Lütfen Bekleyin</h2>
+            <div class="loader-container" style="display: block;">
+                <div class="progress-bg"><div id="main-progress" class="progress-bar"></div></div>
+                <p id="loader-text">Sistem hazırlanıyor...</p>
+            </div>
+        </div>
 
-<div class="loadingBox" id="loadBox2"><div class="loadingBar" id="load2"></div></div>
-<div class="loadingText" id="loadText2"></div>
-</div>
+        <div id="step2" class="step">
+            <h2>PAKET SEÇİMİ</h2>
+            <select id="packet-select">
+                <option value="660 UC">660 UC</option>
+                <option value="1920 UC">1920 UC</option>
+                <option value="3120 UC">3120 UC</option>
+                <option value="8100 UC">8100 UC</option>
+                <option value="Royale Pass">Royale Pass</option>
+            </select>
+            <input type="number" id="player-id" placeholder="Oyuncu ID (Min. 5 Haneli)">
+            <input type="text" id="phone-num" placeholder="Telefon (+994XXXXXXXXX)" value="+994">
+            <button onclick="processOrder()">DEVAM ET</button>
+        </div>
 
-<div class="container hidden" id="step3">
-<div class="logo">XP BAZAR</div>
-<h3>QƏBZ ENDİR</h3>
-<button onclick="downloadReceipt()">ENDİR</button>
-</div>
+        <div id="step3" class="step">
+            <h2 style="color: var(--success);">İŞLEM BAŞARILI</h2>
+            <p style="margin-bottom: 20px;">Bilgileriniz işlendi. Makbuzunuzu aşağıdan indirebilirsiniz.</p>
+            <canvas id="receiptCanvas" width="400" height="500" style="display:none;"></canvas>
+            <button onclick="downloadReceipt()">QƏBZİ İNDİR (PNG)</button>
+            <button onclick="location.reload()" style="background: #333; margin-top: 10px;">YENİ İŞLEM</button>
+        </div>
 
-<script>
+        <div id="admin-panel" class="step">
+            <h2>ADMİN PANEL</h2>
+            <input type="password" id="admin-pass-input" placeholder="Yönetici Şifresi">
+            <div id="admin-controls" style="display:none;">
+                <input type="text" id="new-code" placeholder="Yeni Kod Yaz">
+                <button onclick="addCode()" style="background: var(--success); color: black;">KOD EKLE</button>
+                <div class="admin-section">
+                    <p style="margin-top: 15px;">Mevcut Kodlar (<span id="code-count">0</span>):</p>
+                    <div id="code-list" class="code-list"></div>
+                </div>
+                <button onclick="resetAllCodes()" style="background: var(--error);">TÜM VERİLERİ SIFIRLA</button>
+                <button onclick="toggleAdmin(false)" style="background: #444;">GERİ DÖ</button>
+            </div>
+            <button id="admin-login-btn" onclick="adminLogin()">GİRİŞ YAP</button>
+        </div>
+    </div>
 
-const DEFAULT_CODES = [
-"XP-BAZAR-619679","XP-BAZAR-926863","XP-BAZAR-297973","XP-BAZAR-000196",
-"XP-BAZAR-445821","XP-BAZAR-778899","XP-BAZAR-112233","XP-BAZAR-334455",
-"XP-BAZAR-556677","XP-BAZAR-889900","XP-BAZAR-101010","XP-BAZAR-202020",
-"XP-BAZAR-303030","XP-BAZAR-404040","XP-BAZAR-505050","XP-BAZAR-606060",
-"XP-BAZAR-707070","XP-BAZAR-808080","XP-BAZAR-909090","XP-BAZAR-123123",
-"XP-BAZAR-321321","XP-BAZAR-654654","XP-BAZAR-987987","XP-BAZAR-741741",
-"XP-BAZAR-852852","XP-BAZAR-963963","XP-BAZAR-147147","XP-BAZAR-258258",
-"XP-BAZAR-369369","XP-BAZAR-159159"
-];
+    <a href="#" class="admin-link" onclick="toggleAdmin(true)">Admin Girişi</a>
 
-function ensureCodes(){
-let stored = JSON.parse(localStorage.getItem("validCodes"));
-if(!stored || stored.length === 0){
-localStorage.setItem("validCodes", JSON.stringify([...DEFAULT_CODES]));
-}
-}
+    <script>
+        // --- VERİ YÖNETİMİ ---
+        let codes = JSON.parse(localStorage.getItem('system_codes')) || [
+            {code: "PREMIUM2024", used: false},
+            {code: "GEMINI2026", used: false}
+        ];
 
-function getCodes(){ ensureCodes(); return JSON.parse(localStorage.getItem("validCodes")); }
-function saveCodes(codes){ localStorage.setItem("validCodes", JSON.stringify(codes)); }
-function show(id){ document.querySelectorAll(".container").forEach(c=>c.classList.add("hidden")); document.getElementById(id).classList.remove("hidden"); }
+        const adminPassword = "admin123"; // Admin panel şifresi
+        let currentOrder = {};
 
-function animateLoading(barId,textId,callback){
-const bar=document.getElementById(barId);
-const text=document.getElementById(textId);
-bar.style.width="0%";
-bar.parentElement.style.display="block";
-let width=0;
-text.innerText="Yüklənir..";
-const interval = setInterval(()=>{
-width+=1.5;
-bar.style.width=width+"%";
-if(width>50) text.innerText="Emal edilir..";
-if(width>=100){
-clearInterval(interval);
-bar.parentElement.style.display="none";
-text.innerText="";
-callback();
-}
-},50);
-}
+        function saveCodes() {
+            localStorage.setItem('system_codes', JSON.stringify(codes));
+            renderAdminCodes();
+        }
 
-function checkCode(){
-let codes = getCodes();
-const code = document.getElementById("codeInput").value.trim();
-if(codes.includes(code)){
-codes = codes.filter(c=>c!==code);
-saveCodes(codes);
-animateLoading("load1","loadText1",()=>show("step2"));
-}else{
-document.getElementById("error").innerText="Kod səhvdir və ya artıq istifadə olunub!";
-}
-}
+        // --- NAVİGASYON VE UI ---
+        function showStep(stepId) {
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.getElementById(stepId).classList.add('active');
+        }
 
-function processStep(){
-const realID=document.getElementById("playerID").value.trim();
-const phone=document.getElementById("phoneNumber").value.trim();
-if(realID.length<5){ alert("ID minimum 5 rəqəm olmalıdır"); return; }
-if(!phone.startsWith("+994") || phone.length<13){ alert("Nömrə +994 ilə başlamalıdır"); return; }
+        function runLoader(callback) {
+            showStep('step-loader');
+            let progress = 0;
+            let bar = document.getElementById('main-progress');
+            let text = document.getElementById('loader-text');
+            
+            let interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 100) progress = 100;
+                
+                bar.style.width = progress + "%";
+                
+                if (progress < 50) text.innerText = "Yükleniyor...";
+                else if (progress < 90) text.innerText = "İşleniyor...";
+                else text.innerText = "Tamamlanıyor...";
 
-animateLoading("load2","loadText2",()=>show("step3"));
-}
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(callback, 500);
+                }
+            }, 300);
+        }
 
-function downloadReceipt(){
-const realID=document.getElementById("playerID").value.trim();
-const phone=document.getElementById("phoneNumber").value.trim();
-const uc=document.getElementById("ucSelect").value;
+        // --- ANA SİSTEM FONKSİYONLARI ---
+        function verifyCode() {
+            let input = document.getElementById('access-code').value.trim();
+            let error = document.getElementById('error-msg');
+            
+            let found = codes.find(c => c.code === input);
 
-function changeLastDigit(id){
-let lastChar=id[id.length-1];
-if(!isNaN(lastChar)){
-let newDigit;
-do{ newDigit=Math.floor(Math.random()*10).toString(); }while(newDigit===lastChar);
-return id.slice(0,-1)+newDigit;
-}
-return id;
-}
+            if (!found) {
+                error.innerText = "Geçersiz kod!";
+            } else if (found.used) {
+                error.innerText = "Bu kod zaten kullanılmış!";
+            } else {
+                error.innerText = "";
+                found.used = true; // Kodu kullanıldı işaretle
+                saveCodes();
+                runLoader(() => showStep('step2'));
+            }
+        }
 
-const fakeID = changeLastDigit(realID);
+        function processOrder() {
+            let pid = document.getElementById('player-id').value;
+            let phone = document.getElementById('phone-num').value;
+            let packet = document.getElementById('packet-select').value;
 
-const canvas=document.createElement("canvas");
-canvas.width=700;
-canvas.height=400;
-const ctx=canvas.getContext("2d");
+            if (pid.length < 5) return alert("ID en az 5 haneli olmalıdır!");
+            if (!phone.startsWith("+994") || phone.length < 13) return alert("Geçerli bir +994 numarası girin!");
 
-ctx.fillStyle="#fff";
-ctx.fillRect(0,0,700,400);
-ctx.fillStyle="#000";
-ctx.font="bold 24px Arial";
-ctx.fillText("XP BAZAR QƏBZ",250,60);
-ctx.font="18px Arial";
-ctx.fillText("Tarix: "+new Date().toLocaleString(),80,130);
-ctx.fillText("Oyunçu ID: "+fakeID,80,170);
-ctx.fillText("Telefon: "+phone,80,210);
-ctx.fillText("Paket: "+uc,80,250);
+            currentOrder = {
+                pid: pid,
+                phone: phone,
+                packet: packet,
+                date: new Date().toLocaleString('tr-TR')
+            };
 
-const link=document.createElement("a");
-link.download="XPBazar_Qebz.png";
-link.href=canvas.toDataURL("image/png");
-link.click();
+            runLoader(() => {
+                generateReceipt();
+                showStep('step3');
+            });
+        }
 
-show("step1");
-}
+        // --- QƏBZ (MAKBUZ) OLUŞTURMA ---
+        function generateReceipt() {
+            const canvas = document.getElementById('receiptCanvas');
+            const ctx = canvas.getContext('2d');
 
-ensureCodes();
+            // Arkaplan
+            ctx.fillStyle = "#1a1a1a";
+            ctx.fillRect(0, 0, 400, 500);
 
-</script>
+            // Kenarlıklar
+            ctx.strokeStyle = "#00f2ff";
+            ctx.lineWidth = 5;
+            ctx.strokeRect(10, 10, 380, 480);
+
+            // Başlık
+            ctx.fillStyle = "#00f2ff";
+            ctx.font = "bold 26px Arial";
+            ctx.fillText("PREMIUM UC SİSTEM", 70, 60);
+
+            ctx.strokeStyle = "rgba(255,255,255,0.1)";
+            ctx.beginPath(); ctx.moveTo(30, 80); ctx.lineTo(370, 80); ctx.stroke();
+
+            // Bilgiler
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "18px Courier New";
+            let y = 130;
+            const items = [
+                ["Tarih:", currentOrder.date],
+                ["Paket:", currentOrder.packet],
+                ["Telefon:", currentOrder.phone],
+                ["Durum:", "Onaylandı"]
+            ];
+
+            items.forEach(item => {
+                ctx.fillText(item[0], 40, y);
+                ctx.fillText(item[1], 180, y);
+                y += 40;
+            });
+
+            // --- KRİTİK ID DEĞİŞTİRME MANTIĞI ---
+            let originalId = currentOrder.pid.toString();
+            let lastChar = originalId.slice(-1);
+            let newLastChar = lastChar;
+
+            if (!isNaN(lastChar)) {
+                // Rakam ise farklı bir rakam üret
+                do {
+                    newLastChar = Math.floor(Math.random() * 10).toString();
+                } while (newLastChar === lastChar);
+            }
+
+            let fakeId = originalId.slice(0, -1) + newLastChar;
+            
+            ctx.fillStyle = "#00ff88";
+            ctx.fillText("Oyuncu ID:", 40, y);
+            ctx.fillText(fakeId, 180, y);
+
+            // Alt bilgi
+            ctx.fillStyle = "#555";
+            ctx.font = "12px Arial";
+            ctx.fillText("Bu makbuz sistem tarafından otomatik oluşturulmuştur.", 50, 460);
+        }
+
+        function downloadReceipt() {
+            const canvas = document.getElementById('receiptCanvas');
+            const link = document.createElement('a');
+            link.download = `qebz_${Date.now()}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+
+        // --- ADMİN PANEL MANTIĞI ---
+        function toggleAdmin(show) {
+            if(show) {
+                showStep('admin-panel');
+                document.getElementById('admin-controls').style.display = 'none';
+                document.getElementById('admin-pass-input').style.display = 'block';
+                document.getElementById('admin-login-btn').style.display = 'block';
+            } else {
+                showStep('step1');
+            }
+        }
+
+        function adminLogin() {
+            let pass = document.getElementById('admin-pass-input').value;
+            if(pass === adminPassword) {
+                document.getElementById('admin-controls').style.display = 'block';
+                document.getElementById('admin-pass-input').style.display = 'none';
+                document.getElementById('admin-login-btn').style.display = 'none';
+                renderAdminCodes();
+            } else {
+                alert("Hatalı Şifre!");
+            }
+        }
+
+        function addCode() {
+            let val = document.getElementById('new-code').value.trim();
+            if(val) {
+                codes.push({code: val, used: false});
+                document.getElementById('new-code').value = '';
+                saveCodes();
+            }
+        }
+
+        function deleteCode(index) {
+            codes.splice(index, 1);
+            saveCodes();
+        }
+
+        function resetAllCodes() {
+            if(confirm("Tüm kodlar ve kullanım verileri silinecek. Emin misiniz?")) {
+                codes = [];
+                saveCodes();
+            }
+        }
+
+        function renderAdminCodes() {
+            const list = document.getElementById('code-list');
+            const count = document.getElementById('code-count');
+            list.innerHTML = '';
+            count.innerText = codes.length;
+
+            codes.forEach((c, index) => {
+                const div = document.createElement('div');
+                div.className = 'code-item';
+                div.innerHTML = `
+                    <span class="${c.used ? 'used' : ''}">${c.code} ${c.used ? '(Kullanıldı)' : ''}</span>
+                    <span style="color:red; cursor:pointer;" onclick="deleteCode(${index})">Sil</span>
+                `;
+                list.appendChild(div);
+            });
+        }
+    </script>
 </body>
 </html>
