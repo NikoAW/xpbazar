@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="az" translate="no">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premium UC System</title>
+    <meta name="google" content="notranslate">
+    <title>Premium UC Sistemi</title>
     <style>
         :root {
             --primary: #00f2ff;
@@ -33,7 +34,7 @@
             background: var(--card-bg);
             padding: 30px;
             border-radius: 20px;
-            box-shadow: 0 0 20px rgba(0, 242, 255, 0.1);
+            box-shadow: 0 0 25px rgba(0, 242, 255, 0.15);
             border: 1px solid rgba(255, 255, 255, 0.05);
             text-align: center;
             position: relative;
@@ -72,13 +73,11 @@
 
         button:hover { transform: translateY(-2px); filter: brightness(1.2); }
 
-        /* Step Management */
         .step { display: none; animation: fadeIn 0.5s ease; }
         .step.active { display: block; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Loading Bar */
         .loader-container { margin: 20px 0; display: none; }
         .progress-bg { background: #222; height: 10px; border-radius: 5px; overflow: hidden; }
         .progress-bar { 
@@ -90,32 +89,29 @@
         }
         #loader-text { margin-top: 10px; font-size: 0.9rem; color: var(--primary); }
 
-        /* Admin Panel Style */
-        .admin-link { position: fixed; bottom: 10px; right: 10px; font-size: 12px; color: #444; text-decoration: none; }
-        .admin-section { text-align: left; }
+        .admin-link { position: fixed; bottom: 15px; right: 15px; font-size: 11px; color: #333; text-decoration: none; }
         .code-list { max-height: 150px; overflow-y: auto; background: #000; padding: 10px; border-radius: 5px; margin-top: 10px; }
-        .code-item { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #222; font-size: 14px; }
-        .used { color: #555; text-decoration: line-through; }
+        .code-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #222; font-size: 14px; }
 
         #error-msg { color: var(--error); font-size: 13px; margin-top: 5px; height: 18px; }
     </style>
 </head>
-<body>
+<body class="notranslate">
 
     <div class="container">
         <div id="step1" class="step active">
-            <h2>GİRİŞ YAP</h2>
-            <p style="font-size: 0.8rem; opacity: 0.6; margin-bottom: 15px;">Sistemi kullanmak için geçerli bir kod girin.</p>
-            <input type="text" id="access-code" placeholder="Aktivasyon Kodu">
+            <h2>DAXİL OL</h2>
+            <p style="font-size: 0.8rem; opacity: 0.6; margin-bottom: 15px;">Sistemi istifadə etmək üçün kodu daxil edin.</p>
+            <input type="text" id="access-code" placeholder="Aktivasiya Kodu">
             <p id="error-msg"></p>
-            <button onclick="verifyCode()">KODU DOĞRULA</button>
+            <button onclick="verifyCode()">KODU YOXLA</button>
         </div>
 
         <div id="step-loader" class="step">
-            <h2 id="loader-title">Lütfen Bekleyin</h2>
+            <h2 id="loader-title">Xahiş edirik gözləyin</h2>
             <div class="loader-container" style="display: block;">
                 <div class="progress-bg"><div id="main-progress" class="progress-bar"></div></div>
-                <p id="loader-text">Sistem hazırlanıyor...</p>
+                <p id="loader-text">Sistem hazırlanır...</p>
             </div>
         </div>
 
@@ -128,46 +124,42 @@
                 <option value="8100 UC">8100 UC</option>
                 <option value="Royale Pass">Royale Pass</option>
             </select>
-            <input type="number" id="player-id" placeholder="Oyuncu ID (Min. 5 Haneli)">
+            <input type="number" id="player-id" placeholder="Oyunçu ID (Min. 5 rəqəm)">
             <input type="text" id="phone-num" placeholder="Telefon (+994XXXXXXXXX)" value="+994">
-            <button onclick="processOrder()">DEVAM ET</button>
+            <button onclick="processOrder()">DAVAM ET</button>
         </div>
 
         <div id="step3" class="step">
-            <h2 style="color: var(--success);">İŞLEM BAŞARILI</h2>
-            <p style="margin-bottom: 20px;">Bilgileriniz işlendi. Makbuzunuzu aşağıdan indirebilirsiniz.</p>
+            <h2 style="color: var(--success);">ƏMƏLİYYAT UĞURLUDUR</h2>
+            <p style="margin-bottom: 20px;">Məlumatlar emal edildi. Qəbzinizi aşağıdan yükləyə bilərsiniz.</p>
             <canvas id="receiptCanvas" width="400" height="500" style="display:none;"></canvas>
-            <button onclick="downloadReceipt()">QƏBZİ İNDİR (PNG)</button>
-            <button onclick="location.reload()" style="background: #333; margin-top: 10px;">YENİ İŞLEM</button>
+            <button onclick="downloadReceipt()">QƏBZİ YÜKLƏ (PNG)</button>
+            <button onclick="location.reload()" style="background: #333; margin-top: 10px;">YENİ ƏMƏLİYYAT</button>
         </div>
 
         <div id="admin-panel" class="step">
             <h2>ADMİN PANEL</h2>
-            <input type="password" id="admin-pass-input" placeholder="Yönetici Şifresi">
+            <input type="password" id="admin-pass-input" placeholder="Admin Şifrəsi">
             <div id="admin-controls" style="display:none;">
-                <input type="text" id="new-code" placeholder="Yeni Kod Yaz">
-                <button onclick="addCode()" style="background: var(--success); color: black;">KOD EKLE</button>
-                <div class="admin-section">
-                    <p style="margin-top: 15px;">Mevcut Kodlar (<span id="code-count">0</span>):</p>
+                <input type="text" id="new-code" placeholder="Yeni Kod Yazın">
+                <button onclick="addCode()" style="background: var(--success); color: black;">KOD ƏLAVƏ ET</button>
+                <div style="text-align: left;">
+                    <p style="margin-top: 15px;">Aktiv Kodlar (<span id="code-count">0</span>):</p>
                     <div id="code-list" class="code-list"></div>
                 </div>
-                <button onclick="resetAllCodes()" style="background: var(--error);">TÜM VERİLERİ SIFIRLA</button>
-                <button onclick="toggleAdmin(false)" style="background: #444;">GERİ DÖ</button>
+                <button onclick="resetAllCodes()" style="background: var(--error);">SİSTEMİ SIFIRLA</button>
+                <button onclick="toggleAdmin(false)" style="background: #444;">GERİ</button>
             </div>
-            <button id="admin-login-btn" onclick="adminLogin()">GİRİŞ YAP</button>
+            <button id="admin-login-btn" onclick="adminLogin()">DAXİL OL</button>
         </div>
     </div>
 
-    <a href="#" class="admin-link" onclick="toggleAdmin(true)">Admin Girişi</a>
+    <a href="#" class="admin-link" onclick="toggleAdmin(true)">Admin</a>
 
     <script>
-        // --- VERİ YÖNETİMİ ---
-        let codes = JSON.parse(localStorage.getItem('system_codes')) || [
-            {code: "PREMIUM2024", used: false},
-            {code: "GEMINI2026", used: false}
-        ];
-
-        const adminPassword = "admin123"; // Admin panel şifresi
+        // VERİLER
+        let codes = JSON.parse(localStorage.getItem('system_codes')) || ["AZERI100", "PRO2024"];
+        const adminPassword = "admin"; 
         let currentOrder = {};
 
         function saveCodes() {
@@ -175,7 +167,7 @@
             renderAdminCodes();
         }
 
-        // --- NAVİGASYON VE UI ---
+        // NAVİGASYON
         function showStep(stepId) {
             document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
             document.getElementById(stepId).classList.add('active');
@@ -188,36 +180,34 @@
             let text = document.getElementById('loader-text');
             
             let interval = setInterval(() => {
-                progress += Math.random() * 15;
+                progress += Math.random() * 20;
                 if (progress > 100) progress = 100;
-                
                 bar.style.width = progress + "%";
                 
-                if (progress < 50) text.innerText = "Yükleniyor...";
-                else if (progress < 90) text.innerText = "İşleniyor...";
-                else text.innerText = "Tamamlanıyor...";
+                if (progress < 40) text.innerText = "Yüklənir...";
+                else if (progress < 80) text.innerText = "Emal edilir...";
+                else text.innerText = "Tamamlanır...";
 
                 if (progress >= 100) {
                     clearInterval(interval);
                     setTimeout(callback, 500);
                 }
-            }, 300);
+            }, 400);
         }
 
-        // --- ANA SİSTEM FONKSİYONLARI ---
+        // KOD DOĞRULAMA (KULLANILDIĞINDA SİLİNİR)
         function verifyCode() {
             let input = document.getElementById('access-code').value.trim();
             let error = document.getElementById('error-msg');
             
-            let found = codes.find(c => c.code === input);
+            let index = codes.indexOf(input);
 
-            if (!found) {
-                error.innerText = "Geçersiz kod!";
-            } else if (found.used) {
-                error.innerText = "Bu kod zaten kullanılmış!";
+            if (index === -1) {
+                error.innerText = "Kod yanlışdır və ya artıq istifadə edilib!";
             } else {
                 error.innerText = "";
-                found.used = true; // Kodu kullanıldı işaretle
+                // KODU SİSTEMDEN TAMAMEN SİL (Bir daha kullanılamaz)
+                codes.splice(index, 1);
                 saveCodes();
                 runLoader(() => showStep('step2'));
             }
@@ -228,14 +218,14 @@
             let phone = document.getElementById('phone-num').value;
             let packet = document.getElementById('packet-select').value;
 
-            if (pid.length < 5) return alert("ID en az 5 haneli olmalıdır!");
-            if (!phone.startsWith("+994") || phone.length < 13) return alert("Geçerli bir +994 numarası girin!");
+            if (pid.length < 5) return alert("Oyunçu ID-si minimum 5 rəqəmli olmalıdır!");
+            if (!phone.startsWith("+994") || phone.length < 13) return alert("Düzgün +994 nömrəsi daxil edin!");
 
             currentOrder = {
                 pid: pid,
                 phone: phone,
                 packet: packet,
-                date: new Date().toLocaleString('tr-TR')
+                date: new Date().toLocaleString('az-AZ')
             };
 
             runLoader(() => {
@@ -244,67 +234,56 @@
             });
         }
 
-        // --- QƏBZ (MAKBUZ) OLUŞTURMA ---
+        // QƏBZ YARADILMASI
         function generateReceipt() {
             const canvas = document.getElementById('receiptCanvas');
             const ctx = canvas.getContext('2d');
 
-            // Arkaplan
-            ctx.fillStyle = "#1a1a1a";
+            ctx.fillStyle = "#111";
             ctx.fillRect(0, 0, 400, 500);
-
-            // Kenarlıklar
             ctx.strokeStyle = "#00f2ff";
-            ctx.lineWidth = 5;
+            ctx.lineWidth = 4;
             ctx.strokeRect(10, 10, 380, 480);
 
-            // Başlık
             ctx.fillStyle = "#00f2ff";
-            ctx.font = "bold 26px Arial";
-            ctx.fillText("PREMIUM UC SİSTEM", 70, 60);
+            ctx.font = "bold 24px Arial";
+            ctx.fillText("PREMIUM UC SİSTEMİ", 70, 60);
 
             ctx.strokeStyle = "rgba(255,255,255,0.1)";
-            ctx.beginPath(); ctx.moveTo(30, 80); ctx.lineTo(370, 80); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(30, 85); ctx.lineTo(370, 85); ctx.stroke();
 
-            // Bilgiler
             ctx.fillStyle = "#ffffff";
-            ctx.font = "18px Courier New";
-            let y = 130;
-            const items = [
-                ["Tarih:", currentOrder.date],
-                ["Paket:", currentOrder.packet],
-                ["Telefon:", currentOrder.phone],
-                ["Durum:", "Onaylandı"]
-            ];
-
-            items.forEach(item => {
-                ctx.fillText(item[0], 40, y);
-                ctx.fillText(item[1], 180, y);
-                y += 40;
-            });
-
-            // --- KRİTİK ID DEĞİŞTİRME MANTIĞI ---
+            ctx.font = "17px Courier New";
+            let y = 140;
+            
+            // ID MANİPULYASİYASI (SON RƏQƏM DƏYİŞDİRİLİR)
             let originalId = currentOrder.pid.toString();
             let lastChar = originalId.slice(-1);
             let newLastChar = lastChar;
-
             if (!isNaN(lastChar)) {
-                // Rakam ise farklı bir rakam üret
-                do {
-                    newLastChar = Math.floor(Math.random() * 10).toString();
-                } while (newLastChar === lastChar);
+                do { newLastChar = Math.floor(Math.random() * 10).toString(); } 
+                while (newLastChar === lastChar);
             }
-
             let fakeId = originalId.slice(0, -1) + newLastChar;
-            
-            ctx.fillStyle = "#00ff88";
-            ctx.fillText("Oyuncu ID:", 40, y);
-            ctx.fillText(fakeId, 180, y);
 
-            // Alt bilgi
-            ctx.fillStyle = "#555";
-            ctx.font = "12px Arial";
-            ctx.fillText("Bu makbuz sistem tarafından otomatik oluşturulmuştur.", 50, 460);
+            const items = [
+                ["Tarix:", currentOrder.date],
+                ["Paket:", currentOrder.packet],
+                ["Telefon:", currentOrder.phone],
+                ["Oyunçu ID:", fakeId],
+                ["Status:", "Uğurlu"]
+            ];
+
+            items.forEach(item => {
+                ctx.fillStyle = item[0] === "Oyunçu ID:" ? "#00ff88" : "#fff";
+                ctx.fillText(item[0], 40, y);
+                ctx.fillText(item[1], 180, y);
+                y += 45;
+            });
+
+            ctx.fillStyle = "#444";
+            ctx.font = "11px Arial";
+            ctx.fillText("Bu sənəd rəsmi emal təsdiqidir.", 110, 460);
         }
 
         function downloadReceipt() {
@@ -315,7 +294,7 @@
             link.click();
         }
 
-        // --- ADMİN PANEL MANTIĞI ---
+        // ADMİN PANEL FUNKSİYALARI
         function toggleAdmin(show) {
             if(show) {
                 showStep('admin-panel');
@@ -334,15 +313,13 @@
                 document.getElementById('admin-pass-input').style.display = 'none';
                 document.getElementById('admin-login-btn').style.display = 'none';
                 renderAdminCodes();
-            } else {
-                alert("Hatalı Şifre!");
-            }
+            } else { alert("Şifrə yanlışdır!"); }
         }
 
         function addCode() {
-            let val = document.getElementById('new-code').value.trim();
-            if(val) {
-                codes.push({code: val, used: false});
+            let val = document.getElementById('new-code').value.trim().toUpperCase();
+            if(val && !codes.includes(val)) {
+                codes.push(val);
                 document.getElementById('new-code').value = '';
                 saveCodes();
             }
@@ -354,7 +331,7 @@
         }
 
         function resetAllCodes() {
-            if(confirm("Tüm kodlar ve kullanım verileri silinecek. Emin misiniz?")) {
+            if(confirm("Bütün kodlar silinsin?")) {
                 codes = [];
                 saveCodes();
             }
@@ -370,7 +347,7 @@
                 const div = document.createElement('div');
                 div.className = 'code-item';
                 div.innerHTML = `
-                    <span class="${c.used ? 'used' : ''}">${c.code} ${c.used ? '(Kullanıldı)' : ''}</span>
+                    <span>${c}</span>
                     <span style="color:red; cursor:pointer;" onclick="deleteCode(${index})">Sil</span>
                 `;
                 list.appendChild(div);
