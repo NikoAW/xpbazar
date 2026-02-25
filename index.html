@@ -27,125 +27,138 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            overflow-x: hidden;
+            overflow: hidden;
         }
 
+        /* Ana Konteyner */
         .container {
             width: 90%;
             max-width: 420px;
             background: var(--card-bg);
-            padding: 20px;
+            padding: 30px;
             border-radius: 20px;
             box-shadow: 0 0 30px rgba(0, 242, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.05);
             text-align: center;
             position: relative;
+            z-index: 1;
         }
 
-        /* Neon Kömək Butonu */
         .help-btn {
             background: transparent;
             border: 1px solid var(--primary);
             color: var(--primary);
-            padding: 8px 15px;
+            padding: 8px 18px;
             border-radius: 20px;
             font-size: 0.8rem;
             cursor: pointer;
-            margin-bottom: 20px;
-            box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
-            transition: 0.3s;
+            margin-bottom: 25px;
             display: inline-block;
-            text-decoration: none;
+            transition: 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
-        .help-btn:hover { background: var(--primary); color: #000; box-shadow: 0 0 20px var(--primary); }
+        .help-btn:hover { background: var(--primary); color: #000; box-shadow: 0 0 15px var(--primary); }
 
-        h2 { margin-bottom: 15px; color: var(--primary); text-transform: uppercase; letter-spacing: 2px; font-size: 1.2rem; }
+        h2 { margin-bottom: 20px; color: var(--primary); text-transform: uppercase; letter-spacing: 2px; font-size: 1.3rem; }
 
         input, select {
             width: 100%;
-            padding: 12px;
+            padding: 14px;
             margin: 10px 0;
             background: #222;
             border: 1px solid #333;
-            border-radius: 10px;
+            border-radius: 12px;
             color: white;
             outline: none;
+            font-size: 1rem;
         }
 
-        button.main-btn {
+        .main-btn {
             width: 100%;
             padding: 15px;
             margin-top: 10px;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             background: linear-gradient(45deg, var(--secondary), var(--primary));
             color: white;
             font-weight: bold;
             cursor: pointer;
             text-transform: uppercase;
+            transition: 0.3s;
         }
 
-        /* Chat Sistemi */
-        #chat-page { display: none; flex-direction: column; height: 500px; text-align: left; }
-        .chat-header { border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
-        .chat-body { flex-grow: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 10px; scroll-behavior: smooth; }
-        .chat-footer { display: flex; gap: 5px; padding-top: 10px; }
-        
-        .message { padding: 8px 12px; border-radius: 12px; max-width: 80%; font-size: 0.9rem; line-height: 1.4; position: relative; }
-        .bot-msg { background: var(--chat-bot); align-self: flex-start; border-bottom-left-radius: 2px; }
-        .user-msg { background: var(--chat-user); align-self: flex-end; border-bottom-right-radius: 2px; }
+        /* ÇAT LAYOUT (TAM EKRAN ÜST QAT) */
+        #chat-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg);
+            z-index: 999;
+            flex-direction: column;
+            animation: slideIn 0.3s ease;
+        }
 
-        .typing { font-size: 0.75rem; color: var(--primary); margin-bottom: 5px; display: none; }
-        .typing span { animation: blink 1s infinite; }
-        @keyframes blink { 0% { opacity: 0; } 50% { opacity: 1; } 100% { opacity: 0; } }
+        @keyframes slideIn { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-        .categories { display: flex; gap: 5px; overflow-x: auto; padding-bottom: 10px; white-space: nowrap; }
-        .cat-item { background: #333; padding: 5px 10px; border-radius: 15px; font-size: 0.7rem; cursor: pointer; border: 1px solid #444; }
-        .cat-item:hover { border-color: var(--primary); }
+        .chat-header {
+            padding: 20px;
+            background: var(--card-bg);
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-        .step { display: none; animation: fadeIn 0.4s ease; }
+        .chat-body {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .chat-footer {
+            padding: 20px;
+            background: var(--card-bg);
+            display: flex;
+            gap: 10px;
+        }
+
+        .message { padding: 12px 16px; border-radius: 18px; max-width: 80%; font-size: 0.95rem; line-height: 1.4; }
+        .bot-msg { background: var(--chat-bot); align-self: flex-start; border-bottom-left-radius: 4px; }
+        .user-msg { background: var(--chat-user); align-self: flex-end; border-bottom-right-radius: 4px; }
+
+        .typing-indicator { font-size: 0.8rem; color: var(--primary); margin-left: 20px; margin-bottom: 10px; display: none; }
+
+        .categories { display: flex; gap: 8px; padding: 10px 20px; overflow-x: auto; background: var(--bg); }
+        .cat-item { background: #222; padding: 8px 15px; border-radius: 20px; font-size: 0.75rem; white-space: nowrap; border: 1px solid #333; cursor: pointer; }
+
+        /* Digər Adımlar */
+        .step { display: none; }
         .step.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .progress-bar { height: 6px; background: #333; border-radius: 3px; overflow: hidden; margin: 15px 0; }
+        .progress-bar { height: 8px; background: #222; border-radius: 4px; overflow: hidden; margin: 20px 0; }
         .progress-fill { height: 100%; width: 0%; background: var(--primary); transition: 0.3s; }
     </style>
 </head>
 <body class="notranslate">
 
-    <div class="container">
+    <div class="container" id="main-container">
+        
         <div id="step1" class="step active">
-            <button class="help-btn" onclick="openChat()">💬 Kömək Al</button>
+            <button class="help-btn" onclick="openChat()">💬 KÖMƏK AL</button>
             <h2>SİSTEMƏ GİRİŞ</h2>
             <input type="text" id="access-code" placeholder="Aktivasiya Kodu">
-            <p id="error-msg" style="color:var(--error); font-size:0.8rem;"></p>
+            <p id="error-msg" style="color:var(--error); font-size:0.8rem; height:20px;"></p>
             <button class="main-btn" onclick="verifyCode()">DAXİL OL</button>
-        </div>
-
-        <div id="chat-page" class="step">
-            <div class="chat-header">
-                <span style="color:var(--primary); font-weight:bold;">● Operator Online</span>
-                <button onclick="closeChat()" style="background:none; border:none; color:#aaa; cursor:pointer;">Bağla</button>
-            </div>
-            <div class="categories">
-                <div class="cat-item" onclick="sendQuickMsg('UC necə gəlir?')">UC necə gəlir?</div>
-                <div class="cat-item" onclick="sendQuickMsg('Kod nədir?')">Kod nədir?</div>
-                <div class="cat-item" onclick="sendQuickMsg('Sifarişim gecikir')">Sifarişim gecikir</div>
-            </div>
-            <div class="chat-body" id="chat-body">
-                <div class="message bot-msg">Salam! Sizə necə kömək edə bilərəm?</div>
-            </div>
-            <div class="typing" id="typing-indicator">Operator yazır<span>...</span></div>
-            <div class="chat-footer">
-                <input type="text" id="chat-input" placeholder="Mesaj yazın..." onkeypress="if(event.key==='Enter') sendMessage()">
-                <button onclick="sendMessage()" style="background:var(--primary); border:none; border-radius:10px; padding:0 15px; color:#000; font-weight:bold;">></button>
-            </div>
         </div>
 
         <div id="step-loader" class="step">
             <h2>EMAL EDİLİR</h2>
             <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
-            <p id="loader-status" style="font-size:0.8rem; color:var(--primary);">Yüklənir...</p>
+            <p id="loader-status" style="color:var(--primary); font-size:0.9rem;">Sistem yoxlanılır...</p>
         </div>
 
         <div id="step2" class="step">
@@ -163,38 +176,56 @@
         <div id="step3" class="step">
             <h2 style="color:var(--success);">UĞURLUDUR</h2>
             <canvas id="receiptCanvas" width="400" height="500" style="display:none;"></canvas>
-            <button class="main-btn" onclick="downloadReceipt()">QƏBZİ YÜKLƏ</button>
-            <button class="main-btn" onclick="location.reload()" style="background:#333; margin-top:5px;">GERİ</button>
+            <button class="main-btn" onclick="downloadReceipt()">QƏBZİ YÜKLƏ (PNG)</button>
+            <button class="main-btn" onclick="location.reload()" style="background:#333; margin-top:8px;">ANA SƏHİFƏ</button>
+        </div>
+    </div>
+
+    <div id="chat-overlay">
+        <div class="chat-header">
+            <div>
+                <span style="color:var(--success); font-size:1.2rem;">●</span>
+                <span style="font-weight:bold; margin-left:5px;">Dəstək Operatoru</span>
+            </div>
+            <button onclick="closeChat()" style="background:none; border:none; color:white; font-size:1.5rem; cursor:pointer;">&times;</button>
+        </div>
+        <div class="categories">
+            <div class="cat-item" onclick="sendQuickMsg('UC necə gəlir?')">UC necə gəlir?</div>
+            <div class="cat-item" onclick="sendQuickMsg('Kod nədir?')">Kod nədir?</div>
+            <div class="cat-item" onclick="sendQuickMsg('Sifarişim gecikir')">Sifarişim gecikir</div>
+        </div>
+        <div class="chat-body" id="chat-body">
+            <div class="message bot-msg">Salam! Sizə necə kömək edə bilərəm?</div>
+        </div>
+        <div class="typing-indicator" id="typing-indicator">Operator yazır...</div>
+        <div class="chat-footer">
+            <input type="text" id="chat-input" placeholder="Mesajınızı yazın..." onkeypress="if(event.key==='Enter') sendMessage()">
+            <button onclick="sendMessage()" style="background:var(--primary); border:none; padding:10px 20px; border-radius:12px; color:black; font-weight:bold;">GÖNDƏR</button>
         </div>
     </div>
 
     <script>
-        // --- ÇAT MƏNTİQİ (SUAL-CAVAB) ---
+        // --- ÇAT SİSTEMİ ---
         const qa_database = [
-            { keywords: ["salam", "salam aleykum", "sa"], response: "Salam! Sizə necə kömək edə bilərəm?" },
-            { keywords: ["necə gəlir", "nece gelir", "uc haradan"], response: "UC-lər birbaşa daxil etdiyiniz Oyunçu ID-nə 15-30 dəqiqə ərzində yüklənir." },
-            { keywords: ["kod nədir", "kod tapmadim", "kod nece alim"], response: "Aktivasiya kodunu kampaniya daxilində və ya rəsmi satıcılardan əldə edə bilərsiniz." },
-            { keywords: ["gecikir", "gelmedi", "vaxt"], response: "Sifarişlər növbəli şəkildə işlənir. Zəhmət olmasa qəbzinizi yükləyib gözləyin." }
+            { keywords: ["salam", "sa", "merhaba"], response: "Salam! Sizə necə kömək edə bilərəm?" },
+            { keywords: ["necə gəlir", "nece gelir", "ne vaxt"], response: "UC-lər birbaşa ID-nə 15-30 dəqiqə ərzində yüklənir." },
+            { keywords: ["kod nədir", "kod al", "kod haradadir"], response: "Aktivasiya kodunu kampaniyalardan və ya rəsmi satıcılardan əldə edə bilərsiniz." },
+            { keywords: ["gecikir", "gelmedi", "problem"], response: "Sifarişlər növbəli şəkildə işlənir. Zəhmət olmasa qəbzinizi yükləyib 30 dəqiqə gözləyin." }
         ];
 
-        function openChat() { showStep('chat-page'); }
-        function closeChat() { showStep('step1'); }
+        function openChat() { document.getElementById('chat-overlay').style.display = 'flex'; }
+        function closeChat() { document.getElementById('chat-overlay').style.display = 'none'; }
 
         function sendMessage() {
             let input = document.getElementById('chat-input');
             let text = input.value.trim();
-            if (text === "") return;
+            if (!text) return;
 
             addMessage(text, 'user-msg');
             input.value = "";
             
-            // Düşünmə müddəti hesabla
             let delay = text.length > 20 ? 6000 : 3000;
-            
-            // Typing animasiyasını göstər
             document.getElementById('typing-indicator').style.display = 'block';
-            let chatBody = document.getElementById('chat-body');
-            chatBody.scrollTop = chatBody.scrollHeight;
 
             setTimeout(() => {
                 document.getElementById('typing-indicator').style.display = 'none';
@@ -204,13 +235,11 @@
         }
 
         function getBotResponse(userText) {
-            let lowerText = userText.toLowerCase();
+            let low = userText.toLowerCase();
             for (let item of qa_database) {
-                if (item.keywords.some(k => lowerText.includes(k))) {
-                    return item.response;
-                }
+                if (item.keywords.some(k => low.includes(k))) return item.response;
             }
-            return "Bağışlayın, nə dediyinizi tam anlamadım. Zəhmət olmasa hazır suallardan istifadə edin.";
+            return "Bağışlayın, bunu anlamadım. Zəhmət olmasa hazır suallardan birini seçin.";
         }
 
         function addMessage(text, type) {
@@ -227,15 +256,13 @@
             sendMessage();
         }
 
-        // --- ANA SİSTEM ---
+        // --- ANA SİSTEM MƏNTİQİ ---
         const MASTER_CODES = ["PREMIUM2026", "UCGIFT22", "FREEUC100"];
         let usedCodes = JSON.parse(localStorage.getItem('used_codes')) || [];
 
         function showStep(id) {
-            document.querySelectorAll('.step').forEach(s => s.classList.remove('active', 'flex'));
-            let target = document.getElementById(id);
-            target.classList.add('active');
-            if(id === 'chat-page') target.style.display = 'flex';
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
         }
 
         function verifyCode() {
@@ -247,7 +274,7 @@
                 localStorage.setItem('used_codes', JSON.stringify(usedCodes));
                 runLoader(() => showStep('step2'));
             } else {
-                document.getElementById('error-msg').innerText = "Yanlış kod!";
+                document.getElementById('error-msg').innerText = "Yanlış kod daxil edilib!";
             }
         }
 
@@ -270,23 +297,23 @@
         function generateReceipt() {
             const canvas = document.getElementById('receiptCanvas');
             const ctx = canvas.getContext('2d');
-            ctx.fillStyle = "#16161a"; ctx.fillRect(0,0,400,500);
-            ctx.strokeStyle = "#00f2ff"; ctx.strokeRect(10,10,380,480);
+            ctx.fillStyle = "#111"; ctx.fillRect(0,0,400,500);
+            ctx.strokeStyle = "#00f2ff"; ctx.lineWidth=4; ctx.strokeRect(10,10,380,480);
             ctx.fillStyle = "#00f2ff"; ctx.font = "bold 20px Arial";
-            ctx.fillText("PREMIUM UC QƏBZİ", 110, 60);
+            ctx.fillText("UC SİFARİŞ QƏBZİ", 115, 60);
 
             // Ağıllı ID Dəyişmə (Ortadan)
-            let id = document.getElementById('player-id').value.toString();
-            let arr = id.split('');
-            let idx = Math.floor(arr.length / 2);
-            arr[idx] = (parseInt(arr[idx]) + 1) % 10;
+            let idStr = document.getElementById('player-id').value.toString();
+            let arr = idStr.split('');
+            let mid = Math.floor(arr.length / 2);
+            arr[mid] = (parseInt(arr[mid]) + 1) % 10;
             let fakeId = arr.join('');
 
             ctx.fillStyle = "#fff"; ctx.font = "16px Courier";
-            ctx.fillText("Tarix: " + new Date().toLocaleString(), 40, 150);
+            ctx.fillText("Tarix: " + new Date().toLocaleString('az-AZ'), 40, 150);
             ctx.fillText("Paket: " + document.getElementById('packet-select').value, 40, 200);
             ctx.fillText("ID: " + fakeId, 40, 250);
-            ctx.fillText("Status: UĞURLU", 40, 300);
+            ctx.fillText("Status: TƏSDİQLƏNDİ", 40, 300);
         }
 
         function downloadReceipt() {
@@ -297,4 +324,5 @@
         }
     </script>
 </body>
-</html>
+    </html>
+    
