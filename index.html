@@ -53,7 +53,6 @@
             margin-bottom: 25px;
             display: inline-block;
             transition: 0.3s;
-            text-transform: uppercase;
         }
 
         .help-btn:hover { background: var(--primary); color: #000; box-shadow: 0 0 15px var(--primary); }
@@ -116,7 +115,7 @@
         .chat-footer { padding: 20px; background: var(--card-bg); display: flex; gap: 10px; }
 
         .message { padding: 12px 16px; border-radius: 18px; max-width: 80%; font-size: 0.95rem; line-height: 1.4; word-wrap: break-word; }
-        .bot-msg { background: var(--chat-bot); align-self: flex-start; border-bottom-left-radius: 4px; }
+        .bot-msg { background: var(--chat-bot); align-self: flex-start; border-bottom-left-radius: 4px; white-space: pre-wrap; }
         .user-msg { background: var(--chat-user); align-self: flex-end; border-bottom-right-radius: 4px; }
 
         .typing-indicator { font-size: 0.8rem; color: var(--primary); margin-left: 20px; margin-bottom: 10px; display: none; }
@@ -181,12 +180,12 @@
             <button onclick="closeChat()" style="background:none; border:none; color:white; font-size:1.8rem; cursor:pointer;">&times;</button>
         </div>
         <div class="categories">
-            <div class="cat-item" onclick="sendQuickMsg('Qiymətlər')">Qiymətlər</div>
-            <div class="cat-item" onclick="sendQuickMsg('Ban riski varmı?')">Ban riski?</div>
-            <div class="cat-item" onclick="sendQuickMsg('Adminlə əlaqə')">Əlaqə</div>
+            <div class="cat-item" onclick="sendQuickMsg('UC qiymətləri')">Qiymətlər</div>
+            <div class="cat-item" onclick="sendQuickMsg('Güvənilirdir?')">Ban riski?</div>
+            <div class="cat-item" onclick="sendQuickMsg('Admin nömrəsi')">Adminlə əlaqə</div>
         </div>
         <div class="chat-body" id="chat-body">
-            <div class="message bot-msg">Salam! Sizə necə kömək edə bilərəm? <br><br>Qiymətlər və ya təhlükəsizlik barədə suallarınız varsa yaza bilərsiniz.</div>
+            <div class="message bot-msg">Salam! Mən PUBG Mobile üzrə rəqəmsal köməkçiyəm. Sizə necə kömək edə bilərəm?</div>
         </div>
         <div class="typing-indicator" id="typing-indicator">Operator yazır...</div>
         <div class="chat-footer">
@@ -196,27 +195,31 @@
     </div>
 
     <script>
-        // --- GENİŞLƏNDİRİLMİŞ SUAL-CAVAB BAZASI ---
+        // --- NƏHƏNG AĞILLI CAVAB BAZASI ---
         const qa_database = [
             { 
-                keywords: ["salam", "sa", "merhaba", "hey", "salam aleykum", "salam1", "salam 1"], 
-                response: "Salam! Buyurun, sizə necə kömək edə bilərəm?" 
+                keywords: ["salam", "sa", "merhaba", "hey", "asalamu", "aleykum", "as", "nətərsən", "necesen", "ne var", "sual1", "sual 1"], 
+                response: "Salam! Hər vaxtınız xeyir. Sizə necə yardım edə bilərəm? UC qiymətləri və ya yükləmə barədə suallarınız varsa buyurun." 
             },
             { 
-                keywords: ["qiymet", "qiymət", "qiymetler", "neceyedir", "neçəyədir", "uc necedir", "qiymətlər", "sual 1", "sual1", "paketler"], 
-                response: "PUBG Mobile UC Qiymətlərimiz:\n\n• 660 Uc - 5 AZN\n• 1920 Uc - 13 AZN\n• 3120 Uc - 21 AZN\n• 8100 Uc - 35 AZN" 
+                keywords: ["qiymet", "qiymət", "neceyedir", "neceyə", "uc necedir", "neceye", "list", "pul", "manat", "azn", "qiymetleri", "sual 2", "sual2"], 
+                response: "PUBG Mobile UC qiymətlərimiz aşağıdakı kimidir:\n\n💎 660 UC - 5 AZN\n💎 1920 UC - 13 AZN\n💎 3120 UC - 21 AZN\n💎 8100 UC - 35 AZN\n\nSifariş vermək üçün ana səhifədə kodu daxil edin." 
             },
             { 
-                keywords: ["ban", "ban riski", "tehlukesizdir", "tehluke", "ban var", "ban atar", "ban olar", "risk", "ban riski varmı", "ban olarmi"], 
-                response: "Sistemimiz tamamilə rəsmidir. Hesabınız üçün heç bir BAN riski yoxdur!" 
+                keywords: ["ban", "risk", "tehluke", "atmaz", "baglanmaz", "guven", "guvenilir", "etibar", "ogurluq", "guvenli", "ban var", "ban atar", "sual 3", "sual3"], 
+                response: "Sistemimiz tamamilə rəsmi tərəfdaşlar vasitəsilə işləyir. Heç bir BAN riski yoxdur və hesabınız 100% təhlükəsizdir. İndiyə qədər heç bir şikayət qeydə alınmayıb." 
             },
             { 
-                keywords: ["elaqe", "admin", "nomre", "whatsapp", "vatsap", "wp", "adminle elaqe", "elaqe saxla", "nömrə", "əlaqə"], 
-                response: "Admin ilə əlaqə (WhatsApp): +994 77 124 49 44" 
+                keywords: ["elaqe", "admin", "nomre", "whatsapp", "vatsap", "wp", "nömrə", "əlaqə", "zeng", "danis", "direkt"], 
+                response: "Daha ətraflı dəstək üçün Admin ilə əlaqə saxlaya bilərsiniz:\n\n📱 WhatsApp: +994 77 124 49 44" 
             },
-            {
-                keywords: ["nece gelir", "ne vaxt", "vaxt", "gelmedi", "nezaman", "nece yuklenir"],
-                response: "UC-lər birbaşa Oyunçu ID-nə 15-30 dəqiqə ərzində yüklənir."
+            { 
+                keywords: ["nece gelir", "ne vaxt", "vaxt", "gelir", "yuklenir", "kocur", "ne zaman", "tez", "gec", "gozle", "saat"], 
+                response: "Sifariş tamamlandıqdan sonra UC-lər 15-30 dəqiqə ərzində Oyunçu ID-nə birbaşa köçürülür. Çox vaxt daha tez çatır." 
+            },
+            { 
+                keywords: ["kod", "aktivasiya", "kod al", "tapmadim", "kod haradadir", "kodu nece"], 
+                response: "Aktivasiya kodunu əldə etmək üçün Adminə müraciət edə bilərsiniz və ya kampaniyalardan qazana bilərsiniz." 
             }
         ];
 
@@ -231,8 +234,8 @@
             addMessage(text, 'user-msg');
             input.value = "";
             
-            // Ağıllı gecikmə
-            let delay = text.length > 20 ? 5000 : 2500;
+            // Mesaj uzunluğuna görə ağıllı düşünmə müddəti
+            let delay = text.length > 25 ? 5500 : 3000;
             document.getElementById('typing-indicator').style.display = 'block';
 
             setTimeout(() => {
@@ -242,15 +245,19 @@
         }
 
         function getBotResponse(userText) {
-            // Ağıllı təmizləmə: boşluqları və sual işarələrini silir, kiçik hərfə çevirir
-            let cleanText = userText.toLowerCase().replace(/[?]/g, "").trim();
+            // Cümləni kiçik hərfə çevirir və lazımsız simvolları təmizləyir
+            let lowText = userText.toLowerCase().replace(/[?.,!]/g, "").trim();
             
+            // Baza daxilində dövr edərək açar sözləri axtarır
             for (let item of qa_database) {
-                if (item.keywords.some(k => cleanText.includes(k.toLowerCase()))) {
+                // Əgər istifadəçinin yazdığı cümlənin İÇİNDƏ açar sözlərdən hər hansı biri VARSA
+                if (item.keywords.some(k => lowText.includes(k))) {
                     return item.response;
                 }
             }
-            return "Bağışlayın, bunu anlamadım. Zəhmət olmasa Qiymətlər və ya Ban riski barədə soruşun.";
+            
+            // Əgər heç bir açar söz tapılmasa
+            return "Nə dediyinizi tam anlamadım. Mənə UC qiymətləri, Ban riski və ya Adminlə əlaqə barədə suallar verə bilərsiniz.";
         }
 
         function addMessage(text, type) {
@@ -285,7 +292,7 @@
                 localStorage.setItem('used_codes', JSON.stringify(usedCodes));
                 runLoader(() => showStep('step2'));
             } else {
-                document.getElementById('error-msg').innerText = "Yanlış kod daxil edilib!";
+                document.getElementById('error-msg').innerText = "Kod yanlışdır!";
             }
         }
 
@@ -334,5 +341,4 @@
         }
     </script>
 </body>
-        </html>
-        
+</html>
