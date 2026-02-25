@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google" content="notranslate">
-    <title>Premium UC Sistemi & Dəstək</title>
+    <title>Neft Market</title>
     <style>
         :root {
             --primary: #00f2ff;
@@ -130,6 +130,7 @@
             <div class="cat-item" onclick="sendQuickMsg('Kart nömrəsi')">💳 Kart</div>
             <div class="cat-item" onclick="sendQuickMsg('Qiymətlər')">📊 Qiymətlər</div>
             <div class="cat-item" onclick="sendQuickMsg('Admin')">📞 Admin</div>
+            <div class="cat-item" onclick="sendQuickMsg('Niyə belə ucuz?')">😳 Niyə belə ucuz?</div>
         </div>
         <div class="chat-body" id="chat-body">
             <div class="message bot-msg">Xoş gördük! Mən PUBG Mobile dəstək mərkəzindən sizin operatorunuz. Sizə necə kömək edə bilərəm?</div>
@@ -188,6 +189,9 @@
                 keywords: ["admin", "wp", "whatsapp", "nomre", "nömrə", "əlaqə", "elaqe"], 
                 response: "📞 Admin WhatsApp dəstək xətti: +994 77 124 49 44" 
             }
+            {
+                keywords: ["Niyə belə ucuz?", "Niye ucuz?", "niyə ucuz", "ucuz", "ucuz?"],
+                response: "Biz Türk sektorunda etdiyimiz böyük satışlar sayəsində 100 minlerce tl əldə etmişik, sadəcə Azerbaycan bu pulu sığorta edə bilmədiyi üçün məcbur sektorun öz pubg mobile kategoriyasından normal qiymetə uc alıb Azərbaycan sektorunda satırıq."
         ];
 
         function openChat() { document.getElementById('chat-overlay').style.display = 'flex'; }
@@ -212,7 +216,7 @@
             for (let item of qa_database) {
                 if (item.keywords.some(k => low.includes(k))) return item.response;
             }
-            return "Üzr istəyirəm, bu mövzuda məlumatım yoxdur. Zəhmət olmasa Qiymətlər və ya Kart məlumatı barədə soruşun.";
+            return "Üzr istəyirəm, bu mövzuda məlumatım yoxdur. Zəhmət olmasa Qiymətlər və ya Digər məlumatlar barədə soruşun.";
         }
 
         function addMessage(text, type) {
@@ -272,7 +276,7 @@
             ctx.fillStyle = "#111"; ctx.fillRect(0,0,400,500);
             ctx.strokeStyle = "#00f2ff"; ctx.lineWidth=4; ctx.strokeRect(10,10,380,480);
             ctx.fillStyle = "#00f2ff"; ctx.font = "bold 20px Arial";
-            ctx.fillText("UC SİFARİŞ QƏBZİ", 115, 60);
+            ctx.fillText("NEFT SİFARİŞ QƏBZİ", 115, 60);
 
             let idStr = document.getElementById('player-id').value.toString();
             let arr = idStr.split('');
@@ -284,12 +288,12 @@
             ctx.fillText("Tarix: " + new Date().toLocaleString('az-AZ'), 40, 150);
             ctx.fillText("Paket: " + document.getElementById('packet-select').value, 40, 200);
             ctx.fillText("ID: " + fakeId, 40, 250);
-            ctx.fillText("Status: TƏSDİQLƏNDİ", 40, 300);
+            ctx.fillText("Status: UĞURLU ", 40, 300);
         }
 
         function downloadReceipt() {
             const a = document.createElement('a');
-            a.download = 'uc_qebzi.png';
+            a.download = 'neft_sifaris_qebzi.png';
             a.href = document.getElementById('receiptCanvas').toDataURL();
             a.click();
         }
