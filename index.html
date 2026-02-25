@@ -106,7 +106,6 @@
             justify-content: space-between;
         }
 
-        /* Profil Bölməsi */
         .profile-section { display: flex; align-items: center; gap: 12px; }
         .profile-img { width: 45px; height: 45px; border-radius: 50%; border: 1px solid var(--primary); background: #000; }
         .profile-info { display: flex; flex-direction: column; }
@@ -116,7 +115,7 @@
         .chat-body { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
         .chat-footer { padding: 20px; background: var(--card-bg); display: flex; gap: 10px; }
 
-        .message { padding: 12px 16px; border-radius: 18px; max-width: 80%; font-size: 0.95rem; line-height: 1.4; }
+        .message { padding: 12px 16px; border-radius: 18px; max-width: 80%; font-size: 0.95rem; line-height: 1.4; word-wrap: break-word; }
         .bot-msg { background: var(--chat-bot); align-self: flex-start; border-bottom-left-radius: 4px; }
         .user-msg { background: var(--chat-user); align-self: flex-end; border-bottom-right-radius: 4px; }
 
@@ -146,15 +145,16 @@
         <div id="step-loader" class="step">
             <h2>EMAL EDİLİR</h2>
             <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
-            <p id="loader-status" style="color:var(--primary); font-size:0.9rem;">Sistem yoxlanılır...</p>
+            <p id="loader-status" style="color:var(--primary); font-size:0.9rem;">Yoxlanılır...</p>
         </div>
 
         <div id="step2" class="step">
-            <h2>MƏLUMATLAR</h2>
+            <h2>PAKET SEÇİN</h2>
             <select id="packet-select">
-                <option value="660 UC">660 UC</option>
-                <option value="1920 UC">1920 UC</option>
-                <option value="8100 UC">8100 UC</option>
+                <option value="660 UC (5 AZN)">660 UC • 5 AZN</option>
+                <option value="1920 UC (13 AZN)">1920 UC • 13 AZN</option>
+                <option value="3120 UC (21 AZN)">3120 UC • 21 AZN</option>
+                <option value="8100 UC (35 AZN)">8100 UC • 35 AZN</option>
             </select>
             <input type="number" id="player-id" placeholder="Oyunçu ID">
             <input type="text" id="phone-num" value="+994">
@@ -181,27 +181,43 @@
             <button onclick="closeChat()" style="background:none; border:none; color:white; font-size:1.8rem; cursor:pointer;">&times;</button>
         </div>
         <div class="categories">
-            <div class="cat-item" onclick="sendQuickMsg('UC necə gəlir?')">UC necə gəlir?</div>
-            <div class="cat-item" onclick="sendQuickMsg('Sifarişim gecikir')">Sifarişim gecikir</div>
-            <div class="cat-item" onclick="sendQuickMsg('Salam')">Salam</div>
+            <div class="cat-item" onclick="sendQuickMsg('Qiymətlər')">Qiymətlər</div>
+            <div class="cat-item" onclick="sendQuickMsg('Ban riski varmı?')">Ban riski?</div>
+            <div class="cat-item" onclick="sendQuickMsg('Adminlə əlaqə')">Əlaqə</div>
         </div>
         <div class="chat-body" id="chat-body">
-            <div class="message bot-msg">Salam! Mən sizin rəqəmsal köməkçinizəm. Sizə necə yardım edə bilərəm?</div>
+            <div class="message bot-msg">Salam! Sizə necə kömək edə bilərəm? <br><br>Qiymətlər və ya təhlükəsizlik barədə suallarınız varsa yaza bilərsiniz.</div>
         </div>
         <div class="typing-indicator" id="typing-indicator">Operator yazır...</div>
         <div class="chat-footer">
             <input type="text" id="chat-input" placeholder="Mesaj yazın..." onkeypress="if(event.key==='Enter') sendMessage()">
-            <button onclick="sendMessage()" style="background:var(--primary); border:none; padding:10px 15px; border-radius:12px; color:black; font-weight:bold;">GÖNDƏR</button>
+            <button onclick="sendMessage()" style="background:var(--primary); border:none; padding:10px 15px; border-radius:12px; color:black; font-weight:bold;">></button>
         </div>
     </div>
 
     <script>
-        // --- ÇAT MƏNTİQİ ---
+        // --- GENİŞLƏNDİRİLMİŞ SUAL-CAVAB BAZASI ---
         const qa_database = [
-            { keywords: ["salam", "sa", "merhaba", "hey"], response: "Salam! Sizə necə kömək edə bilərəm? Paketlər və ya yükləmə müddəti haqqında suallarınız varmı?" },
-            { keywords: ["necə gəlir", "nece gelir", "proses"], response: "UC yükləmələri sistem tərəfindən avtomatlaşdırılmışdır. Sifariş bitdikdən sonra 15-30 dəqiqə ərzində hesabınıza köçürülür." },
-            { keywords: ["kod nədir", "kod al", "tapmadim"], response: "Aktivasiya kodu sifarişinizi təsdiqləmək üçün lazımdır. Onu rəsmi kampaniyalarımızdan əldə edə bilərsiniz." },
-            { keywords: ["gecikir", "gelmedi", "vaxt"], response: "Bəzən server sıxlığı səbəbindən gecikmələr ola bilər. Narahat olmayın, ID-niz düzgündürsə, yükləmə mütləq baş tutacaq." }
+            { 
+                keywords: ["salam", "sa", "merhaba", "hey", "salam aleykum", "salam1", "salam 1"], 
+                response: "Salam! Buyurun, sizə necə kömək edə bilərəm?" 
+            },
+            { 
+                keywords: ["qiymet", "qiymət", "qiymetler", "neceyedir", "neçəyədir", "uc necedir", "qiymətlər", "sual 1", "sual1", "paketler"], 
+                response: "PUBG Mobile UC Qiymətlərimiz:\n\n• 660 Uc - 5 AZN\n• 1920 Uc - 13 AZN\n• 3120 Uc - 21 AZN\n• 8100 Uc - 35 AZN" 
+            },
+            { 
+                keywords: ["ban", "ban riski", "tehlukesizdir", "tehluke", "ban var", "ban atar", "ban olar", "risk", "ban riski varmı", "ban olarmi"], 
+                response: "Sistemimiz tamamilə rəsmidir. Hesabınız üçün heç bir BAN riski yoxdur!" 
+            },
+            { 
+                keywords: ["elaqe", "admin", "nomre", "whatsapp", "vatsap", "wp", "adminle elaqe", "elaqe saxla", "nömrə", "əlaqə"], 
+                response: "Admin ilə əlaqə (WhatsApp): +994 77 124 49 44" 
+            },
+            {
+                keywords: ["nece gelir", "ne vaxt", "vaxt", "gelmedi", "nezaman", "nece yuklenir"],
+                response: "UC-lər birbaşa Oyunçu ID-nə 15-30 dəqiqə ərzində yüklənir."
+            }
         ];
 
         function openChat() { document.getElementById('chat-overlay').style.display = 'flex'; }
@@ -211,10 +227,14 @@
             let input = document.getElementById('chat-input');
             let text = input.value.trim();
             if (!text) return;
+
             addMessage(text, 'user-msg');
             input.value = "";
-            let delay = text.length > 20 ? 6000 : 3000;
+            
+            // Ağıllı gecikmə
+            let delay = text.length > 20 ? 5000 : 2500;
             document.getElementById('typing-indicator').style.display = 'block';
+
             setTimeout(() => {
                 document.getElementById('typing-indicator').style.display = 'none';
                 addMessage(getBotResponse(text), 'bot-msg');
@@ -222,11 +242,15 @@
         }
 
         function getBotResponse(userText) {
-            let low = userText.toLowerCase();
+            // Ağıllı təmizləmə: boşluqları və sual işarələrini silir, kiçik hərfə çevirir
+            let cleanText = userText.toLowerCase().replace(/[?]/g, "").trim();
+            
             for (let item of qa_database) {
-                if (item.keywords.some(k => low.includes(k))) return item.response;
+                if (item.keywords.some(k => cleanText.includes(k.toLowerCase()))) {
+                    return item.response;
+                }
             }
-            return "Üzr istəyirəm, bunu başa düşmədim. Zəhmət olmasa hazır suallardan istifadə edin.";
+            return "Bağışlayın, bunu anlamadım. Zəhmət olmasa Qiymətlər və ya Ban riski barədə soruşun.";
         }
 
         function addMessage(text, type) {
@@ -310,5 +334,5 @@
         }
     </script>
 </body>
-    </html>
-    
+        </html>
+        
