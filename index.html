@@ -31,80 +31,31 @@
         }
 
         .container {
-            width: 90%;
-            max-width: 420px;
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 0 30px rgba(0, 242, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            text-align: center;
-            position: relative;
+            width: 90%; max-width: 420px;
+            background: var(--card-bg); padding: 30px;
+            border-radius: 20px; box-shadow: 0 0 30px rgba(0, 242, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.05); text-align: center;
         }
 
         .help-btn {
-            background: transparent;
-            border: 1px solid var(--primary);
-            color: var(--primary);
-            padding: 8px 18px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            margin-bottom: 25px;
-            display: inline-block;
-            transition: 0.3s;
+            background: transparent; border: 1px solid var(--primary);
+            color: var(--primary); padding: 8px 18px; border-radius: 20px;
+            font-size: 0.8rem; cursor: pointer; margin-bottom: 25px; transition: 0.3s;
         }
-
         .help-btn:hover { background: var(--primary); color: #000; box-shadow: 0 0 15px var(--primary); }
 
         h2 { margin-bottom: 20px; color: var(--primary); text-transform: uppercase; letter-spacing: 2px; font-size: 1.3rem; }
+        input, select { width: 100%; padding: 14px; margin: 10px 0; background: #222; border: 1px solid #333; border-radius: 12px; color: white; outline: none; }
+        .main-btn { width: 100%; padding: 15px; margin-top: 10px; border: none; border-radius: 12px; background: linear-gradient(45deg, var(--secondary), var(--primary)); color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; }
 
-        input, select {
-            width: 100%;
-            padding: 14px;
-            margin: 10px 0;
-            background: #222;
-            border: 1px solid #333;
-            border-radius: 12px;
-            color: white;
-            outline: none;
-        }
-
-        .main-btn {
-            width: 100%;
-            padding: 15px;
-            margin-top: 10px;
-            border: none;
-            border-radius: 12px;
-            background: linear-gradient(45deg, var(--secondary), var(--primary));
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            text-transform: uppercase;
-        }
-
-        /* ÇAT OVERLAY */
+        /* CHAT OVERLAY */
         #chat-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg);
-            z-index: 999;
-            flex-direction: column;
-            animation: slideIn 0.3s ease;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg); z-index: 999; flex-direction: column; animation: slideIn 0.3s ease;
         }
-
         @keyframes slideIn { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-        .chat-header {
-            padding: 15px 20px;
-            background: var(--card-bg);
-            border-bottom: 1px solid #333;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
+        .chat-header { padding: 15px 20px; background: var(--card-bg); border-bottom: 1px solid #333; display: flex; align-items: center; justify-content: space-between; }
         .profile-section { display: flex; align-items: center; gap: 12px; }
         .profile-img { width: 45px; height: 45px; border-radius: 50%; border: 1px solid var(--primary); background: #000; }
         .profile-info { display: flex; flex-direction: column; }
@@ -113,26 +64,22 @@
 
         .chat-body { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
         .chat-footer { padding: 20px; background: var(--card-bg); display: flex; gap: 10px; }
-
         .message { padding: 12px 16px; border-radius: 18px; max-width: 80%; font-size: 0.95rem; line-height: 1.4; word-wrap: break-word; }
         .bot-msg { background: var(--chat-bot); align-self: flex-start; border-bottom-left-radius: 4px; white-space: pre-wrap; }
         .user-msg { background: var(--chat-user); align-self: flex-end; border-bottom-right-radius: 4px; }
-
         .typing-indicator { font-size: 0.8rem; color: var(--primary); margin-left: 20px; margin-bottom: 10px; display: none; }
-
         .categories { display: flex; gap: 8px; padding: 10px 20px; overflow-x: auto; background: var(--bg); }
         .cat-item { background: #222; padding: 8px 15px; border-radius: 20px; font-size: 0.75rem; white-space: nowrap; border: 1px solid #333; cursor: pointer; }
 
         .step { display: none; }
         .step.active { display: block; }
-
         .progress-bar { height: 8px; background: #222; border-radius: 4px; overflow: hidden; margin: 20px 0; }
         .progress-fill { height: 100%; width: 0%; background: var(--primary); transition: 0.3s; }
     </style>
 </head>
-<body class="notranslate">
+<body class="notranslate" onload="initOperator()">
 
-    <div class="container" id="main-container">
+    <div class="container">
         <div id="step1" class="step active">
             <button class="help-btn" onclick="openChat()">💬 KÖMƏK AL</button>
             <h2>SİSTEMƏ GİRİŞ</h2>
@@ -171,21 +118,21 @@
     <div id="chat-overlay">
         <div class="chat-header">
             <div class="profile-section">
-                <img src="https://img.icons8.com/3d-fluency/94/support-male.png" class="profile-img" alt="Support">
+                <img id="op-img" src="" class="profile-img" alt="Support">
                 <div class="profile-info">
-                    <span class="profile-name">Dəstək Operatoru</span>
+                    <span id="op-name" class="profile-name">Yüklənir...</span>
                     <span class="profile-status">Onlayn</span>
                 </div>
             </div>
             <button onclick="closeChat()" style="background:none; border:none; color:white; font-size:1.8rem; cursor:pointer;">&times;</button>
         </div>
         <div class="categories">
-            <div class="cat-item" onclick="sendQuickMsg('UC qiymətləri')">Qiymətlər</div>
-            <div class="cat-item" onclick="sendQuickMsg('Güvənilirdir?')">Ban riski?</div>
-            <div class="cat-item" onclick="sendQuickMsg('Admin nömrəsi')">Adminlə əlaqə</div>
+            <div class="cat-item" onclick="sendQuickMsg('Kart nömrəsi')">💳 Kart</div>
+            <div class="cat-item" onclick="sendQuickMsg('Qiymətlər')">📊 Qiymətlər</div>
+            <div class="cat-item" onclick="sendQuickMsg('Admin')">📞 Admin</div>
         </div>
         <div class="chat-body" id="chat-body">
-            <div class="message bot-msg">Salam! Mən PUBG Mobile üzrə rəqəmsal köməkçiyəm. Sizə necə kömək edə bilərəm?</div>
+            <div class="message bot-msg">Xoş gördük! Mən PUBG Mobile dəstək mərkəzindən sizin operatorunuz. Sizə necə kömək edə bilərəm?</div>
         </div>
         <div class="typing-indicator" id="typing-indicator">Operator yazır...</div>
         <div class="chat-footer">
@@ -195,31 +142,51 @@
     </div>
 
     <script>
-        // --- NƏHƏNG AĞILLI CAVAB BAZASI ---
+        // --- DİNAMİK OPERATOR SİSTEMİ ---
+        const operators = [
+            { name: "Operator (Leyla)", img: "https://img.icons8.com/3d-fluency/94/support-female.png" },
+            { name: "Operator (Rəşad)", img: "https://img.icons8.com/3d-fluency/94/support-male.png" }
+        ];
+
+        function initOperator() {
+            const op = operators[Math.floor(Math.random() * operators.length)];
+            document.getElementById('op-img').src = op.img;
+            document.getElementById('op-name').innerText = op.name;
+        }
+
+        // --- NƏHƏNG CAVAB BAZASI ---
         const qa_database = [
             { 
-                keywords: ["salam", "sa", "merhaba", "hey", "asalamu", "aleykum", "as", "nətərsən", "necesen", "ne var", "sual1", "sual 1"], 
-                response: "Salam! Hər vaxtınız xeyir. Sizə necə yardım edə bilərəm? UC qiymətləri və ya yükləmə barədə suallarınız varsa buyurun." 
+                keywords: ["salam", "sa", "hey", "as", "aleykum", "sabahiniz", "axsaminiz", "necesen"], 
+                response: "Salam! Hər vaxtınız xeyir. Sizə necə kömək edə bilərəm?" 
             },
             { 
-                keywords: ["qiymet", "qiymət", "neceyedir", "neceyə", "uc necedir", "neceye", "list", "pul", "manat", "azn", "qiymetleri", "sual 2", "sual2"], 
-                response: "PUBG Mobile UC qiymətlərimiz aşağıdakı kimidir:\n\n💎 660 UC - 5 AZN\n💎 1920 UC - 13 AZN\n💎 3120 UC - 21 AZN\n💎 8100 UC - 35 AZN\n\nSifariş vermək üçün ana səhifədə kodu daxil edin." 
+                keywords: ["qiymet", "neceyedir", "list", "qiymət", "azn", "manat", "uc necedir", "neceye", "neceye olar"], 
+                response: "🔥 GÜNCƏL UC QİYMƏTLƏRİ:\n\n• 660 Uc - 5 AZN\n• 1920 Uc - 13 AZN\n• 3120 Uc - 21 AZN\n• 8100 Uc - 35 AZN" 
             },
             { 
-                keywords: ["ban", "risk", "tehluke", "atmaz", "baglanmaz", "guven", "guvenilir", "etibar", "ogurluq", "guvenli", "ban var", "ban atar", "sual 3", "sual3"], 
-                response: "Sistemimiz tamamilə rəsmi tərəfdaşlar vasitəsilə işləyir. Heç bir BAN riski yoxdur və hesabınız 100% təhlükəsizdir. İndiyə qədər heç bir şikayət qeydə alınmayıb." 
+                keywords: ["kart", "odenis", "ödəniş", "kart nomresi", "karta köçürmə", "karta kocurme", "ödəmə", "kart nömrəsi", "kart var", "kart at"], 
+                response: "💳 Kart məlumatlarımız:\n\n4244 4848 4180 8581\n(Yalnız onlayn ödəniş qəbul olunur)\n\nÖdəniş etdikdən sonra qəbzi Adminə göndərməyi unutmayın." 
             },
             { 
-                keywords: ["elaqe", "admin", "nomre", "whatsapp", "vatsap", "wp", "nömrə", "əlaqə", "zeng", "danis", "direkt"], 
-                response: "Daha ətraflı dəstək üçün Admin ilə əlaqə saxlaya bilərsiniz:\n\n📱 WhatsApp: +994 77 124 49 44" 
+                keywords: ["oldu", "yaxsi", "ok", "tamm", "anladim", "okey", "başa düşdüm", "tm", "aha"], 
+                response: "Anladım. Başqa bir sualınız olsa, mən buradayam. Sifarişinizi gözləyirik!" 
             },
             { 
-                keywords: ["nece gelir", "ne vaxt", "vaxt", "gelir", "yuklenir", "kocur", "ne zaman", "tez", "gec", "gozle", "saat"], 
-                response: "Sifariş tamamlandıqdan sonra UC-lər 15-30 dəqiqə ərzində Oyunçu ID-nə birbaşa köçürülür. Çox vaxt daha tez çatır." 
+                keywords: ["sagol", "sağol", "cox sagol", "təşəkkür", "tesekkur", "minnetdaram"], 
+                response: "Dəyməz! Siz sağ olun. Xoş oyunlar arzulayırıq!" 
             },
             { 
-                keywords: ["kod", "aktivasiya", "kod al", "tapmadim", "kod haradadir", "kodu nece"], 
-                response: "Aktivasiya kodunu əldə etmək üçün Adminə müraciət edə bilərsiniz və ya kampaniyalardan qazana bilərsiniz." 
+                keywords: ["sabah", "pulum olanda", "pulum yoxdur", "sonra", "alacam", "pul yoxdur", "geceler", "maas", "gözlə"], 
+                response: "Problem deyil, nə zaman istəsəniz müraciət edə bilərsiniz. Kampaniyamız hələ davam edir!" 
+            },
+            { 
+                keywords: ["ban", "risk", "tehluke", "guvenilir", "etibar", "ogurluq"], 
+                response: "Sistemimiz 100% rəsmi və təhlükəsizdir. Heç bir BAN riski yoxdur, arxayın ola bilərsiniz." 
+            },
+            { 
+                keywords: ["admin", "wp", "whatsapp", "nomre", "nömrə", "əlaqə", "elaqe"], 
+                response: "📞 Admin WhatsApp dəstək xətti: +994 77 124 49 44" 
             }
         ];
 
@@ -230,14 +197,10 @@
             let input = document.getElementById('chat-input');
             let text = input.value.trim();
             if (!text) return;
-
             addMessage(text, 'user-msg');
             input.value = "";
-            
-            // Mesaj uzunluğuna görə ağıllı düşünmə müddəti
             let delay = text.length > 25 ? 5500 : 3000;
             document.getElementById('typing-indicator').style.display = 'block';
-
             setTimeout(() => {
                 document.getElementById('typing-indicator').style.display = 'none';
                 addMessage(getBotResponse(text), 'bot-msg');
@@ -245,19 +208,11 @@
         }
 
         function getBotResponse(userText) {
-            // Cümləni kiçik hərfə çevirir və lazımsız simvolları təmizləyir
-            let lowText = userText.toLowerCase().replace(/[?.,!]/g, "").trim();
-            
-            // Baza daxilində dövr edərək açar sözləri axtarır
+            let low = userText.toLowerCase().replace(/[?.,!]/g, "").trim();
             for (let item of qa_database) {
-                // Əgər istifadəçinin yazdığı cümlənin İÇİNDƏ açar sözlərdən hər hansı biri VARSA
-                if (item.keywords.some(k => lowText.includes(k))) {
-                    return item.response;
-                }
+                if (item.keywords.some(k => low.includes(k))) return item.response;
             }
-            
-            // Əgər heç bir açar söz tapılmasa
-            return "Nə dediyinizi tam anlamadım. Mənə UC qiymətləri, Ban riski və ya Adminlə əlaqə barədə suallar verə bilərsiniz.";
+            return "Üzr istəyirəm, bu mövzuda məlumatım yoxdur. Zəhmət olmasa Qiymətlər və ya Kart məlumatı barədə soruşun.";
         }
 
         function addMessage(text, type) {
@@ -278,22 +233,22 @@
         const MASTER_CODES = ["PREMIUM2026", "UCGIFT22", "FREEUC100"];
         let usedCodes = JSON.parse(localStorage.getItem('used_codes')) || [];
 
-        function showStep(id) {
-            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-        }
-
         function verifyCode() {
             let code = document.getElementById('access-code').value.trim().toUpperCase();
             if (usedCodes.includes(code)) {
-                alert("Bu kod istifadə edilib!");
+                alert("Kod istifadə edilib!");
             } else if (MASTER_CODES.includes(code)) {
                 usedCodes.push(code);
                 localStorage.setItem('used_codes', JSON.stringify(usedCodes));
                 runLoader(() => showStep('step2'));
             } else {
-                document.getElementById('error-msg').innerText = "Kod yanlışdır!";
+                document.getElementById('error-msg').innerText = "Yanlış kod!";
             }
+        }
+
+        function showStep(id) {
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
         }
 
         function runLoader(cb) {
@@ -301,14 +256,13 @@
             let p = 0;
             let bar = document.getElementById('progress-fill');
             let iv = setInterval(() => {
-                p += 10;
-                bar.style.width = p + "%";
+                p += 10; bar.style.width = p + "%";
                 if(p >= 100) { clearInterval(iv); setTimeout(cb, 500); }
             }, 300);
         }
 
         function processOrder() {
-            if(document.getElementById('player-id').value.length < 5) return alert("ID qısadır!");
+            if(document.getElementById('player-id').value.length < 5) return alert("ID çox qısadır!");
             runLoader(() => { generateReceipt(); showStep('step3'); });
         }
 
@@ -335,7 +289,7 @@
 
         function downloadReceipt() {
             const a = document.createElement('a');
-            a.download = 'qebz.png';
+            a.download = 'uc_qebzi.png';
             a.href = document.getElementById('receiptCanvas').toDataURL();
             a.click();
         }
