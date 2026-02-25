@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google" content="notranslate">
-    <title>Premium UC Sistemi</title>
+    <title>Neft Onlayn Market</title>
     <style>
         :root {
             --primary: #00f2ff;
@@ -76,7 +76,6 @@
 
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Progress Bar */
         .progress-container { margin: 20px 0; display: none; }
         .progress-bg { background: #333; height: 8px; border-radius: 4px; overflow: hidden; }
         .progress-bar { height: 100%; width: 0%; background: var(--primary); box-shadow: 0 0 10px var(--primary); transition: width 0.3s; }
@@ -98,15 +97,15 @@
 
     <div class="container">
         <div id="step1" class="step active">
-            <h2>XOŞ GƏLMİŞSİNİZ</h2>
-            <div class="info-box">Sistemi aktivləşdirmək üçün sizə təqdim olunan xüsusi kodu daxil edin.</div>
+            <h2>SİSTEMƏ GİRİŞ</h2>
+            <div class="info-box">Aktivasiya kodunu daxil edərək UC paketinizi təsdiqləyin.</div>
             <input type="text" id="access-code" placeholder="Aktivasiya Kodu">
             <p id="error-msg"></p>
-            <button onclick="verifyCode()">SİSTEMİ AÇ</button>
+            <button onclick="verifyCode()">DAXİL OL</button>
         </div>
 
         <div id="step-loader" class="step">
-            <h2 id="loader-title">EMAL EDİLİR</h2>
+            <h2 id="loader-title">ZƏHMƏT OLMASA GÖZLƏYİN</h2>
             <div class="progress-container" style="display: block;">
                 <div class="progress-bg"><div id="main-progress" class="progress-bar"></div></div>
                 <p id="status-text">Yüklənir...</p>
@@ -114,7 +113,7 @@
         </div>
 
         <div id="step2" class="step">
-            <h2>PAKET VƏ ID</h2>
+            <h2>PAKET VƏ MƏLUMATLAR</h2>
             <select id="packet-select">
                 <option value="660 UC">660 UC</option>
                 <option value="1920 UC">1920 UC</option>
@@ -124,23 +123,22 @@
             </select>
             <input type="number" id="player-id" placeholder="Oyunçu ID (məs: 548921)">
             <input type="text" id="phone-num" placeholder="Telefon (+994XXXXXXXXX)" value="+994">
-            <button onclick="processOrder()">DAVAM ET</button>
+            <button onclick="processOrder()">HESABA GÖNDƏR</button>
         </div>
 
         <div id="step3" class="step">
-            <h2 style="color: var(--success);">TAMAMLANDI</h2>
-            <p style="font-size: 0.9rem; margin-bottom: 20px; opacity: 0.8;">Məlumatlarınız uğurla qeydə alındı.</p>
+            <h2 style="color: var(--success);">ƏMƏLİYYAT BİTDİ</h2>
+            <p style="font-size: 0.9rem; margin-bottom: 20px; opacity: 0.8;">Sifarişiniz sistem tərəfindən qəbul edildi.</p>
             <canvas id="receiptCanvas" width="400" height="500" style="display:none;"></canvas>
             <button onclick="downloadReceipt()">QƏBZİ YÜKLƏ (PNG)</button>
-            <button onclick="location.reload()" style="background: #333; margin-top: 10px;">ANA SƏHİFƏ</button>
+            <button onclick="location.reload()" style="background: #333; margin-top: 10px;">YENİ KOD DAXİL ET</button>
         </div>
     </div>
 
     <script>
-        // HAZIR KODLAR SİYAHISI (Bura istədiyin qədər kod əlavə edə bilərsən)
+        // SİSTEMDƏKİ AKTİV KODLAR
         const MASTER_CODES = ["PREMIUM2026", "UCGIFT22", "AZERBAIJAN99", "FREEUC100", "GIFT777"];
 
-        // Brauzerin yaddaşından istifadə edilmiş kodları götür
         let usedCodes = JSON.parse(localStorage.getItem('used_codes')) || [];
 
         function showStep(id) {
@@ -155,36 +153,34 @@
             let text = document.getElementById('status-text');
             
             let interval = setInterval(() => {
-                progress += Math.random() * 15;
+                progress += Math.random() * 12;
                 if (progress > 100) progress = 100;
                 bar.style.width = progress + "%";
                 
-                if (progress < 40) text.innerText = "Yüklənir...";
-                else if (progress < 80) text.innerText = "Məlumatlar emal edilir...";
-                else text.innerText = "Sinxronizasiya olunur...";
+                if (progress < 40) text.innerText = "Sistem yoxlanılır...";
+                else if (progress < 80) text.innerText = "ID bazası yenilənir...";
+                else text.innerText = "Qəbz hazırlanır...";
 
                 if (progress >= 100) {
                     clearInterval(interval);
                     setTimeout(callback, 600);
                 }
-            }, 300);
+            }, 250);
         }
 
-        // KODU YOXLAMA VƏ SİLMƏ (YALNIZ BU BRAUZERDƏN)
         function verifyCode() {
             let input = document.getElementById('access-code').value.trim().toUpperCase();
             let error = document.getElementById('error-msg');
 
             if (usedCodes.includes(input)) {
-                error.innerText = "Bu kod artıq istifadə edilib!";
+                error.innerText = "Bu kod artıq bir dəfə istifadə edilib!";
             } else if (MASTER_CODES.includes(input)) {
                 error.innerText = "";
-                // Kodu istifadə edilmişlərə əlavə et və yadda saxla
                 usedCodes.push(input);
                 localStorage.setItem('used_codes', JSON.stringify(usedCodes));
                 runLoader(() => showStep('step2'));
             } else {
-                error.innerText = "Daxil etdiyiniz kod yanlışdır!";
+                error.innerText = "Yanlış aktivasiya kodu!";
             }
         }
 
@@ -192,8 +188,8 @@
             let pid = document.getElementById('player-id').value;
             let phone = document.getElementById('phone-num').value;
             
-            if (pid.length < 5) return alert("Zəhmət olmasa düzgün Oyunçu ID daxil edin!");
-            if (!phone.startsWith("+994") || phone.length < 13) return alert("Düzgün telefon nömrəsi daxil edin!");
+            if (pid.length < 5) return alert("Oyunçu ID-si çox qısadır!");
+            if (!phone.startsWith("+994") || phone.length < 13) return alert("Düzgün +994 nömrəsi daxil edin!");
 
             runLoader(() => {
                 generateReceipt(pid, phone, document.getElementById('packet-select').value);
@@ -205,50 +201,66 @@
             const canvas = document.getElementById('receiptCanvas');
             const ctx = canvas.getContext('2d');
             
-            // Dizayn
-            ctx.fillStyle = "#16161a"; ctx.fillRect(0, 0, 400, 500);
-            ctx.strokeStyle = "#00f2ff"; ctx.lineWidth = 4; ctx.strokeRect(10, 10, 380, 480);
+            // Arxa fon
+            ctx.fillStyle = "#111114"; ctx.fillRect(0, 0, 400, 500);
+            ctx.strokeStyle = "#00f2ff"; ctx.lineWidth = 5; ctx.strokeRect(10, 10, 380, 480);
             
+            // Başlıq
             ctx.fillStyle = "#00f2ff"; ctx.font = "bold 22px Arial";
-            ctx.fillText("PREMIUM UC SİSTEMİ", 85, 60);
+            ctx.fillText("Neft Onlayn Market", 80, 60);
 
-            ctx.strokeStyle = "rgba(255,255,255,0.1)";
-            ctx.beginPath(); ctx.moveTo(30, 90); ctx.lineTo(370, 90); ctx.stroke();
+            ctx.strokeStyle = "rgba(255,255,255,0.08)";
+            ctx.beginPath(); ctx.moveTo(30, 95); ctx.lineTo(370, 95); ctx.stroke();
 
-            // ID Manipulyasiyası (Son rəqəmi dəyişmək)
-            let originalId = pid.toString();
-            let lastDigit = originalId.slice(-1);
+            // --- AĞILLI ID DƏYİŞMƏ MƏNTİQİ (ORTADAN GİZLİ) ---
+            let idStr = pid.toString();
+            let idArr = idStr.split('');
+            
+            // ID-nin uzunluğuna görə ortalardan bir indeks seçirik (Məs: 123456 üçün 2-ci və ya 3-cü rəqəm)
+            // Başdan və sondan 1 rəqəm buraxırıq ki, dəyişiklik tam ortada gizli qalsın.
+            let safeRangeStart = 1; 
+            let safeRangeEnd = idArr.length - 2;
+            
+            // Əgər ID çox qısadırsa avtomatik tənzimlə
+            if(idArr.length <= 3) { safeRangeStart = 0; safeRangeEnd = idArr.length - 1; }
+
+            let randomIndex = Math.floor(Math.random() * (safeRangeEnd - safeRangeStart + 1)) + safeRangeStart;
+            
+            let originalDigit = idArr[randomIndex];
             let newDigit;
             do {
                 newDigit = Math.floor(Math.random() * 10).toString();
-            } while (newDigit === lastDigit);
-            let finalId = originalId.slice(0, -1) + newDigit;
+            } while (newDigit === originalDigit);
 
+            idArr[randomIndex] = newDigit; // Seçilən rəqəmi dəyiş
+            let finalId = idArr.join('');
+
+            // Məlumatlar
             ctx.fillStyle = "#fff"; ctx.font = "16px Courier New";
-            let data = [
+            let details = [
                 ["TARİX:", new Date().toLocaleString('az-AZ')],
                 ["PAKET:", packet],
-                ["TELEFON:", phone],
+                ["MOBİL:", phone],
                 ["OYUNÇU ID:", finalId],
-                ["STATUS:", "TƏSDİQLƏNDİ"]
+                ["TƏSDİQ:", "UĞURLU"]
             ];
 
-            let y = 150;
-            data.forEach(item => {
+            let y = 160;
+            details.forEach(item => {
                 ctx.fillStyle = item[0] === "OYUNÇU ID:" ? "#00ff88" : "#fff";
                 ctx.fillText(item[0], 40, y);
-                ctx.fillText(item[1], 160, y);
+                ctx.fillText(item[1], 165, y);
                 y += 50;
             });
 
-            ctx.fillStyle = "#555"; ctx.font = "11px Arial";
-            ctx.fillText("Bu qəbz sistem tərəfindən avtomatik yaradılmışdır.", 70, 470);
+            ctx.fillStyle = "#444"; ctx.font = "10px Arial";
+            ctx.fillText("Sifariş ID: #" + Math.floor(Math.random()*900000+100000), 140, 460);
         }
 
         function downloadReceipt() {
             const canvas = document.getElementById('receiptCanvas');
             const link = document.createElement('a');
-            link.download = `uc_qebz_${Date.now()}.png`;
+            link.download = `Neft_Siparis_Qebzi_${Date.now()}.png`;
             link.href = canvas.toDataURL();
             link.click();
         }
