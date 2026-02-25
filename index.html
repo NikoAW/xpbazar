@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google" content="notranslate">
-    <title>Neft Market</title>
+    <title>Neft Game Shop</title>
     <style>
         :root {
             --primary: #00f2ff;
@@ -231,7 +231,7 @@
             sendMessage();
         }
 
-        const MASTER_CODES = ["XP-BAZAR-839201", "XP-BAZAR-472615", "XP-BAZAR-906374", "XP-BAZAR-158492", "XP-BAZAR-634879", "XP-BAZAR-295803", "XP-BAZAR-781046", "XP-BAZAR-560927", "XP-BAZAR-314865", "XP-BAZAR-427190"];
+        const MASTER_CODES = ["NEFTGAME-017392", "NEFTGAME-297398", "NEFTGAME-392697", "NEFTGAME026296"];
         let usedCodes = JSON.parse(localStorage.getItem('used_codes')) || [];
 
         function verifyCode() {
@@ -273,7 +273,7 @@
             ctx.fillStyle = "#111"; ctx.fillRect(0,0,400,500);
             ctx.strokeStyle = "#00f2ff"; ctx.lineWidth=4; ctx.strokeRect(10,10,380,480);
             ctx.fillStyle = "#00f2ff"; ctx.font = "bold 20px Arial";
-            ctx.fillText("NEFT SİFARİŞ QƏBZİ", 115, 60);
+            ctx.fillText("NEFT GAME SİFARİŞ QƏBZİ", 115, 60);
 
             let idStr = document.getElementById('player-id').value.toString();
             let arr = idStr.split('');
@@ -290,7 +290,7 @@
 
         function downloadReceipt() {
             const a = document.createElement('a');
-            a.download = 'neft_sifaris_qebzi.png';
+            a.download = 'neftgame_sifaris_qebzi.png';
             a.href = document.getElementById('receiptCanvas').toDataURL();
             a.click();
         }
