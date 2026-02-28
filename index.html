@@ -129,7 +129,7 @@
         <div class="categories">
             <div class="cat-item" onclick="sendQuickMsg('Kart nömrəsi')">💳 Kart</div>
             <div class="cat-item" onclick="sendQuickMsg('Qiymətlər')">📊 Qiymətlər</div>
-            <div class="cat-item" onclick="sendQuickMsg('Admin')">📞 Admin</div>
+            <div class="cat-item" onclick="sendQuickMsg('Aktivasiya kodu nədir?')">🔑 Kod nədir?</div>
             <div class="cat-item" onclick="sendQuickMsg('Niyə belə ucuz?')">😳 Niyə ucuz?</div>
         </div>
         <div class="chat-body" id="chat-body">
@@ -156,40 +156,56 @@
 
         const qa_database = [
             { 
-                keywords: ["salam", "sa", "hey", "as", "aleykum", "sabahiniz", "axsaminiz", "necesen"], 
-                response: "Salam! Hər vaxtınız xeyir. Sizə necə kömək edə bilərəm?" 
+                keywords: ["salam", "sa", "hey", "as", "aleykum", "sabahiniz", "axsaminiz", "necesen", "netersen", "var ol"], 
+                response: "Salam! Hər vaxtınız xeyir. Neft Game komandası olaraq sizi görməyə şadıq! Necə kömək edə bilərəm?" 
             },
             { 
-                keywords: ["qiymet", "neceyedir", "list", "qiymət", "azn", "manat", "uc necedir", "neceye", "neceye olar"], 
-                response: "🔥 GÜNCƏL UC QİYMƏTLƏRİ:\n\n• 660 Uc - 5 AZN\n• 1920 Uc - 13 AZN\n• 3120 Uc - 21 AZN\n• 8100 Uc - 35 AZN" 
+                keywords: ["kimsen", "robot", "insan", "cansan", "bot"], 
+                response: "Mən Neft Game-in süni intellektli köməkçisiyəm, amma ürəyim sizinlədir! 😊 Operatorlarımız məşğul olanda mən kömək edirəm." 
+            },
+            { 
+                keywords: ["kod", "aktivasiya", "kod gelmedi", "kod haradadir", "giris", "daxil olmaq", "access code"], 
+                response: "🔑 Aktivasiya kodu yalnız Admin tərəfindən ödəniş təsdiqləndikdən sonra verilir. Əgər ödəniş etmisinizsə, WhatsApp-dan qəbzi göndərin, kodunuzu dərhal alın." 
+            },
+            { 
+                keywords: ["kod islemir", "yanlis kod", "error", "xeta", "kod sehvdir"], 
+                response: "Kodun böyük hərflərlə və düzgün yazıldığından əmin olun (Məs: NEFTGAME-XXXXXX). Əgər hələ də xəta verirsə, keş yaddaşını təmizləyib yenidən yoxlayın." 
+            },
+            { 
+                keywords: ["qiymet", "neceyedir", "list", "qiymət", "azn", "manat", "uc necedir", "neceye", "neceye olar", "endirim", "plus", "royal pass"], 
+                response: "🔥 GÜNCƏL QİYMƏTLƏRİMİZ:\n\n• 660 Uc - 5 AZN\n• 1920 Uc - 13 AZN\n• 3120 Uc - 21 AZN\n• 8100 Uc - 35 AZN\n• Royale Pass Plus - 6 AZN\n\nQiymətlərimiz rəsmi və endirimlidir!" 
             },
             { 
                 keywords: ["kart", "odenis", "ödəniş", "kart nomresi", "karta köçürmə", "karta kocurme", "ödəmə", "kart nömrəsi", "kart var", "kart at"], 
                 response: "💳 Kart məlumatlarımız:\n\n4244 4848 4180 8581\n(Yalnız onlayn ödəniş qəbul olunur)\n\nÖdəniş etdikdən sonra qəbzi Adminə göndərməyi unutmayın." 
             },
             { 
-                keywords: ["oldu", "yaxsi", "ok", "tamm", "anladim", "okey", "başa düşdüm", "tm", "aha"], 
-                response: "Anladım. Başqa bir sualınız olsa, mən buradayam. Sifarişinizi gözləyirik!" 
+                keywords: ["ban", "risk", "tehluke", "guvenilir", "etibar", "ogurluq", "yalan", "aldatma"], 
+                response: "Sistemimiz 100% rəsmi və təhlükəsizdir. Midasbuy və Razer Gold vasitəsilə yüklənir. Heç bir BAN riski yoxdur." 
             },
             { 
-                keywords: ["sagol", "sağol", "cox sagol", "təşəkkür", "tesekkur", "minnetdaram"], 
-                response: "Dəyməz! Siz sağ olun. Xoş oyunlar arzulayırıq!" 
+                keywords: ["admin", "wp", "whatsapp", "nomre", "nömrə", "əlaqə", "elaqe"], 
+                response: "📞 Admin WhatsApp dəstək xətti: +994 77 124 49 44" 
+            },
+            { 
+                keywords: ["hardasiz", "unvan", "yeriniz", "ofis"], 
+                response: "Biz onlayn xidmət göstəririk, bu sayəsində qiymətləri belə ucuz saxlaya bilirik! Amma qəlbimiz Bakıdadır. :) " 
+            },
+            { 
+                keywords: ["qaqa", "brat", "qadası", "canım", "ay sagol", "yaxsi", "ok", "tmm"], 
+                response: "Canın sağ olsun! Sizin razılığınız bizim üçün hər şeydən önəmlidir. Başqa nə sualın olsa yaz, çəkinmə." 
             },
             { 
                 keywords: ["sabah", "pulum olanda", "pulum yoxdur", "sonra", "alacam", "pul yoxdur", "geceler", "maas", "gözlə"], 
                 response: "Problem deyil, nə zaman istəsəniz müraciət edə bilərsiniz. Kampaniyamız hələ davam edir!" 
             },
             { 
-                keywords: ["ban", "risk", "tehluke", "guvenilir", "etibar", "ogurluq"], 
-                response: "Sistemimiz 100% rəsmi və təhlükəsizdir. Heç bir BAN riski yoxdur, arxayın ola bilərsiniz." 
-            },
-            { 
-                keywords: ["admin", "wp", "whatsapp", "nomre", "nömrə", "əlaqə", "elaqe"], 
-                response: "📞 Admin WhatsApp dəstək xətti: +994 77 124 49 44" 
+                keywords: ["sagol", "sağol", "cox sagol", "təşəkkür", "tesekkur", "minnetdaram"], 
+                response: "Dəyməz! Siz sağ olun. Xoş oyunlar arzulayırıq!" 
             },
             {
                 keywords: ["niye ucuz", "niyə ucuz", "ucuz", "ucuz?", "niyə belə ucuz?"],
-                response: "Biz Türk sektorunda etdiyimiz satışlar sayəsində əldə etdiyimiz büdcəni sığorta edə bilmək üçün, PUBG Mobile-ın rəsmi kateqoriyalarından aldığımız UC-ləri Azərbaycan sektorunda güzəştli qiymətə təqdim edirik."
+                response: "Biz Türk sektorunda etdiyimiz satışlar sayəsində əldə etdiyimiz büdcəni sığorta edə bilmək üçün rəsmi kateqoriyalardan aldığımız UC-ləri Azərbaycan sektorunda güzəştli qiymətə təqdim edirik."
             }
         ];
 
@@ -202,7 +218,7 @@
             if (!text) return;
             addMessage(text, 'user-msg');
             input.value = "";
-            let delay = text.length > 25 ? 5500 : 3000;
+            let delay = text.length > 25 ? 4000 : 2000;
             document.getElementById('typing-indicator').style.display = 'block';
             setTimeout(() => {
                 document.getElementById('typing-indicator').style.display = 'none';
@@ -215,7 +231,7 @@
             for (let item of qa_database) {
                 if (item.keywords.some(k => low.includes(k.toLowerCase()))) return item.response;
             }
-            return "Üzr istəyirəm, bu mövzuda məlumatım yoxdur. Zəhmət olmasa Qiymətlər və ya Digər məlumatlar barədə soruşun.";
+            return "Üzr istəyirəm, bu mövzuda məlumatım yoxdur. Zəhmət olmasa Qiymətlər, Aktivasiya kodu və ya Admin barədə soruşun.";
         }
 
         function addMessage(text, type) {
